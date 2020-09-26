@@ -11,6 +11,7 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release/bin)
 subdirs(
     usd
     samples/hello
+    samples/gl_sample
     usd_source/pxr/usdImaging/usddImagingGL
     usd_source/extras/imaging/examples/hdTiny
     # IETutorials/hydra
