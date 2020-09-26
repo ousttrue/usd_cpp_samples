@@ -25,10 +25,7 @@
 #define PXR_USD_IMAGING_USD_IMAGING_GL_UNIT_TEST_GLDRAWING_H
 
 #include "Args.h"
-#include "pxr/pxr.h"
-#include "pxr/base/gf/vec4d.h"
-#include "pxr/base/vt/dictionary.h"
-#include "pxr/base/tf/declarePtrs.h"
+#include "UnitTestWindow.h"
 #include <pxr/usd/usd/stage.h>
 #include "pxr/usdImaging/usdImagingGL/engine.h"
 
@@ -36,8 +33,6 @@
 #include <vector>
 
 PXR_NAMESPACE_OPEN_SCOPE
-
-class UsdImagingGL_UnitTestWindow;
 
 /// \class UsdImagingGL_UnitTestGLDrawing
 ///
@@ -72,10 +67,7 @@ public:
     void RunTest();
 
 private:
-    HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine)
-    {
-        return engine->_GetRenderIndex();
-    }
+    HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine);
 
     void _Render(UsdImagingGLEngine *engine,
                  const UsdImagingGLRenderParams &params)
