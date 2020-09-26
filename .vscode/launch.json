@@ -59,9 +59,11 @@
             "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
             "args": [
                 "-stage",
-                // "${workspaceFolder}/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                "${workspaceFolder}/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
                 // "${workspaceFolder}/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
-                "${workspaceFolder}/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+                // "${workspaceFolder}/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+                "-translate",
+                "0", "0", "-100"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
