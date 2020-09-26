@@ -2,21 +2,18 @@
 
 #include <pxr/imaging/garch/glDebugWindow.h>
 #include <pxr/imaging/glf/drawTarget.h>
-
-PXR_NAMESPACE_OPEN_SCOPE
-
-class UsdImagingGL_UnitTestGLDrawing;
-
-PXR_NAMESPACE_CLOSE_SCOPE
+#include <functional>
 
 class UsdImagingGL_UnitTestWindow : public pxr::GarchGLDebugWindow
 {
 public:
     typedef UsdImagingGL_UnitTestWindow This;
 
+    using OnInitFunc = std::function<void()>;
+    using OnDrawFunc = std::function<void(bool, int, int)>;
+
 public:
-    UsdImagingGL_UnitTestWindow(pxr::UsdImagingGL_UnitTestGLDrawing *unitTest,
-                                int w, int h);
+    UsdImagingGL_UnitTestWindow(int w, int h, const OnInitFunc &onInit, const OnDrawFunc &onDraw);
     virtual ~UsdImagingGL_UnitTestWindow();
 
     void DrawOffscreen();
@@ -35,6 +32,7 @@ public:
     virtual void OnMouseMove(int x, int y, int modKeys);
 
 private:
-    pxr::UsdImagingGL_UnitTestGLDrawing *_unitTest;
     pxr::GlfDrawTargetRefPtr _drawTarget;
+    OnInitFunc _onInit;
+    OnDrawFunc _onDraw;
 };

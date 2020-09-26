@@ -22,9 +22,9 @@
 // language governing permissions and limitations under the Apache License.
 //
 // #include "pxr/imaging/glf/glew.h"
+#include "pxr/imaging/glf/glew.h"
 #include "unitTestGLDrawing.h"
 #include "Args.h"
-#include "UnitTestWindow.h"
 
 #include "pxr/pxr.h"
 
@@ -71,26 +71,11 @@ static void UsdImagingGL_UnitTestHelper_InitPlugins()
 UsdImagingGL_UnitTestGLDrawing::UsdImagingGL_UnitTestGLDrawing(const Args &a)
 : args(a)
 {
+    RunTest();
 }
 
 UsdImagingGL_UnitTestGLDrawing::~UsdImagingGL_UnitTestGLDrawing()
 {
-}
-
-int UsdImagingGL_UnitTestGLDrawing::GetWidth() const
-{
-    return _widget->GetWidth();
-}
-
-int UsdImagingGL_UnitTestGLDrawing::GetHeight() const
-{
-    return _widget->GetHeight();
-}
-
-bool UsdImagingGL_UnitTestGLDrawing::WriteToFile(std::string const &attachment,
-                                                 std::string const &filename) const
-{
-    return _widget->WriteToFile(attachment, filename);
 }
 
 void UsdImagingGL_UnitTestGLDrawing::RunTest()
@@ -129,38 +114,9 @@ void UsdImagingGL_UnitTestGLDrawing::RunTest()
         args._stageFilePath = args.unresolvedStageFilePath;
     }
 
-    _widget = new UsdImagingGL_UnitTestWindow(this, 640, 480);
-    _widget->Init();
-
     if (args._times.empty())
     {
         args._times.push_back(-999);
-    }
-
-    if (args.complexities.size() > 0)
-    {
-        std::string imageFilePath = args.GetOutputFilePath();
-
-        TF_FOR_ALL(compIt, args.complexities)
-        {
-            args._complexity = *compIt;
-            if (!imageFilePath.empty())
-            {
-                std::stringstream suffix;
-                suffix << "_" << args._complexity << ".png";
-                args._outputFilePath = TfStringReplace(imageFilePath, ".png", suffix.str());
-            }
-
-            _widget->DrawOffscreen();
-        }
-    }
-    else if (args.offscreen)
-    {
-        _widget->DrawOffscreen();
-    }
-    else
-    {
-        _widget->Run();
     }
 
     if (!args._traceFile.empty())
@@ -320,7 +276,7 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
     }
 }
 
-void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
+void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen, int width, int height)
 {
     TRACE_FUNCTION();
 
@@ -341,9 +297,6 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
     perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingTopology, 0);
     perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingVisibility, 0);
     perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
-
-    const int width = GetWidth();
-    const int height = GetHeight();
 
     pxr::GfVec4d viewport(0, 0, width, height);
 
@@ -454,7 +407,8 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
                 }
                 else
                 {
-                    _widget->Clear(fboClearColor, clearDepth[0]);
+                    glClearBufferfv(GL_COLOR, 0, fboClearColor.data());
+                    glClearBufferfv(GL_DEPTH, 0, clearDepth);
 
                     cleared = true;
                 }
@@ -489,7 +443,8 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
                 imageFilePath = pxr::TfStringReplace(imageFilePath, ".png", suffix.str());
             }
             std::cout << imageFilePath << "\n";
-            WriteToFile("color", imageFilePath);
+            // TODO:
+            // WriteToFile("color", imageFilePath);
         }
     }
 

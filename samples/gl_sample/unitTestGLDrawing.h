@@ -25,7 +25,6 @@
 #define PXR_USD_IMAGING_USD_IMAGING_GL_UNIT_TEST_GLDRAWING_H
 
 #include "Args.h"
-#include "UnitTestWindow.h"
 #include <pxr/usd/usd/stage.h>
 #include "pxr/usdImaging/usdImagingGL/engine.h"
 
@@ -45,16 +44,13 @@ public:
     UsdImagingGL_UnitTestGLDrawing(const Args &args);
     ~UsdImagingGL_UnitTestGLDrawing();
 
-    int GetWidth() const;
-    int GetHeight() const;
-
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
     std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
 
     void InitTest();
-    void DrawTest(bool offscreen);
+    void DrawTest(bool offscreen, int w, int h);
     void ShutdownTest();
 
     void MousePress(int button, int x, int y, int modKeys);
@@ -62,11 +58,9 @@ public:
     void MouseMove(int x, int y, int modKeys);
     void KeyRelease(int key);
 
-    bool WriteToFile(std::string const &attachment, std::string const &filename) const;
-
-    void RunTest();
 
 private:
+    void RunTest();
     HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine);
 
     void _Render(UsdImagingGLEngine *engine,
@@ -77,8 +71,6 @@ private:
     }
 
 private:
-    UsdImagingGL_UnitTestWindow *_widget = nullptr;
-
     std::vector<GfVec4d> _clipPlanes;
 
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;

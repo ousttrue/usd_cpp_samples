@@ -1,14 +1,14 @@
 #include "pxr/imaging/glf/glew.h"
 #include "UnitTestWindow.h"
-#include "unitTestGLDrawing.h"
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/diagnostic.h"
 #include "pxr/imaging/glf/drawTarget.h"
 #include "pxr/imaging/garch/glDebugWindow.h"
 
-UsdImagingGL_UnitTestWindow::UsdImagingGL_UnitTestWindow(
-    pxr::UsdImagingGL_UnitTestGLDrawing *unitTest, int w, int h)
-    : GarchGLDebugWindow("UsdImagingGL Test", w, h), _unitTest(unitTest)
+UsdImagingGL_UnitTestWindow::UsdImagingGL_UnitTestWindow(int w, int h, 
+const OnInitFunc &onInit, const OnDrawFunc &onDraw)
+    : GarchGLDebugWindow("UsdImagingGL Test", w, h),
+      _onInit(onInit), _onDraw(onDraw)
 {
 }
 
@@ -33,7 +33,7 @@ void UsdImagingGL_UnitTestWindow::OnInitializeGL()
     _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
                                GL_DEPTH_COMPONENT);
 
-    _unitTest->InitTest();
+    _onInit();
 
     _drawTarget->Unbind();
 }
@@ -43,7 +43,7 @@ void UsdImagingGL_UnitTestWindow::OnUninitializeGL()
 {
     _drawTarget = pxr::GlfDrawTargetRefPtr();
 
-    _unitTest->ShutdownTest();
+    // _unitTest->ShutdownTest();
 }
 
 /* virtual */
@@ -58,7 +58,7 @@ void UsdImagingGL_UnitTestWindow::OnPaintGL()
     _drawTarget->Bind();
     _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
-    _unitTest->DrawTest(false);
+    _onDraw(false, width, height);
 
     _drawTarget->Unbind();
 
@@ -83,7 +83,7 @@ void UsdImagingGL_UnitTestWindow::DrawOffscreen()
     _drawTarget->Bind();
     _drawTarget->SetSize(pxr::GfVec2i(GetWidth(), GetHeight()));
 
-    _unitTest->DrawTest(true);
+    _onDraw(true, GetWidth(), GetHeight());
 
     _drawTarget->Unbind();
 }
@@ -119,25 +119,25 @@ void UsdImagingGL_UnitTestWindow::OnKeyRelease(int key)
         ExitApp();
         return;
     }
-    _unitTest->KeyRelease(key);
+    // _unitTest->KeyRelease(key);
 }
 
 /* virtual */
 void UsdImagingGL_UnitTestWindow::OnMousePress(int button,
                                                int x, int y, int modKeys)
 {
-    _unitTest->MousePress(button, x, y, modKeys);
+    // _unitTest->MousePress(button, x, y, modKeys);
 }
 
 /* virtual */
 void UsdImagingGL_UnitTestWindow::OnMouseRelease(int button,
                                                  int x, int y, int modKeys)
 {
-    _unitTest->MouseRelease(button, x, y, modKeys);
+    // _unitTest->MouseRelease(button, x, y, modKeys);
 }
 
 /* virtual */
 void UsdImagingGL_UnitTestWindow::OnMouseMove(int x, int y, int modKeys)
 {
-    _unitTest->MouseMove(x, y, modKeys);
+    // _unitTest->MouseMove(x, y, modKeys);
 }
