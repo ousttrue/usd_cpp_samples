@@ -21,8 +21,16 @@ target_link_libraries(usd INTERFACE
 "$<$<CONFIG:RelWithDebInfo>:$ENV{USD_BUILD_RELEASE}/lib/tbb.lib>"
 "$<$<CONFIG:Release>:$ENV{USD_BUILD_RELEASE}/lib/tbb.lib>"
 "$<$<CONFIG:MinSizeRel>:$ENV{USD_BUILD_RELEASE}/lib/tbb.lib>"
+
 "$<$<CONFIG:Debug>:$ENV{USD_BUILD_DEBUG}/lib/usd_ms.lib>"
 "$<$<CONFIG:RelWithDebInfo>:$ENV{USD_BUILD_RELEASE}/lib/usd_ms.lib>"
 "$<$<CONFIG:Release>:$ENV{USD_BUILD_RELEASE}/lib/usd_ms.lib>"
 "$<$<CONFIG:MinSizeRel>:$ENV{USD_BUILD_RELEASE}/lib/usd_ms.lib>"
+
+"$<$<CONFIG:Debug>:$ENV{USD_BUILD_DEBUG}/lib/glew32.lib>"
+"$<$<CONFIG:RelWithDebInfo>:$ENV{USD_BUILD_RELEASE}/lib/glew32.lib>"
+"$<$<CONFIG:Release>:$ENV{USD_BUILD_RELEASE}/lib/glew32.lib>"
+"$<$<CONFIG:MinSizeRel>:$ENV{USD_BUILD_RELEASE}/lib/glew32.lib>"
+
+OpenGL32
 )

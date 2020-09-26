@@ -51,6 +51,22 @@
                 }
             ],
             "externalConsole": false
-        }
+        },
+        {
+            "name": "extras:testUsdImagingGLBasicDrawing",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
     ]
 }
