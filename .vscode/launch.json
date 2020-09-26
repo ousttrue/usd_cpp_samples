@@ -57,7 +57,12 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
-            "args": [],
+            "args": [
+                "-stage",
+                // "${workspaceFolder}/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                // "${workspaceFolder}/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
+                "${workspaceFolder}/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
