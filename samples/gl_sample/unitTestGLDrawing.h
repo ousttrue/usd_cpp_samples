@@ -24,6 +24,7 @@
 #ifndef PXR_USD_IMAGING_USD_IMAGING_GL_UNIT_TEST_GLDRAWING_H
 #define PXR_USD_IMAGING_USD_IMAGING_GL_UNIT_TEST_GLDRAWING_H
 
+#include "Args.h"
 #include "pxr/pxr.h"
 #include "pxr/base/gf/vec4d.h"
 #include "pxr/base/vt/dictionary.h"
@@ -44,39 +45,18 @@ class UsdImagingGL_UnitTestWindow;
 ///
 class UsdImagingGL_UnitTestGLDrawing
 {
+    Args args;
 public:
-    UsdImagingGL_UnitTestGLDrawing();
+    UsdImagingGL_UnitTestGLDrawing(const Args &args);
     ~UsdImagingGL_UnitTestGLDrawing();
 
     int GetWidth() const;
     int GetHeight() const;
 
-    bool IsEnabledTestLighting() const { return _testLighting; }
-    bool IsEnabledSceneLights() const { return _sceneLights; }
-    bool IsEnabledCameraLight() const { return _cameraLight; }
-    bool IsEnabledCullBackfaces() const { return _cullBackfaces; }
-    bool IsEnabledIdRender() const { return _testIdRender; }
-
-    bool IsShowGuides() const { return _showGuides; }
-    bool IsShowRender() const { return _showRender; }
-    bool IsShowProxy() const { return _showProxy; }
-    bool ShouldClearOnce() const { return _clearOnce; }
-
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
-
-    std::string const &GetStageFilePath() const { return _stageFilePath; }
-    std::string const &GetOutputFilePath() const { return _outputFilePath; }
-
-    std::string const &GetCameraPath() const { return _cameraPath; }
     std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
-    std::vector<double> const &GetTimes() const { return _times; }
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
-    VtDictionary const &GetRenderSettings() const { return _renderSettings; }
-    TfToken const &GetRendererAov() const { return _rendererAov; }
-    std::string const &GetPerfStatsFile() const { return _perfStatsFile; }
-
-    void RunTest(int argc, char *argv[]);
 
     void InitTest();
     void DrawTest(bool offscreen);
@@ -89,11 +69,9 @@ public:
 
     bool WriteToFile(std::string const &attachment, std::string const &filename) const;
 
-protected:
-    float _GetComplexity() const { return _complexity; }
-    bool _ShouldFrameAll() const { return _shouldFrameAll; }
-    TfToken _GetRenderer() const { return _renderer; }
+    void RunTest();
 
+private:
     HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine)
     {
         return engine->_GetRenderIndex();
@@ -107,41 +85,14 @@ protected:
     }
 
 private:
-    struct _Args;
-    void _Parse(int argc, char *argv[], _Args *args);
-
-private:
-    UsdImagingGL_UnitTestWindow *_widget;
-    bool _testLighting;
-    bool _sceneLights;
-    bool _cameraLight;
-    std::string _cameraPath;
-    bool _testIdRender;
-
-    std::string _stageFilePath;
-    std::string _outputFilePath;
-
-    float _complexity;
-    TfToken _renderer;
-
-    std::vector<double> _times;
+    UsdImagingGL_UnitTestWindow *_widget = nullptr;
 
     std::vector<GfVec4d> _clipPlanes;
 
-    UsdImagingGLDrawMode _drawMode;
-    bool _shouldFrameAll;
-    bool _cullBackfaces;
+    UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
+
     GfVec4f _clearColor;
     GfVec3f _translate;
-    VtDictionary _renderSettings;
-    TfToken _rendererAov;
-    std::string _perfStatsFile;
-    std::string _traceFile;
-
-    bool _showGuides;
-    bool _showRender;
-    bool _showProxy;
-    bool _clearOnce;
 
 private:
     pxr::UsdStageRefPtr _stage;

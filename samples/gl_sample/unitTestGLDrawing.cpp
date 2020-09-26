@@ -21,6 +21,7 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
+#include "Args.h"
 #include "pxr/pxr.h"
 #include "pxr/imaging/glf/glew.h"
 
@@ -232,8 +233,8 @@ void UsdImagingGL_UnitTestWindow::OnMouseMove(int x, int y, int modKeys)
 
 ////////////////////////////////////////////////////////////
 
-UsdImagingGL_UnitTestGLDrawing::UsdImagingGL_UnitTestGLDrawing()
-    : _widget(NULL), _testLighting(false), _sceneLights(false), _cameraLight(false), _testIdRender(false), _complexity(1.0f), _drawMode(UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH), _shouldFrameAll(false), _cullBackfaces(false), _showGuides(UsdImagingGLRenderParams().showGuides), _showRender(UsdImagingGLRenderParams().showRender), _showProxy(UsdImagingGLRenderParams().showProxy), _clearOnce(false)
+UsdImagingGL_UnitTestGLDrawing::UsdImagingGL_UnitTestGLDrawing(const Args &a)
+: args(a)
 {
 }
 
@@ -257,400 +258,9 @@ bool UsdImagingGL_UnitTestGLDrawing::WriteToFile(std::string const &attachment,
     return _widget->WriteToFile(attachment, filename);
 }
 
-struct UsdImagingGL_UnitTestGLDrawing::_Args
+void UsdImagingGL_UnitTestGLDrawing::RunTest()
 {
-    _Args() : offscreen(false)
-    {
-        clearColor[0] = 1.0f;
-        clearColor[1] = 0.5f;
-        clearColor[2] = 0.1f;
-        clearColor[3] = 1.0f;
-
-        translate[0] = 0.0;
-        translate[1] = -1000.0;
-        translate[2] = -2500.0;
-    }
-
-    std::string unresolvedStageFilePath;
-    bool offscreen;
-    std::string shading;
-    std::vector<double> clipPlaneCoords;
-    std::vector<double> complexities;
-    float clearColor[4];
-    float translate[3];
-};
-
-static void Die(const char *fmt, ...) ARCH_PRINTF_FUNCTION(1, 2);
-static void Die(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-    fflush(stderr);
-    exit(1);
-}
-
-static void
-ParseError(const char *pname, const char *fmt, ...) ARCH_PRINTF_FUNCTION(2, 3);
-static void
-ParseError(const char *pname, const char *fmt, ...)
-{
-    fprintf(stderr, "%s: ", TfGetBaseName(pname).c_str());
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-    fprintf(stderr, ".  Try '%s -' for help.\n", TfGetBaseName(pname).c_str());
-    fflush(stderr);
-    exit(1);
-}
-
-static void Usage(int argc, char *argv[])
-{
-    static const char usage[] =
-        "%s [-stage filePath] [-write filePath]\n"
-        "                           [-offscreen] [-lighting] [-idRender]\n"
-        "                           [-camera pathToCamera]\n"
-        "                           [-complexity complexity]\n"
-        "                           [-renderer rendererName]\n"
-        "                           [-shading [flat|smooth|wire|wireOnSurface]]\n"
-        "                           [-frameAll]\n"
-        "                           [-clipPlane clipPlane1 ... clipPlane4]\n"
-        "                           [-complexities complexities1 complexities2 ...]\n"
-        "                           [-times times1 times2 ...] [-cullBackfaces]\n"
-        "                           [-clear r g b a] [-clearOnce] [-translate x y z]\n"
-        "                           [-renderSetting name type value]\n"
-        "                           [-rendererAov name]\n"
-        "                           [-perfStatsFile path]\n"
-        "                           [-traceFile path] [...]\n"
-        "\n"
-        "  usdImaging basic drawing test\n"
-        "\n"
-        "options:\n"
-        "  -stage filePath     name of usd stage to open []\n"
-        "  -write filePath     name of image file to write (suffix determines type) []\n"
-        "  -offscreen          execute without mapping a window\n"
-        "  -lighting           use simple lighting override shader\n"
-        "  -sceneLights        use in combination with -lighting to utilize the lights \n"
-        "                      defined in the scene\n"
-        "  -camLight           use a single camera light\n"
-        "  -idRender           ID rendering\n"
-        "  -complexity complexity\n"
-        "                      Set the fallback complexity [1]\n"
-        "  -renderer rendererName\n"
-        "                      use the specified renderer plugin []\n"
-        "  -shading [flat|smooth|wire|wireOnSurface]\n"
-        "                      force specific type of shading\n"
-        "                      [flat|smooth|wire|wireOnSurface] []\n"
-        "  -frameAll           set the view to frame all root prims on the stage\n"
-        "  -clipPlane clipPlane1 ... clipPlane4\n"
-        "                      set an additional camera clipping plane [()]\n"
-        "  -complexities complexities1 complexities2 ...\n"
-        "                      One or more complexities, each complexity will\n"
-        "                      produce an image [()]\n"
-        "  -times times1 times2 ...\n"
-        "                      One or more time samples, each time will produce\n"
-        "                      an image [()]\n"
-        "  -cullBackfaces      enable backface culling\n"
-        "  -clear r g b a      clear color\n"
-        "  -clearOnce          Clear the framebuffer only once at the start \n"
-        "                      instead of before each render.\n"
-        "  -translate x y z    default camera translation\n"
-        "  -rendererAov name   Name of AOV to display or write out\n"
-        "  -perfStatsFile path Path to file performance stats are written to\n"
-        "  -traceFile path     Path to trace file to write\n"
-        "  -renderSetting name type value\n"
-        "                      Specifies a setting with given name, type (such as\n"
-        "                      float) and value passed to renderer. -renderSetting\n"
-        "                      can be given multiple times to specify different\n"
-        "                      settings\n"
-        "  -guidesPurpose [show|hide]\n"
-        "                      force prims of purpose 'guide' to be shown or hidden\n"
-        "  -renderPurpose [show|hide]\n"
-        "                      force prims of purpose 'render' to be shown or hidden\n"
-        "  -proxyPurpose [show|hide]\n"
-        "                      force prims of purpose 'proxy' to be shown or hidden\n";
-
-    Die(usage, TfGetBaseName(argv[0]).c_str());
-}
-
-static void CheckForMissingArguments(int i, int n, int argc, char *argv[])
-{
-    if (i + n >= argc)
-    {
-        if (n == 1)
-        {
-            ParseError(argv[0], "missing parameter for '%s'", argv[i]);
-        }
-        else
-        {
-            ParseError(argv[0], "argument '%s' requires %d values", argv[i], n);
-        }
-    }
-}
-
-static double ParseDouble(int &i, int argc, char *argv[],
-                          bool *invalid = nullptr)
-{
-    if (i + 1 == argc)
-    {
-        if (invalid)
-        {
-            *invalid = true;
-            return 0.0;
-        }
-        ParseError(argv[0], "missing parameter for '%s'", argv[i]);
-    }
-    char *end;
-    double result = strtod(argv[i + 1], &end);
-    if (end == argv[i + 1] || *end != '\0')
-    {
-        if (invalid)
-        {
-            *invalid = true;
-            return 0.0;
-        }
-        ParseError(argv[0], "invalid parameter for '%s': %s",
-                   argv[i], argv[i + 1]);
-    }
-    ++i;
-    if (invalid)
-    {
-        *invalid = false;
-    }
-    return result;
-}
-
-static bool ParseShowHide(int &i, int argc, char *argv[],
-                          bool *result)
-{
-    if (i + 1 == argc)
-    {
-        ParseError(argv[0], "missing parameter for '%s'", argv[i]);
-        return false;
-    }
-    if (strcmp(argv[i + 1], "show") == 0)
-    {
-        *result = true;
-    }
-    else if (strcmp(argv[i + 1], "hide") == 0)
-    {
-        *result = false;
-    }
-    else
-    {
-        ParseError(argv[0], "invalid parameter for '%s': %s. Must be either "
-                            "'show' or 'hide'",
-                   argv[i], argv[i + 1]);
-        return false;
-    }
-
-    ++i;
-    return true;
-}
-
-static const char *ParseString(int &i, int argc, char *argv[],
-                               bool *invalid = nullptr)
-{
-    if (i + 1 == argc)
-    {
-        if (invalid)
-        {
-            *invalid = true;
-            return nullptr;
-        }
-        ParseError(argv[0], "missing parameter for '%s'", argv[i]);
-    }
-    const char *const result = argv[i + 1];
-    ++i;
-    if (invalid)
-    {
-        *invalid = false;
-    }
-    return result;
-}
-
-static void
-ParseDoubleVector(
-    int &i, int argc, char *argv[],
-    std::vector<double> *result)
-{
-    bool invalid = false;
-    while (i != argc)
-    {
-        const double value = ParseDouble(i, argc, argv, &invalid);
-        if (invalid)
-        {
-            break;
-        }
-        result->push_back(value);
-    }
-}
-
-static VtValue ParseVtValue(int &i, int argc, char *argv[])
-{
-    const char *const typeString = ParseString(i, argc, argv);
-
-    if (strcmp(typeString, "float") == 0)
-    {
-        CheckForMissingArguments(i, 1, argc, argv);
-        return VtValue(float(ParseDouble(i, argc, argv)));
-    }
-    else
-    {
-        ParseError(argv[0], "unknown type '%s'", typeString);
-        return VtValue();
-    }
-}
-
-void UsdImagingGL_UnitTestGLDrawing::_Parse(int argc, char *argv[], _Args *args)
-{
-    for (int i = 1; i != argc; ++i)
-    {
-        if (strcmp(argv[i], "-") == 0)
-        {
-            Usage(argc, argv);
-        }
-        else if (strcmp(argv[i], "-frameAll") == 0)
-        {
-            _shouldFrameAll = true;
-        }
-        else if (strcmp(argv[i], "-cullBackfaces") == 0)
-        {
-            _cullBackfaces = true;
-        }
-        else if (strcmp(argv[i], "-offscreen") == 0)
-        {
-            args->offscreen = true;
-        }
-        else if (strcmp(argv[i], "-lighting") == 0)
-        {
-            _testLighting = true;
-        }
-        else if (strcmp(argv[i], "-sceneLights") == 0)
-        {
-            _sceneLights = true;
-        }
-        else if (strcmp(argv[i], "-camlight") == 0)
-        {
-            _cameraLight = true;
-        }
-        else if (strcmp(argv[i], "-camera") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _cameraPath = argv[++i];
-        }
-        else if (strcmp(argv[i], "-idRender") == 0)
-        {
-            _testIdRender = true;
-        }
-        else if (strcmp(argv[i], "-stage") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            args->unresolvedStageFilePath = argv[++i];
-        }
-        else if (strcmp(argv[i], "-write") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _outputFilePath = argv[++i];
-        }
-        else if (strcmp(argv[i], "-shading") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            args->shading = argv[++i];
-        }
-        else if (strcmp(argv[i], "-complexity") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _complexity = ParseDouble(i, argc, argv);
-        }
-        else if (strcmp(argv[i], "-renderer") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _renderer = TfToken(argv[++i]);
-        }
-        else if (strcmp(argv[i], "-rendererAov") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _rendererAov = TfToken(argv[++i]);
-        }
-        else if (strcmp(argv[i], "-perfStatsFile") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _perfStatsFile = argv[++i];
-        }
-        else if (strcmp(argv[i], "-traceFile") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _traceFile = argv[++i];
-        }
-        else if (strcmp(argv[i], "-clipPlane") == 0)
-        {
-            CheckForMissingArguments(i, 4, argc, argv);
-            args->clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            args->clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            args->clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            args->clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-        }
-        else if (strcmp(argv[i], "-complexities") == 0)
-        {
-            ParseDoubleVector(i, argc, argv, &args->complexities);
-        }
-        else if (strcmp(argv[i], "-times") == 0)
-        {
-            ParseDoubleVector(i, argc, argv, &_times);
-        }
-        else if (strcmp(argv[i], "-clear") == 0)
-        {
-            CheckForMissingArguments(i, 4, argc, argv);
-            args->clearColor[0] = (float)ParseDouble(i, argc, argv);
-            args->clearColor[1] = (float)ParseDouble(i, argc, argv);
-            args->clearColor[2] = (float)ParseDouble(i, argc, argv);
-            args->clearColor[3] = (float)ParseDouble(i, argc, argv);
-        }
-        else if (strcmp(argv[i], "-translate") == 0)
-        {
-            CheckForMissingArguments(i, 3, argc, argv);
-            args->translate[0] = (float)ParseDouble(i, argc, argv);
-            args->translate[1] = (float)ParseDouble(i, argc, argv);
-            args->translate[2] = (float)ParseDouble(i, argc, argv);
-        }
-        else if (strcmp(argv[i], "-renderSetting") == 0)
-        {
-            CheckForMissingArguments(i, 2, argc, argv);
-            const char *const key = ParseString(i, argc, argv);
-            _renderSettings[key] = ParseVtValue(i, argc, argv);
-        }
-        else if (strcmp(argv[i], "-guidesPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showGuides);
-        }
-        else if (strcmp(argv[i], "-renderPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showRender);
-        }
-        else if (strcmp(argv[i], "-proxyPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showProxy);
-        }
-        else if (strcmp(argv[i], "-clearOnce") == 0)
-        {
-            _clearOnce = true;
-        }
-        else
-        {
-            ParseError(argv[0], "unknown argument %s", argv[i]);
-        }
-    }
-}
-
-void UsdImagingGL_UnitTestGLDrawing::RunTest(int argc, char *argv[])
-{
-    _Args args;
-    _Parse(argc, argv, &args);
-
-    if (!_traceFile.empty())
+    if (!args._traceFile.empty())
     {
         TraceCollector::GetInstance().SetEnabled(true);
     }
@@ -681,29 +291,29 @@ void UsdImagingGL_UnitTestGLDrawing::RunTest(int argc, char *argv[])
 
     if (!args.unresolvedStageFilePath.empty())
     {
-        _stageFilePath = args.unresolvedStageFilePath;
+        args._stageFilePath = args.unresolvedStageFilePath;
     }
 
     _widget = new UsdImagingGL_UnitTestWindow(this, 640, 480);
     _widget->Init();
 
-    if (_times.empty())
+    if (args._times.empty())
     {
-        _times.push_back(-999);
+        args._times.push_back(-999);
     }
 
     if (args.complexities.size() > 0)
     {
-        std::string imageFilePath = GetOutputFilePath();
+        std::string imageFilePath = args.GetOutputFilePath();
 
         TF_FOR_ALL(compIt, args.complexities)
         {
-            _complexity = *compIt;
+            args._complexity = *compIt;
             if (!imageFilePath.empty())
             {
                 std::stringstream suffix;
-                suffix << "_" << _complexity << ".png";
-                _outputFilePath = TfStringReplace(imageFilePath, ".png", suffix.str());
+                suffix << "_" << args._complexity << ".png";
+                args._outputFilePath = TfStringReplace(imageFilePath, ".png", suffix.str());
             }
 
             _widget->DrawOffscreen();
@@ -718,12 +328,12 @@ void UsdImagingGL_UnitTestGLDrawing::RunTest(int argc, char *argv[])
         _widget->Run();
     }
 
-    if (!_traceFile.empty())
+    if (!args._traceFile.empty())
     {
         TraceCollector::GetInstance().SetEnabled(false);
 
         {
-            std::ofstream traceOutFile(_traceFile);
+            std::ofstream traceOutFile(args._traceFile);
             if (TF_VERIFY(traceOutFile))
             {
                 TraceReporter::GetGlobalReporter()->Report(traceOutFile);
@@ -742,7 +352,7 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
     TRACE_FUNCTION();
 
     std::cout << "UsdImagingGL_UnitTestGLDrawing::InitTest()\n";
-    _stage = pxr::UsdStage::Open(GetStageFilePath());
+    _stage = pxr::UsdStage::Open(args.GetStageFilePath());
     pxr::SdfPathVector excludedPaths;
 
     if (pxr::UsdImagingGLEngine::IsHydraEnabled())
@@ -750,16 +360,16 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
         std::cout << "Using HD Renderer.\n";
         _engine.reset(new pxr::UsdImagingGLEngine(
             _stage->GetPseudoRoot().GetPath(), excludedPaths));
-        if (!_GetRenderer().IsEmpty())
+        if (!args._GetRenderer().IsEmpty())
         {
-            if (!_engine->SetRendererPlugin(_GetRenderer()))
+            if (!_engine->SetRendererPlugin(args._GetRenderer()))
             {
-                std::cerr << "Couldn't set renderer plugin: " << _GetRenderer().GetText() << std::endl;
+                std::cerr << "Couldn't set renderer plugin: " << args._GetRenderer().GetText() << std::endl;
                 exit(-1);
             }
             else
             {
-                std::cout << "Renderer plugin: " << _GetRenderer().GetText()
+                std::cout << "Renderer plugin: " << args._GetRenderer().GetText()
                           << std::endl;
             }
         }
@@ -772,7 +382,7 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
                                         excludedPaths));
     }
 
-    for (const auto &renderSetting : GetRenderSettings())
+    for (const auto &renderSetting : args.GetRenderSettings())
     {
         _engine->SetRendererSetting(pxr::TfToken(renderSetting.first),
                                     renderSetting.second);
@@ -782,7 +392,7 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
     std::cout << glGetString(GL_RENDERER) << "\n";
     std::cout << glGetString(GL_VERSION) << "\n";
 
-    if (_ShouldFrameAll())
+    if (args._ShouldFrameAll())
     {
         pxr::TfTokenVector purposes;
         purposes.push_back(pxr::UsdGeomTokens->default_);
@@ -823,17 +433,17 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
         _translate[2] = GetTranslate()[2];
     }
 
-    if (IsEnabledTestLighting())
+    if (args.IsEnabledTestLighting())
     {
         if (pxr::UsdImagingGLEngine::IsHydraEnabled())
         {
             // set same parameter as GlfSimpleLightingContext::SetStateFromOpenGL
             // OpenGL defaults
             _lightingContext = pxr::GlfSimpleLightingContext::New();
-            if (!IsEnabledSceneLights())
+            if (!args.IsEnabledSceneLights())
             {
                 pxr::GlfSimpleLight light;
-                if (IsEnabledCameraLight())
+                if (args.IsEnabledCameraLight())
                 {
                     light.SetPosition(pxr::GfVec4f(_translate[0], _translate[2], _translate[1], 0));
                 }
@@ -861,7 +471,7 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
         {
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
-            if (IsEnabledCameraLight())
+            if (args.IsEnabledCameraLight())
             {
                 float position[4] = {_translate[0], _translate[2], _translate[1], 0};
                 glLightfv(GL_LIGHT0, GL_POSITION, position);
@@ -902,7 +512,7 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
 
     pxr::GfVec4d viewport(0, 0, width, height);
 
-    if (GetCameraPath().empty())
+    if (args.GetCameraPath().empty())
     {
         pxr::GfMatrix4d viewMatrix(1.0);
         viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
@@ -927,25 +537,25 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
     }
     else
     {
-        _engine->SetCameraPath(pxr::SdfPath(GetCameraPath()));
+        _engine->SetCameraPath(pxr::SdfPath(args.GetCameraPath()));
     }
     _engine->SetRenderViewport(viewport);
 
-    bool const useAovs = !GetRendererAov().IsEmpty();
+    bool const useAovs = !args.GetRendererAov().IsEmpty();
     pxr::GfVec4f fboClearColor = useAovs ? pxr::GfVec4f(0.0f) : GetClearColor();
     GLfloat clearDepth[1] = {1.0f};
-    bool const clearOnlyOnce = ShouldClearOnce();
+    bool const clearOnlyOnce = args.ShouldClearOnce();
     bool cleared = false;
 
     pxr::UsdImagingGLRenderParams params;
     params.drawMode = GetDrawMode();
-    params.enableLighting = IsEnabledTestLighting();
-    params.enableIdRender = IsEnabledIdRender();
-    params.complexity = _GetComplexity();
-    params.cullStyle = IsEnabledCullBackfaces() ? pxr::UsdImagingGLCullStyle::CULL_STYLE_BACK : pxr::UsdImagingGLCullStyle::CULL_STYLE_NOTHING;
-    params.showGuides = IsShowGuides();
-    params.showRender = IsShowRender();
-    params.showProxy = IsShowProxy();
+    params.enableLighting = args.IsEnabledTestLighting();
+    params.enableIdRender = args.IsEnabledIdRender();
+    params.complexity = args._GetComplexity();
+    params.cullStyle = args.IsEnabledCullBackfaces() ? pxr::UsdImagingGLCullStyle::CULL_STYLE_BACK : pxr::UsdImagingGLCullStyle::CULL_STYLE_NOTHING;
+    params.showGuides = args.IsShowGuides();
+    params.showRender = args.IsShowRender();
+    params.showProxy = args.IsShowProxy();
     params.clearColor = GetClearColor();
 
     glViewport(0, 0, width, height);
@@ -954,10 +564,10 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
 
     if (useAovs)
     {
-        _engine->SetRendererAov(GetRendererAov());
+        _engine->SetRendererAov(args.GetRendererAov());
     }
 
-    if (IsEnabledTestLighting())
+    if (args.IsEnabledTestLighting())
     {
         if (pxr::UsdImagingGLEngine::IsHydraEnabled())
         {
@@ -978,7 +588,7 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
         }
     }
 
-    for (double const &t : GetTimes())
+    for (double const &t : args.GetTimes())
     {
         pxr::UsdTimeCode time = t;
         if (t == -999)
@@ -1035,7 +645,7 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
         std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
         std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
 
-        std::string imageFilePath = GetOutputFilePath();
+        std::string imageFilePath = args.GetOutputFilePath();
         if (!imageFilePath.empty())
         {
             if (time != pxr::UsdTimeCode::Default())
@@ -1049,16 +659,16 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen)
         }
     }
 
-    if (!GetPerfStatsFile().empty())
+    if (!args.GetPerfStatsFile().empty())
     {
-        std::ofstream perfstatsRaw(GetPerfStatsFile(), std::ofstream::out);
+        std::ofstream perfstatsRaw(args.GetPerfStatsFile(), std::ofstream::out);
         PXR_NAMESPACE_USING_DIRECTIVE;
         if (TF_VERIFY(perfstatsRaw))
         {
             perfstatsRaw << "{ 'profile'  : 'renderTime', "
                          << "   'metric'  : 'time', "
                          << "   'value'   : " << renderTime.GetSeconds() << ", "
-                         << "   'samples' : " << GetTimes().size() << " }" << std::endl;
+                         << "   'samples' : " << args.GetTimes().size() << " }" << std::endl;
         }
     }
 }
