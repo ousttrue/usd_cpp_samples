@@ -67,18 +67,17 @@ static void UsdImagingGL_UnitTestHelper_InitPlugins()
     PlugRegistry::GetInstance().RegisterPlugins(pluginDir);
 }
 
-
-UsdImagingGL_UnitTestGLDrawing::UsdImagingGL_UnitTestGLDrawing(const Args &a)
-: args(a)
+UnitTestGLDrawing::UnitTestGLDrawing(const Args &a)
+    : args(a)
 {
     RunTest();
 }
 
-UsdImagingGL_UnitTestGLDrawing::~UsdImagingGL_UnitTestGLDrawing()
+UnitTestGLDrawing::~UnitTestGLDrawing()
 {
 }
 
-void UsdImagingGL_UnitTestGLDrawing::RunTest()
+void UnitTestGLDrawing::RunTest()
 {
     if (!args._traceFile.empty())
     {
@@ -138,11 +137,24 @@ void UsdImagingGL_UnitTestGLDrawing::RunTest()
 
 GLuint vao;
 
-void UsdImagingGL_UnitTestGLDrawing::InitTest()
+void UnitTestGLDrawing::InitTest(int width, int height)
 {
     TRACE_FUNCTION();
 
-    std::cout << "UsdImagingGL_UnitTestGLDrawing::InitTest()\n";
+    std::cout << "UnitTestGLDrawing::InitTest()\n";
+
+    //
+    // Create an offscreen draw target which is the same size as this
+    // widget and initialize the unit test with the draw target bound.
+    //
+    _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
+    _drawTarget->Bind();
+    _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
+    _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
+                               GL_DEPTH_COMPONENT);
+
+    _drawTarget->Unbind();
+
     _stage = pxr::UsdStage::Open(args.GetStageFilePath());
     pxr::SdfPathVector excludedPaths;
 
@@ -276,11 +288,14 @@ void UsdImagingGL_UnitTestGLDrawing::InitTest()
     }
 }
 
-void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen, int width, int height)
+uint32_t UnitTestGLDrawing::DrawTest(bool offscreen, int width, int height)
 {
     TRACE_FUNCTION();
 
-    std::cout << "UsdImagingGL_UnitTestGLDrawing::DrawTest()\n";
+    std::cout << "UnitTestGLDrawing::DrawTest()\n";
+
+    _drawTarget->Bind();
+    _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
     pxr::TfStopwatch renderTime;
 
@@ -444,7 +459,7 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen, int width, int hei
             }
             std::cout << imageFilePath << "\n";
             // TODO:
-            // WriteToFile("color", imageFilePath);
+            WriteToFile("color", imageFilePath);
         }
     }
 
@@ -460,27 +475,34 @@ void UsdImagingGL_UnitTestGLDrawing::DrawTest(bool offscreen, int width, int hei
                          << "   'samples' : " << args.GetTimes().size() << " }" << std::endl;
         }
     }
+
+    _drawTarget->Unbind();
+
+    return _drawTarget->GetFramebufferId();
 }
 
-void UsdImagingGL_UnitTestGLDrawing::ShutdownTest()
+void UnitTestGLDrawing::ShutdownTest()
 {
-    std::cout << "UsdImagingGL_UnitTestGLDrawing::ShutdownTest()\n";
+    std::cout << "UnitTestGLDrawing::ShutdownTest()\n";
+
+    _drawTarget = pxr::GlfDrawTargetRefPtr();
+
     _engine->InvalidateBuffers();
 }
 
-void UsdImagingGL_UnitTestGLDrawing::MousePress(int button, int x, int y, int modKeys)
+void UnitTestGLDrawing::MousePress(int button, int x, int y, int modKeys)
 {
     _mouseButton[button] = 1;
     _mousePos[0] = x;
     _mousePos[1] = y;
 }
 
-void UsdImagingGL_UnitTestGLDrawing::MouseRelease(int button, int x, int y, int modKeys)
+void UnitTestGLDrawing::MouseRelease(int button, int x, int y, int modKeys)
 {
     _mouseButton[button] = 0;
 }
 
-void UsdImagingGL_UnitTestGLDrawing::MouseMove(int x, int y, int modKeys)
+void UnitTestGLDrawing::MouseMove(int x, int y, int modKeys)
 {
     int dx = x - _mousePos[0];
     int dy = y - _mousePos[1];
@@ -504,14 +526,25 @@ void UsdImagingGL_UnitTestGLDrawing::MouseMove(int x, int y, int modKeys)
     _mousePos[1] = y;
 }
 
-void UsdImagingGL_UnitTestGLDrawing::KeyRelease(int key)
+void UnitTestGLDrawing::KeyRelease(int key)
 {
 }
 
-HdRenderIndex *UsdImagingGL_UnitTestGLDrawing::_GetRenderIndex(UsdImagingGLEngine *engine)
+bool UnitTestGLDrawing::WriteToFile(std::string const &attachment,
+                                              std::string const &filename)
 {
-    return engine->_GetRenderIndex();
+    // We need to unbind the draw target before writing to file to be sure the
+    // attachment is in a good state.
+    bool isBound = _drawTarget->IsBound();
+    if (isBound)
+        _drawTarget->Unbind();
+
+    bool result = _drawTarget->WriteToFile(attachment, filename);
+
+    if (isBound)
+        _drawTarget->Bind();
+    return result;
 }
+
 
 PXR_NAMESPACE_CLOSE_SCOPE
-

@@ -1,53 +1,38 @@
-#include "pxr/imaging/glf/glew.h"
 #include "UnitTestWindow.h"
+#include "pxr/imaging/glf/glew.h"
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/diagnostic.h"
-#include "pxr/imaging/glf/drawTarget.h"
-#include "pxr/imaging/garch/glDebugWindow.h"
 
-UsdImagingGL_UnitTestWindow::UsdImagingGL_UnitTestWindow(int w, int h, 
-const OnInitFunc &onInit, const OnDrawFunc &onDraw)
+UnitTestWindow::UnitTestWindow(int w, int h,
+                               const OnInitFunc &onInit, const OnDrawFunc &onDraw, const OnUninitFunc &onUninit,
+                               const Input &input)
     : GarchGLDebugWindow("UsdImagingGL Test", w, h),
-      _onInit(onInit), _onDraw(onDraw)
+      _onInit(onInit), _onDraw(onDraw), _onUninit(onUninit), _input(input)
 {
 }
 
-UsdImagingGL_UnitTestWindow::~UsdImagingGL_UnitTestWindow()
+UnitTestWindow::~UnitTestWindow()
 {
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnInitializeGL()
+void UnitTestWindow::OnInitializeGL()
 {
     pxr::GlfGlewInit();
     pxr::GlfRegisterDefaultDebugOutputMessageCallback();
     pxr::GlfContextCaps::InitInstance();
 
-    //
-    // Create an offscreen draw target which is the same size as this
-    // widget and initialize the unit test with the draw target bound.
-    //
-    _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(GetWidth(), GetHeight()));
-    _drawTarget->Bind();
-    _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
-    _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
-                               GL_DEPTH_COMPONENT);
-
-    _onInit();
-
-    _drawTarget->Unbind();
+    _onInit(GetWidth(), GetHeight());
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnUninitializeGL()
+void UnitTestWindow::OnUninitializeGL()
 {
-    _drawTarget = pxr::GlfDrawTargetRefPtr();
-
-    // _unitTest->ShutdownTest();
+    _onUninit();
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnPaintGL()
+void UnitTestWindow::OnPaintGL()
 {
     //
     // Update the draw target's size and execute the unit test with
@@ -55,19 +40,15 @@ void UsdImagingGL_UnitTestWindow::OnPaintGL()
     //
     int width = GetWidth();
     int height = GetHeight();
-    _drawTarget->Bind();
-    _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
-    _onDraw(false, width, height);
-
-    _drawTarget->Unbind();
+    auto fbo = _onDraw(false, width, height);
 
     //
     // Blit the resulting color buffer to the window (this is a noop
     // if we're drawing offscreen).
     //
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, _drawTarget->GetFramebufferId());
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 
     glBlitFramebuffer(0, 0, width, height,
                       0, 0, width, height,
@@ -78,40 +59,8 @@ void UsdImagingGL_UnitTestWindow::OnPaintGL()
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
-void UsdImagingGL_UnitTestWindow::DrawOffscreen()
-{
-    _drawTarget->Bind();
-    _drawTarget->SetSize(pxr::GfVec2i(GetWidth(), GetHeight()));
-
-    _onDraw(true, GetWidth(), GetHeight());
-
-    _drawTarget->Unbind();
-}
-
-void UsdImagingGL_UnitTestWindow::Clear(const pxr::GfVec4f &fboClearColor, float clearDepth)
-{
-    glClearBufferfv(GL_COLOR, 0, fboClearColor.data());
-    glClearBufferfv(GL_DEPTH, 0, &clearDepth);
-}
-
-bool UsdImagingGL_UnitTestWindow::WriteToFile(std::string const &attachment,
-                                              std::string const &filename)
-{
-    // We need to unbind the draw target before writing to file to be sure the
-    // attachment is in a good state.
-    bool isBound = _drawTarget->IsBound();
-    if (isBound)
-        _drawTarget->Unbind();
-
-    bool result = _drawTarget->WriteToFile(attachment, filename);
-
-    if (isBound)
-        _drawTarget->Bind();
-    return result;
-}
-
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnKeyRelease(int key)
+void UnitTestWindow::OnKeyRelease(int key)
 {
     switch (key)
     {
@@ -119,25 +68,25 @@ void UsdImagingGL_UnitTestWindow::OnKeyRelease(int key)
         ExitApp();
         return;
     }
-    // _unitTest->KeyRelease(key);
+    _input.KeyRelease(key);
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnMousePress(int button,
-                                               int x, int y, int modKeys)
+void UnitTestWindow::OnMousePress(int button,
+                                  int x, int y, int modKeys)
 {
-    // _unitTest->MousePress(button, x, y, modKeys);
+    _input.MousePress(button, x, y, modKeys);
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnMouseRelease(int button,
-                                                 int x, int y, int modKeys)
+void UnitTestWindow::OnMouseRelease(int button,
+                                    int x, int y, int modKeys)
 {
-    // _unitTest->MouseRelease(button, x, y, modKeys);
+    _input.MouseRelease(button, x, y, modKeys);
 }
 
 /* virtual */
-void UsdImagingGL_UnitTestWindow::OnMouseMove(int x, int y, int modKeys)
+void UnitTestWindow::OnMouseMove(int x, int y, int modKeys)
 {
-    // _unitTest->MouseMove(x, y, modKeys);
+    _input.MouseMove(x, y, modKeys);
 }

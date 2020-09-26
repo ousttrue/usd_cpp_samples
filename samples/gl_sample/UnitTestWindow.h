@@ -1,26 +1,56 @@
 #pragma once
 
 #include <pxr/imaging/garch/glDebugWindow.h>
-#include <pxr/imaging/glf/drawTarget.h>
 #include <functional>
 
-class UsdImagingGL_UnitTestWindow : public pxr::GarchGLDebugWindow
+struct Input
+{
+    std::function<void(int key)> OnKeyRelease;
+    std::function<void(int button, int x, int y, int modKeys)> OnMousePress;
+    std::function<void(int button, int x, int y, int modKeys)> OnMouseRelease;
+    std::function<void(int x, int y, int modKeys)> OnMouseMove;
+
+    void KeyRelease(int key)
+    {
+        if (OnKeyRelease)
+        {
+            OnKeyRelease(key);
+        }
+    }
+    void MousePress(int button, int x, int y, int modKeys)
+    {
+        if (OnMouseRelease)
+        {
+            OnMousePress(button, x, y, modKeys);
+        }
+    }
+    void MouseRelease(int button, int x, int y, int modKeys)
+    {
+        if (OnMouseRelease)
+        {
+            OnMouseRelease(button, x, y, modKeys);
+        }
+    }
+    void MouseMove(int x, int y, int modKeys)
+    {
+        if (OnMouseMove)
+        {
+            OnMouseMove(x, y, modKeys);
+        }
+    }
+};
+
+class UnitTestWindow : public pxr::GarchGLDebugWindow
 {
 public:
-    typedef UsdImagingGL_UnitTestWindow This;
-
-    using OnInitFunc = std::function<void()>;
-    using OnDrawFunc = std::function<void(bool, int, int)>;
+    using OnInitFunc = std::function<void(int, int)>;
+    using OnDrawFunc = std::function<uint32_t(bool, int, int)>;
+    using OnUninitFunc = std::function<void()>;
 
 public:
-    UsdImagingGL_UnitTestWindow(int w, int h, const OnInitFunc &onInit, const OnDrawFunc &onDraw);
-    virtual ~UsdImagingGL_UnitTestWindow();
-
-    void DrawOffscreen();
-    void Clear(const pxr::GfVec4f &fboClearColor, float clearDepth);
-
-    bool WriteToFile(std::string const &attachment,
-                     std::string const &filename);
+    UnitTestWindow(int w, int h,
+                   const OnInitFunc &onInit, const OnDrawFunc &onDraw, const OnUninitFunc &onUninit, const Input &input);
+    virtual ~UnitTestWindow();
 
     // GarchGLDebugWIndow overrides;
     virtual void OnInitializeGL();
@@ -32,7 +62,8 @@ public:
     virtual void OnMouseMove(int x, int y, int modKeys);
 
 private:
-    pxr::GlfDrawTargetRefPtr _drawTarget;
     OnInitFunc _onInit;
     OnDrawFunc _onDraw;
+    OnUninitFunc _onUninit;
+    Input _input;
 };

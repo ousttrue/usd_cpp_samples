@@ -11,15 +11,31 @@ int main(int argc, char *argv[])
     args.Parse(argc, argv);
 
     {
-        pxr::UsdImagingGL_UnitTestGLDrawing driver(args);
+        pxr::UnitTestGLDrawing driver(args);
+
+        Input input;
+        input.OnMousePress = [&driver](int button, int x, int y, int mod) {
+            driver.MousePress(button, x, y, mod);
+        };
+        input.OnMouseRelease = [&driver](int button, int x, int y, int mod) {
+            driver.MouseRelease(button, x, y, mod);
+        };
+        input.OnMouseMove = [&driver](int button, int x, int y) {
+            driver.MouseMove(button, x, y);
+        };
+        input.OnKeyRelease = [&driver](int key) {
+            driver.KeyRelease(key);
+        };
 
         // create window
-        auto _widget = new UsdImagingGL_UnitTestWindow(
+        auto _widget = new UnitTestWindow(
             640, 480,
-            [&driver]() { driver.InitTest(); },
+            [&driver](int w, int h) { driver.InitTest(w, h); },
             [&driver](bool offscreen, int w, int h) {
-                driver.DrawTest(offscreen, w, h);
-            });
+                return driver.DrawTest(offscreen, w, h);
+            },
+            [&driver]() { driver.ShutdownTest(); },
+            input);
 
         _widget->Init();
 
@@ -37,12 +53,12 @@ int main(int argc, char *argv[])
                     args._outputFilePath = pxr::TfStringReplace(imageFilePath, ".png", suffix.str());
                 }
 
-                _widget->DrawOffscreen();
+                driver.DrawTest(true, _widget->GetWidth(), _widget->GetHeight());
             }
         }
         else if (args.offscreen)
         {
-            _widget->DrawOffscreen();
+            driver.DrawTest(true, _widget->GetWidth(), _widget->GetHeight());
         }
         else
         {

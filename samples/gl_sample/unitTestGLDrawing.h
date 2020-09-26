@@ -27,30 +27,31 @@
 #include "Args.h"
 #include <pxr/usd/usd/stage.h>
 #include "pxr/usdImaging/usdImagingGL/engine.h"
+#include <pxr/imaging/glf/drawTarget.h>
 
 #include <string>
 #include <vector>
 
 PXR_NAMESPACE_OPEN_SCOPE
 
-/// \class UsdImagingGL_UnitTestGLDrawing
+/// \class UnitTestGLDrawing
 ///
 /// A helper class for unit tests which need to perform GL drawing.
 ///
-class UsdImagingGL_UnitTestGLDrawing
+class UnitTestGLDrawing
 {
     Args args;
 public:
-    UsdImagingGL_UnitTestGLDrawing(const Args &args);
-    ~UsdImagingGL_UnitTestGLDrawing();
+    UnitTestGLDrawing(const Args &args);
+    ~UnitTestGLDrawing();
 
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
     std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
 
-    void InitTest();
-    void DrawTest(bool offscreen, int w, int h);
+    void InitTest(int w, int h);
+    uint32_t DrawTest(bool offscreen, int w, int h);
     void ShutdownTest();
 
     void MousePress(int button, int x, int y, int modKeys);
@@ -58,10 +59,11 @@ public:
     void MouseMove(int x, int y, int modKeys);
     void KeyRelease(int key);
 
-
 private:
+    bool WriteToFile(std::string const &attachment,
+                     std::string const &filename);
+
     void RunTest();
-    HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine);
 
     void _Render(UsdImagingGLEngine *engine,
                  const UsdImagingGLRenderParams &params)
@@ -79,6 +81,7 @@ private:
     GfVec3f _translate;
 
 private:
+    pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
     std::shared_ptr<pxr::UsdImagingGLEngine> _engine;
     pxr::GlfSimpleLightingContextRefPtr _lightingContext;
