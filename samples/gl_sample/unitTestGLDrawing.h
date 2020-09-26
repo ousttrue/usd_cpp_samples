@@ -27,9 +27,8 @@
 #include "pxr/pxr.h"
 #include "pxr/base/gf/vec4d.h"
 #include "pxr/base/vt/dictionary.h"
-
 #include "pxr/base/tf/declarePtrs.h"
-
+#include <pxr/usd/usd/stage.h>
 #include "pxr/usdImaging/usdImagingGL/engine.h"
 
 #include <string>
@@ -37,17 +36,17 @@
 
 PXR_NAMESPACE_OPEN_SCOPE
 
-
 class UsdImagingGL_UnitTestWindow;
 
 /// \class UsdImagingGL_UnitTestGLDrawing
 ///
 /// A helper class for unit tests which need to perform GL drawing.
 ///
-class UsdImagingGL_UnitTestGLDrawing {
+class UsdImagingGL_UnitTestGLDrawing
+{
 public:
     UsdImagingGL_UnitTestGLDrawing();
-    virtual ~UsdImagingGL_UnitTestGLDrawing();
+    ~UsdImagingGL_UnitTestGLDrawing();
 
     int GetWidth() const;
     int GetHeight() const;
@@ -57,7 +56,7 @@ public:
     bool IsEnabledCameraLight() const { return _cameraLight; }
     bool IsEnabledCullBackfaces() const { return _cullBackfaces; }
     bool IsEnabledIdRender() const { return _testIdRender; }
-    
+
     bool IsShowGuides() const { return _showGuides; }
     bool IsShowRender() const { return _showRender; }
     bool IsShowProxy() const { return _showProxy; }
@@ -65,49 +64,51 @@ public:
 
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
 
-    std::string const & GetStageFilePath() const { return _stageFilePath; }
-    std::string const & GetOutputFilePath() const { return _outputFilePath; }
+    std::string const &GetStageFilePath() const { return _stageFilePath; }
+    std::string const &GetOutputFilePath() const { return _outputFilePath; }
 
-    std::string const & GetCameraPath() const { return _cameraPath; }
-    std::vector<GfVec4d> const & GetClipPlanes() const { return _clipPlanes; }
-    std::vector<double> const& GetTimes() const { return _times; }
-    GfVec4f const & GetClearColor() const { return _clearColor; }
-    GfVec3f const & GetTranslate() const { return _translate; }
+    std::string const &GetCameraPath() const { return _cameraPath; }
+    std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
+    std::vector<double> const &GetTimes() const { return _times; }
+    GfVec4f const &GetClearColor() const { return _clearColor; }
+    GfVec3f const &GetTranslate() const { return _translate; }
     VtDictionary const &GetRenderSettings() const { return _renderSettings; }
-    TfToken const & GetRendererAov() const { return _rendererAov; }
+    TfToken const &GetRendererAov() const { return _rendererAov; }
     std::string const &GetPerfStatsFile() const { return _perfStatsFile; }
 
     void RunTest(int argc, char *argv[]);
 
-    virtual void InitTest() = 0;
-    virtual void DrawTest(bool offscreen) = 0;
-    virtual void ShutdownTest() { }
+    void InitTest();
+    void DrawTest(bool offscreen);
+    void ShutdownTest();
 
-    virtual void MousePress(int button, int x, int y, int modKeys);
-    virtual void MouseRelease(int button, int x, int y, int modKeys);
-    virtual void MouseMove(int x, int y, int modKeys);
-    virtual void KeyRelease(int key);
+    void MousePress(int button, int x, int y, int modKeys);
+    void MouseRelease(int button, int x, int y, int modKeys);
+    void MouseMove(int x, int y, int modKeys);
+    void KeyRelease(int key);
 
-    bool WriteToFile(std::string const & attachment, std::string const & filename) const;
+    bool WriteToFile(std::string const &attachment, std::string const &filename) const;
 
 protected:
     float _GetComplexity() const { return _complexity; }
     bool _ShouldFrameAll() const { return _shouldFrameAll; }
     TfToken _GetRenderer() const { return _renderer; }
 
-    HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine) {
+    HdRenderIndex *_GetRenderIndex(UsdImagingGLEngine *engine)
+    {
         return engine->_GetRenderIndex();
     }
-    
-    void _Render(UsdImagingGLEngine *engine, 
-                 const UsdImagingGLRenderParams &params) {
+
+    void _Render(UsdImagingGLEngine *engine,
+                 const UsdImagingGLRenderParams &params)
+    {
         SdfPathVector roots(1, SdfPath::AbsoluteRootPath());
         engine->RenderBatch(roots, params);
     }
 
 private:
     struct _Args;
-    void _Parse(int argc, char *argv[], _Args* args);
+    void _Parse(int argc, char *argv[], _Args *args);
 
 private:
     UsdImagingGL_UnitTestWindow *_widget;
@@ -141,8 +142,17 @@ private:
     bool _showRender;
     bool _showProxy;
     bool _clearOnce;
-};
 
+private:
+    pxr::UsdStageRefPtr _stage;
+    std::shared_ptr<pxr::UsdImagingGLEngine> _engine;
+    pxr::GlfSimpleLightingContextRefPtr _lightingContext;
+
+    float _rotate[2] = {0, 0};
+    float __translate[3] = {0, 0, 0};
+    int _mousePos[2] = {0, 0};
+    bool _mouseButton[3] = {false, false, false};
+};
 
 PXR_NAMESPACE_CLOSE_SCOPE
 

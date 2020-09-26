@@ -1,14 +1,12 @@
 #include <iostream>
-#include "My_TestGLDrawing.h"
-
-void BasicTest(int argc, char *argv[])
-{
-    My_TestGLDrawing driver;
-    driver.RunTest(argc, argv);
-}
+#include "unitTestGLDrawing.h"
 
 int main(int argc, char *argv[])
 {
-    BasicTest(argc, argv);
+    {
+        pxr::UsdImagingGL_UnitTestGLDrawing driver;
+        driver.RunTest(argc, argv);
+    }
+
     std::cout << "OK" << std::endl;
 }
