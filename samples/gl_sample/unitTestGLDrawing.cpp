@@ -21,7 +21,7 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-// #include "pxr/imaging/glf/glew.h"
+
 #include "pxr/imaging/glf/glew.h"
 #include "unitTestGLDrawing.h"
 #include "Args.h"
@@ -287,7 +287,7 @@ void UnitTestGLDrawing::_InitTest(int width, int height)
     }
 }
 
-uint32_t UnitTestGLDrawing::DrawTest(bool offscreen, int width, int height)
+uint32_t UnitTestGLDrawing::DrawTest(int width, int height)
 {
     _InitTest(width, height);
 

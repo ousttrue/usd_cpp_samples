@@ -41,7 +41,7 @@ void UnitTestWindow::OnPaintGL()
     int width = GetWidth();
     int height = GetHeight();
 
-    auto fbo = _onDraw(false, width, height);
+    auto fbo = _onDraw(width, height);
 
     //
     // Blit the resulting color buffer to the window (this is a noop

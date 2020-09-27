@@ -45,12 +45,7 @@ public:
     UnitTestGLDrawing(const Args &args);
     ~UnitTestGLDrawing();
 
-    UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
-    std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
-    GfVec4f const &GetClearColor() const { return _clearColor; }
-    GfVec3f const &GetTranslate() const { return _translate; }
-
-    uint32_t DrawTest(bool offscreen, int w, int h);
+    uint32_t DrawTest(int w, int h);
     void ShutdownTest();
 
     void MousePress(int button, int x, int y, int modKeys);
@@ -59,6 +54,10 @@ public:
     void KeyRelease(int key);
 
 private:
+    UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
+    std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
+    GfVec4f const &GetClearColor() const { return _clearColor; }
+    GfVec3f const &GetTranslate() const { return _translate; }
     void _InitTest(int w, int h);
     bool WriteToFile(std::string const &attachment,
                      std::string const &filename);

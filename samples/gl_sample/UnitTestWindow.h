@@ -44,7 +44,7 @@ class UnitTestWindow : public pxr::GarchGLDebugWindow
 {
 public:
     using OnInitFunc = std::function<void(int, int)>;
-    using OnDrawFunc = std::function<uint32_t(bool, int, int)>;
+    using OnDrawFunc = std::function<uint32_t(int, int)>;
     using OnUninitFunc = std::function<void()>;
 
 public:

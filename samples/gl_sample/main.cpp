@@ -5,6 +5,7 @@
 
 #include <pxr/base/tf/stringUtils.h>
 
+
 int main(int argc, char *argv[])
 {
     Args args;
@@ -31,8 +32,8 @@ int main(int argc, char *argv[])
         auto _widget = new UnitTestWindow(
             640, 480,
             [&driver](int w, int h) { },
-            [&driver](bool offscreen, int w, int h) {
-                return driver.DrawTest(offscreen, w, h);
+            [&driver](int w, int h) {
+                return driver.DrawTest(w, h);
             },
             [&driver]() { driver.ShutdownTest(); },
             input);
@@ -53,12 +54,12 @@ int main(int argc, char *argv[])
                     args._outputFilePath = pxr::TfStringReplace(imageFilePath, ".png", suffix.str());
                 }
 
-                driver.DrawTest(true, _widget->GetWidth(), _widget->GetHeight());
+                driver.DrawTest(_widget->GetWidth(), _widget->GetHeight());
             }
         }
         else if (args.offscreen)
         {
-            driver.DrawTest(true, _widget->GetWidth(), _widget->GetHeight());
+            driver.DrawTest(_widget->GetWidth(), _widget->GetHeight());
         }
         else
         {
