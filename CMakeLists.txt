@@ -12,6 +12,7 @@ subdirs(
     usd
     samples/hello
     samples/gl_sample
+    samples/tiny
     usd_source/pxr/usdImaging/usddImagingGL
     usd_source/extras/imaging/examples/hdTiny
     # IETutorials/hydra

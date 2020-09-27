@@ -46,6 +46,23 @@
             "externalConsole": false
         },
         {
+            "name": "samples:tiny",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
+            "args": [
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
+        {
             "name": "hydra:helloWorld",
             "type": "cppvsdbg",
             "request": "launch",
