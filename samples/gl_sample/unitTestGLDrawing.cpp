@@ -70,15 +70,6 @@ static void UsdImagingGL_UnitTestHelper_InitPlugins()
 UnitTestGLDrawing::UnitTestGLDrawing(const Args &a)
     : args(a)
 {
-    RunTest();
-}
-
-UnitTestGLDrawing::~UnitTestGLDrawing()
-{
-}
-
-void UnitTestGLDrawing::RunTest()
-{
     if (!args._traceFile.empty())
     {
         TraceCollector::GetInstance().SetEnabled(true);
@@ -135,10 +126,18 @@ void UnitTestGLDrawing::RunTest()
     }
 }
 
-GLuint vao;
-
-void UnitTestGLDrawing::InitTest(int width, int height)
+UnitTestGLDrawing::~UnitTestGLDrawing()
 {
+}
+
+void UnitTestGLDrawing::_InitTest(int width, int height)
+{
+    if(_initialized)
+    {
+        return;
+    }
+    _initialized = true;
+
     TRACE_FUNCTION();
 
     std::cout << "UnitTestGLDrawing::InitTest()\n";
@@ -290,6 +289,8 @@ void UnitTestGLDrawing::InitTest(int width, int height)
 
 uint32_t UnitTestGLDrawing::DrawTest(bool offscreen, int width, int height)
 {
+    _InitTest(width, height);
+
     TRACE_FUNCTION();
 
     std::cout << "UnitTestGLDrawing::DrawTest()\n";

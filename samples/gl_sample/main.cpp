@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         // create window
         auto _widget = new UnitTestWindow(
             640, 480,
-            [&driver](int w, int h) { driver.InitTest(w, h); },
+            [&driver](int w, int h) { },
             [&driver](bool offscreen, int w, int h) {
                 return driver.DrawTest(offscreen, w, h);
             },

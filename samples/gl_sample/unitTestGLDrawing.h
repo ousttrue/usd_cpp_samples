@@ -50,7 +50,6 @@ public:
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
 
-    void InitTest(int w, int h);
     uint32_t DrawTest(bool offscreen, int w, int h);
     void ShutdownTest();
 
@@ -60,17 +59,9 @@ public:
     void KeyRelease(int key);
 
 private:
+    void _InitTest(int w, int h);
     bool WriteToFile(std::string const &attachment,
                      std::string const &filename);
-
-    void RunTest();
-
-    void _Render(UsdImagingGLEngine *engine,
-                 const UsdImagingGLRenderParams &params)
-    {
-        SdfPathVector roots(1, SdfPath::AbsoluteRootPath());
-        engine->RenderBatch(roots, params);
-    }
 
 private:
     std::vector<GfVec4d> _clipPlanes;
@@ -81,6 +72,7 @@ private:
     GfVec3f _translate;
 
 private:
+    bool _initialized = false;
     pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
     std::shared_ptr<pxr::UsdImagingGLEngine> _engine;
