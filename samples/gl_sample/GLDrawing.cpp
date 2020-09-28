@@ -23,6 +23,7 @@
 //
 
 #include "pxr/imaging/glf/glew.h"
+#include "GLEngine.h"
 #include "GLDrawing.h"
 #include "Args.h"
 
@@ -84,7 +85,7 @@ class Impl
     bool _initialized = false;
     pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
-    std::shared_ptr<pxr::UsdImagingGLEngine> _engine;
+    std::shared_ptr<GLEngine> _engine;
     pxr::GlfSimpleLightingContextRefPtr _lightingContext;
     float _rotate[2] = {0, 0};
     float __translate[3] = {0, 0, 0};
@@ -244,7 +245,7 @@ public:
 
         if (_args.IsEnabledTestLighting())
         {
-            if (pxr::UsdImagingGLEngine::IsHydraEnabled())
+            if (GLEngine::IsHydraEnabled())
             {
                 _engine->SetLightingState(_lightingContext);
             }
@@ -441,10 +442,10 @@ private:
         _stage = pxr::UsdStage::Open(_args.GetStageFilePath());
         pxr::SdfPathVector excludedPaths;
 
-        if (pxr::UsdImagingGLEngine::IsHydraEnabled())
+        if (GLEngine::IsHydraEnabled())
         {
             std::cout << "Using HD Renderer.\n";
-            _engine.reset(new pxr::UsdImagingGLEngine(
+            _engine.reset(new GLEngine(
                 _stage->GetPseudoRoot().GetPath(), excludedPaths));
             if (!_args._GetRenderer().IsEmpty())
             {
@@ -464,7 +465,7 @@ private:
         {
             std::cout << "Using Reference Renderer.\n";
             _engine.reset(
-                new pxr::UsdImagingGLEngine(_stage->GetPseudoRoot().GetPath(),
+                new GLEngine(_stage->GetPseudoRoot().GetPath(),
                                             excludedPaths));
         }
 
@@ -521,7 +522,7 @@ private:
 
         if (_args.IsEnabledTestLighting())
         {
-            if (pxr::UsdImagingGLEngine::IsHydraEnabled())
+            if (GLEngine::IsHydraEnabled())
             {
                 // set same parameter as GlfSimpleLightingContext::SetStateFromOpenGL
                 // OpenGL defaults

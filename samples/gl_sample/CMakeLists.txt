@@ -4,6 +4,7 @@ add_executable(${TARGET_NAME}
     Args.cpp
     UnitTestWindow.cpp
     GLDrawing.cpp
+    GLEngine.cpp
 )
 target_link_libraries(${TARGET_NAME}
 PRIVATE
