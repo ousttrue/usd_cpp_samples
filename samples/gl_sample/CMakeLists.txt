@@ -3,7 +3,7 @@ add_executable(${TARGET_NAME}
     main.cpp
     Args.cpp
     UnitTestWindow.cpp
-    unitTestGLDrawing.cpp
+    GLDrawing.cpp
 )
 target_link_libraries(${TARGET_NAME}
 PRIVATE

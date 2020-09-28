@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Args.h"
 #include "UnitTestWindow.h"
-#include "unitTestGLDrawing.h"
+#include "GLDrawing.h"
 
 int main(int argc, char *argv[])
 {

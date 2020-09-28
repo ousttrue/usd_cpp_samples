@@ -23,7 +23,7 @@
 //
 
 #include "pxr/imaging/glf/glew.h"
-#include "unitTestGLDrawing.h"
+#include "GLDrawing.h"
 #include "Args.h"
 
 #include "pxr/pxr.h"
