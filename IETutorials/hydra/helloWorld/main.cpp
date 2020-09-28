@@ -24,6 +24,8 @@
 #include <iostream>
 #include "pxr/imaging/hgi/hgi.h"
 #include "pxr/imaging/hgi/tokens.h"
+#include "pxr/imaging/glf/contextCaps.h"
+#include "pxr/imaging/glf/glContext.h"
 
 
 class DebugWindow : public pxr::GarchGLDebugWindow
@@ -99,6 +101,11 @@ int main(int argc, char** argv)
 	window.Init();
 	bool glewInit = pxr::GlfGlewInit();
 	std::cout << "glew:" << glewInit << std::endl;
+
+    // Test uses ContextCaps, so need to create a GL instance.
+    // pxr::GlfTestGLContext::RegisterGLContextCallbacks();
+    pxr::GlfSharedGLContextScopeHolder sharedContext;
+    pxr::GlfContextCaps::InitInstance();
 
 	// display the window & run the *event* loop until the window is closed
 	window.Run();
