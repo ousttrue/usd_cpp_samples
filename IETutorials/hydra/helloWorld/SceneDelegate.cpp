@@ -69,12 +69,7 @@ pxr::VtValue SceneDelegate::Get(pxr::SdfPath const &id, const pxr::TfToken &key)
 		return ret;
 	}
 
-	if (key == pxr::HdShaderTokens->fragmentShader)
-	{
-		return pxr::VtValue();
-	}
-
-	if (key == pxr::HdTokens->points)
+    if (key == pxr::HdTokens->points)
 	{
 		pxr::VtVec3fArray points;
 
@@ -83,6 +78,8 @@ pxr::VtValue SceneDelegate::Get(pxr::SdfPath const &id, const pxr::TfToken &key)
 		points.push_back(pxr::GfVec3f(0,1,0));
 		return pxr::VtValue(points);
 	}
+
+    return pxr::VtValue();
 }
 
 bool SceneDelegate::GetVisible(pxr::SdfPath const &id)
