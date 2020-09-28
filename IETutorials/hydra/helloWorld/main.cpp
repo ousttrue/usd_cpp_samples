@@ -21,7 +21,7 @@
 #include "pxr/imaging/garch/glDebugWindow.h"
 
 #include "SceneDelegate.h"
-
+#include <iostream>
 
 
 class DebugWindow : public pxr::GarchGLDebugWindow
@@ -33,7 +33,7 @@ public:
 		renderDelegate.reset( new pxr::HdStRenderDelegate() );
 
 		// RenderIndex which stores a flat list of the scene to render
-		index = pxr::HdRenderIndex::New( renderDelegate.get() );
+		index = pxr::HdRenderIndex::New( renderDelegate.get(), {} );
 
 		// names for elements in the RenderIndex
 		pxr::SdfPath renderSetupId("/renderSetup");
@@ -66,7 +66,7 @@ public:
 		glEnable(GL_DEPTH_TEST);
 
 		// execute the render tasks
-		engine.Execute( *index, tasks );
+		engine.Execute(index, &tasks);
 	}
 
 private:
@@ -74,7 +74,7 @@ private:
 	pxr::HdTaskSharedPtrVector tasks;
 	pxr::HdEngine engine;
 	pxr::HdRenderIndex *index;
-	boost::shared_ptr<pxr::HdStRenderDelegate> renderDelegate;
+	std::shared_ptr<pxr::HdStRenderDelegate> renderDelegate;
 };
 
 int main(int argc, char** argv)

@@ -9,7 +9,7 @@
 #include "pxr/base/gf/range3f.h"
 #include "pxr/base/gf/frustum.h"
 #include "pxr/base/vt/array.h"
-
+#include <iostream>
 
 SceneDelegate::SceneDelegate(pxr::HdRenderIndex *parentIndex, pxr::SdfPath const &delegateID)
  : pxr::HdSceneDelegate(parentIndex, delegateID)
@@ -29,9 +29,8 @@ SceneDelegate::AddRenderTask(pxr::SdfPath const &id)
 {
 	GetRenderIndex().InsertTask<pxr::HdxRenderTask>(this, id);
 	_ValueCache &cache = _valueCacheMap[id];
-	cache[pxr::HdTokens->children] = pxr::VtValue(pxr::SdfPathVector());
 	cache[pxr::HdTokens->collection]
-			= pxr::HdRprimCollection(pxr::HdTokens->geometry, pxr::HdTokens->smoothHull);
+			= pxr::HdRprimCollection(pxr::HdTokens->geometry, pxr::HdReprSelector(pxr::HdReprTokens->smoothHull));
 }
 
 void
@@ -42,7 +41,6 @@ SceneDelegate::AddRenderSetupTask(pxr::SdfPath const &id)
 	pxr::HdxRenderTaskParams params;
 	params.camera = cameraPath;
 	params.viewport = pxr::GfVec4f(0, 0, 512, 512);
-	cache[pxr::HdTokens->children] = pxr::VtValue(pxr::SdfPathVector());
 	cache[pxr::HdTokens->params] = pxr::VtValue(params);
 }
 
