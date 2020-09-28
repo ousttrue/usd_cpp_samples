@@ -84,29 +84,16 @@ class GLEngine
 {
 public:
     // ---------------------------------------------------------------------
-    /// \name Global State
-    /// @{
-    // ---------------------------------------------------------------------
-
-    /// Returns true if Hydra is enabled for GL drawing.
-    
-    static bool IsHydraEnabled();
-
-    /// @}
-
-    // ---------------------------------------------------------------------
     /// \name Construction
     /// @{
     // ---------------------------------------------------------------------
 
     /// A HdDriver, containing the Hgi of your choice, can be optionally passed
     /// in during construction. This can be helpful if you application creates
-    /// multiple GLEngine that wish to use the same HdDriver / Hgi.
-    
-    GLEngine(const pxr::HdDriver &driver = pxr::HdDriver());
-
-    
-    GLEngine(const pxr::SdfPath &rootPath,
+    /// multiple GLEngine that wish to use the same HdDriver / Hgi.   
+    GLEngine(
+        const pxr::TfToken &renderID,
+        const pxr::SdfPath &rootPath,
              const pxr::SdfPathVector &excludedPaths,
              const pxr::SdfPathVector &invisedPaths = pxr::SdfPathVector(),
              const pxr::SdfPath &sceneDelegateID =
@@ -490,10 +477,7 @@ protected:
     
     pxr::SdfPath _ComputeControllerPath(const pxr::HdPluginRenderDelegateUniqueHandle &);
 
-    
-    static pxr::TfToken _GetDefaultRendererPluginId();
-
-    
+       
     pxr::UsdImagingDelegate *_GetSceneDelegate() const;
 
     

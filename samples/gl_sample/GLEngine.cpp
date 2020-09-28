@@ -29,10 +29,8 @@
 
 #include "pxr/usd/usdGeom/tokens.h"
 #include "pxr/usd/usdGeom/camera.h"
-
-#include "pxr/imaging/glf/diagnostic.h"
 #include "pxr/imaging/glf/contextCaps.h"
-#include "pxr/imaging/glf/glContext.h"
+#include "pxr/imaging/glf/diagnostic.h"
 #include "pxr/imaging/glf/info.h"
 
 #include "pxr/imaging/hd/rendererPlugin.h"
@@ -43,8 +41,6 @@
 #include "pxr/imaging/hgi/hgi.h"
 #include "pxr/imaging/hgi/tokens.h"
 
-#include "pxr/base/tf/envSetting.h"
-#include "pxr/base/tf/getenv.h"
 #include "pxr/base/tf/stl.h"
 
 #include "pxr/base/gf/matrix4d.h"
@@ -52,103 +48,11 @@
 
 #include <string>
 
-PXR_NAMESPACE_OPEN_SCOPE
-
-TF_DEFINE_ENV_SETTING(USDIMAGINGGL_ENGINE_DEBUG_SCENE_DELEGATE_ID, "/",
-                      "Default usdImaging scene delegate id");
-
-PXR_NAMESPACE_CLOSE_SCOPE
-
-namespace
-{
-
-    bool
-    _GetHydraEnabledEnvVar()
-    {
-        // XXX: Note that we don't cache the result here.  This is primarily because
-        // of the way usdview currently interacts with this setting.  This should
-        // be cleaned up, and the new class hierarchy around GLEngine
-        // makes it much easier to do so.
-        return pxr::TfGetenv("HD_ENABLED", "1") == "1";
-    }
-
-    pxr::SdfPath const &
-    _GetUsdImagingDelegateId()
-    {
-        static pxr::SdfPath const delegateId =
-            pxr::SdfPath(pxr::TfGetEnvSetting(pxr::USDIMAGINGGL_ENGINE_DEBUG_SCENE_DELEGATE_ID));
-
-        return delegateId;
-    }
-
-    void _InitGL()
-    {
-        static std::once_flag initFlag;
-
-        std::call_once(initFlag, [] {
-            // Initialize Glew library for GL Extensions if needed
-            pxr::GlfGlewInit();
-
-            // Initialize if needed and switch to shared GL context.
-            pxr::GlfSharedGLContextScopeHolder sharedContext;
-
-            // Initialize GL context caps based on shared context
-            pxr::GlfContextCaps::InitInstance();
-        });
-    }
-
-    bool
-    _IsHydraEnabled()
-    {
-        // Make sure there is an OpenGL context when
-        // trying to initialize Hydra/Reference
-        pxr::GlfGLContextSharedPtr context = pxr::GlfGLContext::GetCurrentGLContext();
-        if (!context || !context->IsValid())
-        {
-            using namespace pxr;
-            TF_CODING_ERROR("OpenGL context required, using reference renderer");
-            return false;
-        }
-
-        if (!_GetHydraEnabledEnvVar())
-        {
-            return false;
-        }
-
-        // Check to see if we have a default plugin for the renderer
-        pxr::TfToken defaultPlugin =
-            pxr::HdRendererPluginRegistry::GetInstance().GetDefaultPluginId();
-
-        return !defaultPlugin.IsEmpty();
-    }
-
-} // anonymous namespace
-
-//----------------------------------------------------------------------------
-// Global State
-//----------------------------------------------------------------------------
-
-/*static*/
-bool GLEngine::IsHydraEnabled()
-{
-    static bool isHydraEnabled = _IsHydraEnabled();
-    return isHydraEnabled;
-}
-
 //----------------------------------------------------------------------------
 // Construction
 //----------------------------------------------------------------------------
-
-GLEngine::GLEngine(const pxr::HdDriver &driver)
-    : GLEngine(pxr::SdfPath::AbsoluteRootPath(),
-               {},
-               {},
-               _GetUsdImagingDelegateId(),
-               driver)
-{
-}
-
 GLEngine::GLEngine(
+    const pxr::TfToken &rendererID,
     const pxr::SdfPath &rootPath,
     const pxr::SdfPathVector &excludedPaths,
     const pxr::SdfPathVector &invisedPaths,
@@ -156,31 +60,13 @@ GLEngine::GLEngine(
     const pxr::HdDriver &driver)
     : _hgi(), _hgiDriver(driver), _sceneDelegateId(sceneDelegateID), _selTracker(std::make_shared<pxr::HdxSelectionTracker>()), _selectionColor(1.0f, 1.0f, 0.0f, 1.0f), _rootPath(rootPath), _excludedPrimPaths(excludedPaths), _invisedPrimPaths(invisedPaths), _isPopulated(false)
 {
-    _InitGL();
-
-    if (IsHydraEnabled())
+    // _renderIndex, _taskController, and _sceneDelegate are initialized
+    // by the plugin system.
+    if (!SetRendererPlugin(rendererID))
     {
-
-        // _renderIndex, _taskController, and _sceneDelegate are initialized
-        // by the plugin system.
-        if (!SetRendererPlugin(_GetDefaultRendererPluginId()))
-        {
-            using namespace pxr;
-            TF_CODING_ERROR("No renderer plugins found! "
-                            "Check before creation.");
-        }
-    }
-    else
-    {
-
-        assert(false);
-
-        // // In the legacy implementation, both excluded paths and invised paths
-        // // are treated the same way.
-        // pxr::SdfPathVector pathsToExclude = excludedPaths;
-        // pathsToExclude.insert(pathsToExclude.end(),
-        //     invisedPaths.begin(), invisedPaths.end());
-        // _legacyImpl =std::make_unique<UsdImagingGLLegacyEngine>(pathsToExclude);
+        using namespace pxr;
+        TF_CODING_ERROR("No renderer plugins found! "
+                        "Check before creation.");
     }
 }
 
@@ -990,8 +876,7 @@ void GLEngine::SetColorCorrectionSettings(
 
 bool GLEngine::IsColorCorrectionCapable()
 {
-    return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled &&
-           IsHydraEnabled();
+    return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled;
 }
 
 //----------------------------------------------------------------------------
@@ -1375,37 +1260,6 @@ void GLEngine::_ComputeRenderTags(pxr::UsdImagingGLRenderParams const &params,
     {
         renderTags->push_back(pxr::HdRenderTagTokens->render);
     }
-}
-
-/* static */
-pxr::TfToken
-GLEngine::_GetDefaultRendererPluginId()
-{
-    static const std::string defaultRendererDisplayName =
-        pxr::TfGetenv("HD_DEFAULT_RENDERER", "");
-
-    if (defaultRendererDisplayName.empty())
-    {
-        return pxr::TfToken();
-    }
-
-    pxr::HfPluginDescVector pluginDescs;
-    pxr::HdRendererPluginRegistry::GetInstance().GetPluginDescs(&pluginDescs);
-
-    // Look for the one with the matching display name
-    for (size_t i = 0; i < pluginDescs.size(); ++i)
-    {
-        if (pluginDescs[i].displayName == defaultRendererDisplayName)
-        {
-            return pluginDescs[i].id;
-        }
-    }
-
-    using namespace pxr;
-    TF_WARN("Failed to find default renderer with display name '%s'.",
-            defaultRendererDisplayName.c_str());
-
-    return TfToken();
 }
 
 pxr::UsdImagingDelegate *
