@@ -32,32 +32,23 @@
 #include "pxr/imaging/hd/unitTestDelegate.h"
 #include "pxr/imaging/hdx/renderTask.h"
 
+#include "renderDelegate.h"
+
 #include <iostream>
 
 PXR_NAMESPACE_USING_DIRECTIVE
 
+// http://graphics.pixar.com/usd/files/Siggraph2019_Hydra.pdf
 void RunHydra()
 {
-    // Get the renderer plugin and create a new render delegate and index.
-    const TfToken tinyRendererPluginId("HdTinyRendererPlugin");
-
-    HdRendererPlugin *rendererPlugin = HdRendererPluginRegistry::GetInstance()
-        .GetRendererPlugin(tinyRendererPluginId);
-    TF_VERIFY(rendererPlugin != nullptr);
-
-    HdRenderDelegate *renderDelegate = rendererPlugin->CreateRenderDelegate();
-    TF_VERIFY(renderDelegate != nullptr);
-
-    HdRenderIndex *renderIndex = HdRenderIndex::New(renderDelegate, {});
-    TF_VERIFY(renderIndex != nullptr);
-
-    // Construct a new scene delegate to populate the render index.
-    HdUnitTestDelegate *sceneDelegate = new HdUnitTestDelegate(renderIndex, 
-        SdfPath::AbsoluteRootPath());
-    TF_VERIFY(sceneDelegate != nullptr);
+    // Hydra initialization
+    HdEngine engine;
+    HdTinyRenderDelegate renderDelegate;
+    HdRenderIndex *renderIndex = HdRenderIndex::New(&renderDelegate, {});
+    HdUnitTestDelegate sceneDelegate(renderIndex, SdfPath::AbsoluteRootPath());
 
     // Create a cube.
-    sceneDelegate->AddCube(SdfPath("/MyCube1"), GfMatrix4f(1));
+    sceneDelegate.AddCube(SdfPath("/MyCube1"), GfMatrix4f(1));
 
     // Let's use the HdxRenderTask as an example, and configure it with
     // basic parameters.
@@ -72,7 +63,7 @@ void RunHydra()
     //                HdRenderPassStateSharedPtr const &renderPassState,
     //                TfTokenVector const &renderTags)
     //     : HdTask(SdfPath::EmptyPath()) { }
-    // 
+    //
     //     void Sync(HdSceneDelegate* delegate,
     //         HdTaskContext* ctx,
     //         HdDirtyBits* dirtyBits) override { }
@@ -82,24 +73,22 @@ void RunHydra()
     //
     //     void Execute(HdTaskContext* ctx) override { }
     // };
+
     SdfPath renderTask("/renderTask");
-    sceneDelegate->AddTask<HdxRenderTask>(renderTask);
-    sceneDelegate->UpdateTask(renderTask, HdTokens->params, 
-        VtValue(HdxRenderTaskParams()));
-    sceneDelegate->UpdateTask(renderTask, 
-        HdTokens->collection,
-        VtValue(HdRprimCollection(HdTokens->geometry, 
-        HdReprSelector(HdReprTokens->refined))));
+    sceneDelegate.AddTask<HdxRenderTask>(renderTask);
+    sceneDelegate.UpdateTask(renderTask, HdTokens->params,
+                             VtValue(HdxRenderTaskParams()));
+    sceneDelegate.UpdateTask(renderTask,
+                             HdTokens->collection,
+                             VtValue(HdRprimCollection(HdTokens->geometry,
+                                                       HdReprSelector(HdReprTokens->refined))));
 
     // Ask Hydra to execute our render task.
-    HdEngine engine;
-    HdTaskSharedPtrVector tasks = { renderIndex->GetTask(renderTask) };
+    HdTaskSharedPtrVector tasks = {renderIndex->GetTask(renderTask)};
     engine.Execute(renderIndex, &tasks);
 
     // Destroy the data structures
     delete renderIndex;
-    delete renderDelegate;
-    delete sceneDelegate;
 }
 
 int main(int argc, char *argv[])
@@ -108,10 +97,13 @@ int main(int argc, char *argv[])
     RunHydra();
 
     // If no error messages were logged, return success.
-    if (mark.IsClean()) {
+    if (mark.IsClean())
+    {
         std::cout << "OK" << std::endl;
         return EXIT_SUCCESS;
-    } else {
+    }
+    else
+    {
         std::cout << "FAILED" << std::endl;
         return EXIT_FAILURE;
     }

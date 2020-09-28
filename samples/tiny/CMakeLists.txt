@@ -21,6 +21,9 @@ set(TARGET_NAME tiny)
 
 add_executable(${TARGET_NAME}
     main.cpp
+    mesh.cpp
+    renderDelegate.cpp
+    renderPass.cpp
 )
 target_link_libraries(${TARGET_NAME}
 PRIVATE
