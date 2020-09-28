@@ -22,18 +22,28 @@
 
 #include "SceneDelegate.h"
 #include <iostream>
+#include "pxr/imaging/hgi/hgi.h"
+#include "pxr/imaging/hgi/tokens.h"
 
 
 class DebugWindow : public pxr::GarchGLDebugWindow
 {
+    pxr::HgiUniquePtr hgi;
+    pxr::HdDriver driver;
+
 public:
 	DebugWindow(const char *title, int width, int height) : GarchGLDebugWindow(title, width, height)
 	{
 		// create a RenderDelegate which is required for the RenderIndex
 		renderDelegate.reset( new pxr::HdStRenderDelegate() );
 
+        // Hgi and HdDriver should be constructed before HdEngine to ensure they
+        // are destructed last. Hgi may be used during engine/delegate destruction.
+        hgi = pxr::Hgi::CreatePlatformDefaultHgi();
+        driver = {pxr::HgiTokens->renderDriver, pxr::VtValue(hgi.get())};
+
 		// RenderIndex which stores a flat list of the scene to render
-		index = pxr::HdRenderIndex::New( renderDelegate.get(), {} );
+		index = pxr::HdRenderIndex::New( renderDelegate.get(), {&driver} );
 
 		// names for elements in the RenderIndex
 		pxr::SdfPath renderSetupId("/renderSetup");
