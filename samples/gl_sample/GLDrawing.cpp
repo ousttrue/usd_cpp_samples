@@ -221,7 +221,7 @@ public:
     {
         std::cout << "GLDrawing::ShutdownTest()\n";
         // _drawTarget = pxr::GlfDrawTargetRefPtr();
-        _engine->InvalidateBuffers();
+        // _engine->InvalidateBuffers();
     }
 
     uint32_t Draw(int width, int height)

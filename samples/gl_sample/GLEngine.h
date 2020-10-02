@@ -30,8 +30,6 @@ public:
     void Render(const pxr::UsdPrim &root,
                 const pxr::UsdImagingGLRenderParams &params);
     
-    void InvalidateBuffers();
-
     /// Returns true if the resulting image is fully converged.
     /// (otherwise, caller may need to call Render() again to refine the result)   
     bool IsConverged() const;

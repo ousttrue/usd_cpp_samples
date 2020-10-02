@@ -716,10 +716,6 @@ void GLEngine::Render(
     _impl->Render(root, params);
 }
 
-void GLEngine::InvalidateBuffers()
-{
-}
-
 bool GLEngine::IsConverged() const
 {
     return _impl->IsConverged();
