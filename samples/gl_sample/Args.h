@@ -17,7 +17,6 @@ struct Args
     bool _sceneLights = false;
     bool _cameraLight = false;
     std::string _cameraPath;
-    bool _testIdRender = false;
     std::string _stageFilePath;
     std::string _outputFilePath;
     pxr::TfToken _renderer;
@@ -31,7 +30,6 @@ struct Args
     bool IsEnabledTestLighting() const { return _testLighting; }
     bool IsEnabledSceneLights() const { return _sceneLights; }
     bool IsEnabledCameraLight() const { return _cameraLight; }
-    bool IsEnabledIdRender() const { return _testIdRender; }
     pxr::TfToken _GetRenderer() const { return _renderer; }
     pxr::VtDictionary const &GetRenderSettings() const { return _renderSettings; }
     std::string const &GetCameraPath() const { return _cameraPath; }

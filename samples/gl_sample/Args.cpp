@@ -250,10 +250,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _cameraPath = argv[++i];
         }
-        else if (strcmp(argv[i], "-idRender") == 0)
-        {
-            _testIdRender = true;
-        }
         else if (strcmp(argv[i], "-stage") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);

@@ -192,7 +192,6 @@ public:
         pxr::UsdImagingGLRenderParams params;
         params.drawMode = GetDrawMode();
         params.enableLighting = _args.IsEnabledTestLighting();
-        params.enableIdRender = _args.IsEnabledIdRender();
         params.clearColor = GetClearColor();
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
