@@ -271,6 +271,12 @@ public:
 
         // renderTime.Start();
 
+        auto width = info.viewport.data()[2];
+        auto height = info.viewport.data()[3];
+
+        glViewport(0, 0, width, height);
+        glEnable(GL_DEPTH_TEST);
+
         for (int convergenceIterations = 0; true; convergenceIterations++)
         {
             TRACE_FUNCTION_SCOPE("iteration render convergence");

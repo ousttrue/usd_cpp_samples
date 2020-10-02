@@ -110,24 +110,22 @@ static pxr::TfToken _GetDefaultRendererPluginId()
 
 class Impl
 {
-    std::string _usdFile;
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
     GfVec4f _clearColor = GfVec4f(1.0f, 0.5f, 0.1f, 1.0f);
-    GfVec3f _translate = GfVec3f(0.0f, 0.0f, -100.0f);
-    bool _initialized = false;
     pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
     std::shared_ptr<GLEngine> _engine;
+
     float _rotate[2] = {0, 0};
-    float __translate[3] = {0, 0, 0};
+    GfVec3f _translate = GfVec3f(0.0f, 0.0f, -100.0f);
     int _mousePos[2] = {0, 0};
     bool _mouseButton[3] = {false, false, false};
 
 public:
     Impl(const char *usdFile)
-        : _usdFile(usdFile)
     {
         UsdImagingGL_UnitTestHelper_InitPlugins();
+        _stage = pxr::UsdStage::Open(usdFile);
     }
 
     ~Impl()
@@ -137,35 +135,29 @@ public:
 
     uint32_t Draw(int width, int height, const pxr::UsdTimeCode &time)
     {
-        _Init(width, height);
-
         TRACE_FUNCTION();
-
-        std::cout << "UnitTestGLDrawing::DrawTest()\n";
-
-        _drawTarget->Bind();
-        _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
         // pxr::TfStopwatch renderTime;
 
-        auto &perfLog = pxr::HdPerfLog::GetInstance();
-        perfLog.Enable();
+        // auto &perfLog = pxr::HdPerfLog::GetInstance();
+        // perfLog.Enable();
 
-        // Reset all counters we care about.
-        perfLog.ResetCache(pxr::HdTokens->extent);
-        perfLog.ResetCache(pxr::HdTokens->points);
-        perfLog.ResetCache(pxr::HdTokens->topology);
-        perfLog.ResetCache(pxr::HdTokens->transform);
-        perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingExtent, 0);
-        perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingPrimvar, 0);
-        perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingTopology, 0);
-        perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingVisibility, 0);
-        perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
+        // // Reset all counters we care about.
+        // perfLog.ResetCache(pxr::HdTokens->extent);
+        // perfLog.ResetCache(pxr::HdTokens->points);
+        // perfLog.ResetCache(pxr::HdTokens->topology);
+        // perfLog.ResetCache(pxr::HdTokens->transform);
+        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingExtent, 0);
+        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingPrimvar, 0);
+        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingTopology, 0);
+        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingVisibility, 0);
+        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
 
         pxr::UsdImagingGLRenderParams params;
         params.drawMode = _drawMode;
         params.enableLighting = false;
         params.clearColor = _clearColor;
+        params.frame = time;
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
 
@@ -193,16 +185,13 @@ public:
             frameInfo.projectionMatrix = frustum.ComputeProjectionMatrix();
         }
 
-        glViewport(0, 0, width, height);
-
-        glEnable(GL_DEPTH_TEST);
-
         {
-            params.frame = time;
-
             // Make sure we render to convergence.
             pxr::TfErrorMark mark;
 
+            _Init(width, height);
+            _drawTarget->Bind();
+            _drawTarget->SetSize(pxr::GfVec2i(width, height));
             _engine->RenderFrame(frameInfo);
 
             {
@@ -211,8 +200,8 @@ public:
             }
 
             // std::cout << "Iterations to convergence: " << convergenceIterations << std::endl;
-            std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
-            std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
+            // std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
+            // std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
         }
 
         _drawTarget->Unbind();
@@ -263,11 +252,19 @@ public:
 private:
     void _Init(int width, int height)
     {
-        if (_initialized)
+        static bool s_initialized = false;
+        if (s_initialized)
         {
             return;
         }
-        _initialized = true;
+        s_initialized = true;
+
+        {
+            std::cout << "Using HD Renderer.\n";
+            pxr::SdfPathVector excludedPaths;
+            _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
+                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
+        }
 
         TRACE_FUNCTION();
 
@@ -284,15 +281,6 @@ private:
                                    GL_DEPTH_COMPONENT);
 
         _drawTarget->Unbind();
-
-        _stage = pxr::UsdStage::Open(_usdFile);
-        pxr::SdfPathVector excludedPaths;
-
-        {
-            std::cout << "Using HD Renderer.\n";
-            _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
-                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
-        }
 
         std::cout << glGetString(GL_VENDOR) << "\n";
         std::cout << glGetString(GL_RENDERER) << "\n";
