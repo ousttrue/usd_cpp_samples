@@ -271,21 +271,12 @@ public:
 
         // renderTime.Start();
 
-        bool cleared = false;
         for (int convergenceIterations = 0; true; convergenceIterations++)
         {
             TRACE_FUNCTION_SCOPE("iteration render convergence");
 
-            if (cleared && info.clearOnlyOnce)
-            {
-                // Don't clear the FBO
-            }
-            else
-            {
-                glClearBufferfv(GL_COLOR, 0, info.fboClearColor.data());
-                glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
-                cleared = true;
-            }
+            glClearBufferfv(GL_COLOR, 0, info.fboClearColor.data());
+            glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
 
             Render(info.root, info.params);
             if (IsConverged())

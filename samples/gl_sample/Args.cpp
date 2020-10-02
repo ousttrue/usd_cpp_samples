@@ -342,10 +342,6 @@ void Args::Parse(int argc, char *argv[])
         {
             ParseShowHide(i, argc, argv, &_showProxy);
         }
-        else if (strcmp(argv[i], "-clearOnce") == 0)
-        {
-            _clearOnce = true;
-        }
         else
         {
             ParseError(argv[0], "unknown argument %s", argv[i]);

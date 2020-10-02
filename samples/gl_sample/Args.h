@@ -32,7 +32,6 @@ struct Args
     bool _showGuides;
     bool _showRender;
     bool _showProxy;
-    bool _clearOnce = false;
 
     Args();
 
@@ -48,7 +47,6 @@ struct Args
     bool IsShowGuides() const { return _showGuides; }
     bool IsShowRender() const { return _showRender; }
     bool IsShowProxy() const { return _showProxy; }
-    bool ShouldClearOnce() const { return _clearOnce; }
 
     float _GetComplexity() const { return _complexity; }
     bool _ShouldFrameAll() const { return _shouldFrameAll; }

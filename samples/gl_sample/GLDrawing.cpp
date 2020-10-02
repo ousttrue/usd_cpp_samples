@@ -226,7 +226,6 @@ public:
         bool const useAovs = !_args.GetRendererAov().IsEmpty();
         frameInfo.fboClearColor = useAovs ? pxr::GfVec4f(0.0f) : GetClearColor();
         frameInfo.clearDepth = {1.0f};
-        frameInfo.clearOnlyOnce = _args.ShouldClearOnce();
 
         frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
         {
