@@ -292,16 +292,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _rendererAov = pxr::TfToken(argv[++i]);
         }
-        else if (strcmp(argv[i], "-perfStatsFile") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _perfStatsFile = argv[++i];
-        }
-        else if (strcmp(argv[i], "-traceFile") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _traceFile = argv[++i];
-        }
         else if (strcmp(argv[i], "-clear") == 0)
         {
             CheckForMissingArguments(i, 4, argc, argv);

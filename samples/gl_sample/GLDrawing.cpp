@@ -129,11 +129,6 @@ public:
     Impl(const Args &args)
         : _args(args)
     {
-        if (!_args._traceFile.empty())
-        {
-            TraceCollector::GetInstance().SetEnabled(true);
-        }
-
         UsdImagingGL_UnitTestHelper_InitPlugins();
 
         _clearColor = GfVec4f(_args.clearColor);
@@ -157,22 +152,6 @@ public:
         if (!_args.unresolvedStageFilePath.empty())
         {
             _args._stageFilePath = _args.unresolvedStageFilePath;
-        }
-
-        if (!_args._traceFile.empty())
-        {
-            TraceCollector::GetInstance().SetEnabled(false);
-
-            {
-                std::ofstream traceOutFile(_args._traceFile);
-                if (TF_VERIFY(traceOutFile))
-                {
-                    TraceReporter::GetGlobalReporter()->Report(traceOutFile);
-                }
-            }
-
-            TraceCollector::GetInstance().Clear();
-            TraceReporter::GetGlobalReporter()->ClearTree();
         }
     }
 
@@ -280,19 +259,6 @@ public:
                 // TODO:
                 WriteToFile("color", imageFilePath);
             }
-        }
-
-        if (!_args.GetPerfStatsFile().empty())
-        {
-            std::ofstream perfstatsRaw(_args.GetPerfStatsFile(), std::ofstream::out);
-            PXR_NAMESPACE_USING_DIRECTIVE;
-            // if (TF_VERIFY(perfstatsRaw))
-            // {
-            //     perfstatsRaw << "{ 'profile'  : 'renderTime', "
-            //                  << "   'metric'  : 'time', "
-            //                  << "   'value'   : " << renderTime.GetSeconds() << ", "
-            //                  << "   'samples' : " << _args.GetTimes().size() << " }" << std::endl;
-            // }
         }
 
         _drawTarget->Unbind();

@@ -25,8 +25,6 @@ struct Args
     float _complexity = 1.0f;
     pxr::TfToken _renderer;
     pxr::TfToken _rendererAov;
-    std::string _perfStatsFile;
-    std::string _traceFile;
 
     pxr::VtDictionary _renderSettings;
 
@@ -45,7 +43,6 @@ struct Args
     pxr::VtDictionary const &GetRenderSettings() const { return _renderSettings; }
     std::string const &GetCameraPath() const { return _cameraPath; }
     pxr::TfToken const &GetRendererAov() const { return _rendererAov; }
-    std::string const &GetPerfStatsFile() const { return _perfStatsFile; }
 
     void Parse(int argc, char *argv[]);
 };
