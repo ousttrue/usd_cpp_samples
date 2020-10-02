@@ -309,14 +309,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _traceFile = argv[++i];
         }
-        else if (strcmp(argv[i], "-clipPlane") == 0)
-        {
-            CheckForMissingArguments(i, 4, argc, argv);
-            clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-            clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-        }
         else if (strcmp(argv[i], "-clear") == 0)
         {
             CheckForMissingArguments(i, 4, argc, argv);

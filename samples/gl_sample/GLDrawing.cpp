@@ -112,7 +112,6 @@ static pxr::TfToken _GetDefaultRendererPluginId()
 class Impl
 {
     Args _args;
-    std::vector<GfVec4d> _clipPlanes;
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
     GfVec4f _clearColor;
     GfVec3f _translate;
@@ -137,10 +136,6 @@ public:
 
         UsdImagingGL_UnitTestHelper_InitPlugins();
 
-        for (size_t i = 0; i < _args.clipPlaneCoords.size() / 4; ++i)
-        {
-            _clipPlanes.push_back(GfVec4d(&_args.clipPlaneCoords[i * 4]));
-        }
         _clearColor = GfVec4f(_args.clearColor);
         _translate = GfVec3f(_args.translate);
 
@@ -259,23 +254,7 @@ public:
 
         glEnable(GL_DEPTH_TEST);
 
-        if (!GetClipPlanes().empty())
         {
-            params.clipPlanes = GetClipPlanes();
-            for (size_t i = 0; i < GetClipPlanes().size(); ++i)
-            {
-                glEnable(GL_CLIP_PLANE0 + i);
-            }
-        }
-
-        // for (double const &t : _args.GetTimes())
-        {
-            // pxr::UsdTimeCode time = t;
-            // if (t == -999)
-            // {
-            //     time = pxr::UsdTimeCode::Default();
-            // }
-
             params.frame = time;
 
             // Make sure we render to convergence.
@@ -367,7 +346,6 @@ public:
 
 private:
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
-    std::vector<GfVec4d> const &GetClipPlanes() const { return _clipPlanes; }
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
     bool WriteToFile(std::string const &attachment,
