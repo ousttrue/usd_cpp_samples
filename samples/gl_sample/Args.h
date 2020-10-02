@@ -6,8 +6,6 @@
 
 struct Args
 {
-    std::string shading;
-
     float clearColor[4] = {1.0f, 0.5f, 0.1f, 1.0f};
     float translate[3] = {0.0f, -1000.0f, -2500.0f};
 

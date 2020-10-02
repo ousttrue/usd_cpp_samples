@@ -133,28 +133,12 @@ public:
 
         _clearColor = GfVec4f(_args.clearColor);
         _translate = GfVec3f(_args.translate);
-
         _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
-
-        if (_args.shading.compare("wireOnSurface") == 0)
-        {
-            _drawMode = UsdImagingGLDrawMode::DRAW_WIREFRAME_ON_SURFACE;
-        }
-        else if (_args.shading.compare("flat") == 0)
-        {
-            _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_FLAT;
-        }
-        else if (_args.shading.compare("wire") == 0)
-        {
-            _drawMode = UsdImagingGLDrawMode::DRAW_WIREFRAME;
-        }
     }
 
     ~Impl()
     {
         std::cout << "GLDrawing::ShutdownTest()\n";
-        // _drawTarget = pxr::GlfDrawTargetRefPtr();
-        // _engine->InvalidateBuffers();
     }
 
     uint32_t Draw(int width, int height, const pxr::UsdTimeCode &time)

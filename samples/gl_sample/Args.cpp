@@ -260,11 +260,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _outputFilePath = argv[++i];
         }
-        else if (strcmp(argv[i], "-shading") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            shading = argv[++i];
-        }
         else if (strcmp(argv[i], "-renderer") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);
