@@ -233,14 +233,6 @@ void Args::Parse(int argc, char *argv[])
         {
             Usage(argc, argv);
         }
-        else if (strcmp(argv[i], "-frameAll") == 0)
-        {
-            _shouldFrameAll = true;
-        }
-        else if (strcmp(argv[i], "-cullBackfaces") == 0)
-        {
-            _cullBackfaces = true;
-        }
         else if (strcmp(argv[i], "-lighting") == 0)
         {
             _testLighting = true;

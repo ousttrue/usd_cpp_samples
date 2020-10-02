@@ -194,7 +194,6 @@ public:
         params.enableLighting = _args.IsEnabledTestLighting();
         params.enableIdRender = _args.IsEnabledIdRender();
         params.complexity = _args._GetComplexity();
-        params.cullStyle = _args.IsEnabledCullBackfaces() ? pxr::UsdImagingGLCullStyle::CULL_STYLE_BACK : pxr::UsdImagingGLCullStyle::CULL_STYLE_NOTHING;
         params.clearColor = GetClearColor();
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
@@ -363,41 +362,6 @@ private:
         std::cout << glGetString(GL_RENDERER) << "\n";
         std::cout << glGetString(GL_VERSION) << "\n";
 
-        if (_args._ShouldFrameAll())
-        {
-            pxr::TfTokenVector purposes;
-            purposes.push_back(pxr::UsdGeomTokens->default_);
-            purposes.push_back(pxr::UsdGeomTokens->proxy);
-
-            // Extent hints are sometimes authored as an optimization to avoid
-            // computing bounds, they are particularly useful for some tests where
-            // there is no bound on the first frame.
-            bool useExtentHints = true;
-            pxr::UsdGeomBBoxCache bboxCache(pxr::UsdTimeCode::Default(), purposes, useExtentHints);
-
-            pxr::GfBBox3d bbox = bboxCache.ComputeWorldBound(_stage->GetPseudoRoot());
-            pxr::GfRange3d world = bbox.ComputeAlignedRange();
-
-            pxr::GfVec3d worldCenter = (world.GetMin() + world.GetMax()) / 2.0;
-            double worldSize = world.GetSize().GetLength();
-
-            std::cerr << "worldCenter: " << worldCenter << "\n";
-            std::cerr << "worldSize: " << worldSize << "\n";
-            if (pxr::UsdGeomGetStageUpAxis(_stage) == pxr::UsdGeomTokens->z)
-            {
-                // transpose y and z centering translation
-                _translate[0] = -worldCenter[0];
-                _translate[1] = -worldCenter[2];
-                _translate[2] = -worldCenter[1] - worldSize;
-            }
-            else
-            {
-                _translate[0] = -worldCenter[0];
-                _translate[1] = -worldCenter[1];
-                _translate[2] = -worldCenter[2] - worldSize;
-            }
-        }
-        else
         {
             _translate[0] = GetTranslate()[0];
             _translate[1] = GetTranslate()[1];

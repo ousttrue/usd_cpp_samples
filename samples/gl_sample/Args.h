@@ -13,8 +13,6 @@ struct Args
     float clearColor[4] = {1.0f, 0.5f, 0.1f, 1.0f};
     float translate[3] = {0.0f, -1000.0f, -2500.0f};
 
-    bool _shouldFrameAll = false;
-    bool _cullBackfaces = false;
     bool _testLighting = false;
     bool _sceneLights = false;
     bool _cameraLight = false;
@@ -34,11 +32,8 @@ struct Args
     bool IsEnabledTestLighting() const { return _testLighting; }
     bool IsEnabledSceneLights() const { return _sceneLights; }
     bool IsEnabledCameraLight() const { return _cameraLight; }
-    bool IsEnabledCullBackfaces() const { return _cullBackfaces; }
     bool IsEnabledIdRender() const { return _testIdRender; }
-
     float _GetComplexity() const { return _complexity; }
-    bool _ShouldFrameAll() const { return _shouldFrameAll; }
     pxr::TfToken _GetRenderer() const { return _renderer; }
     pxr::VtDictionary const &GetRenderSettings() const { return _renderSettings; }
     std::string const &GetCameraPath() const { return _cameraPath; }
