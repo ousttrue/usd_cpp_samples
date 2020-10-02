@@ -233,19 +233,6 @@ void Args::Parse(int argc, char *argv[])
         {
             Usage(argc, argv);
         }
-        else if (strcmp(argv[i], "-sceneLights") == 0)
-        {
-            _sceneLights = true;
-        }
-        else if (strcmp(argv[i], "-camlight") == 0)
-        {
-            _cameraLight = true;
-        }
-        else if (strcmp(argv[i], "-camera") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _cameraPath = argv[++i];
-        }
         else if (strcmp(argv[i], "-stage") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);
