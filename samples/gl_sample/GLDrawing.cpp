@@ -1,69 +1,31 @@
-//
-// Copyright 2016 Pixar
-//
-// Licensed under the Apache License, Version 2.0 (the "Apache License")
-// with the following modification; you may not use this file except in
-// compliance with the Apache License and the following modification to it:
-// Section 6. Trademarks. is deleted and replaced with:
-//
-// 6. Trademarks. This License does not grant permission to use the trade
-//    names, trademarks, service marks, or product names of the Licensor
-//    and its affiliates, except as required to comply with Section 4(c) of
-//    the License and to reproduce the content of the NOTICE file.
-//
-// You may obtain a copy of the Apache License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the Apache License with the above modification is
-// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied. See the Apache License for the specific
-// language governing permissions and limitations under the Apache License.
-//
-
-#include "pxr/imaging/glf/glew.h"
+#include <pxr/imaging/glf/glew.h>
 #include "GLEngine.h"
 #include "GLDrawing.h"
 #include "Args.h"
-
-#include "pxr/pxr.h"
-
-#include "pxr/base/arch/attributes.h"
-#include "pxr/base/gf/vec2i.h"
-#include "pxr/base/trace/collector.h"
-#include "pxr/base/trace/reporter.h"
-
-#include "pxr/base/plug/registry.h"
-#include "pxr/base/arch/systemInfo.h"
-
-#include <pxr/base/tf/token.h>
-#include <pxr/usd/sdf/path.h>
+#include <pxr/base/trace/collector.h>
+#include <pxr/base/trace/reporter.h>
+#include <pxr/base/gf/frustum.h>
+#include <pxr/base/plug/registry.h>
+#include <pxr/base/arch/systemInfo.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/bboxCache.h>
 #include <pxr/usd/usdGeom/metrics.h>
 #include <pxr/imaging/glf/simpleLightingContext.h>
-#include <pxr/usdImaging/usdImagingGL/engine.h>
 #include <pxr/usdImaging/usdImaging/tokens.h>
-
-#include <stdio.h>
-#include <stdarg.h>
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-
 #include <pxr/usd/usd/stage.h>
 #include <pxr/imaging/glf/drawTarget.h>
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/glContext.h"
-#include "pxr/base/tf/getenv.h"
-#include "pxr/imaging/hd/rendererPlugin.h"
-#include "pxr/imaging/hd/rendererPluginRegistry.h"
-#include "pxr/base/tf/envSetting.h"
-#include "pxr/base/tf/getenv.h"
+#include <pxr/base/tf/getenv.h>
+#include <pxr/imaging/hd/rendererPluginRegistry.h>
+#include <pxr/base/tf/envSetting.h>
 
+#include <stdio.h>
+#include <stdarg.h>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 
@@ -291,7 +253,7 @@ public:
 
         pxr::GfVec4d viewport(0, 0, width, height);
 
-        if (_args.GetCameraPath().empty())
+        // if (_args.GetCameraPath().empty())
         {
             pxr::GfMatrix4d viewMatrix(1.0);
             viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
@@ -314,10 +276,10 @@ public:
 
             _engine->SetCameraState(modelViewMatrix, projMatrix);
         }
-        else
-        {
-            _engine->SetCameraPath(pxr::SdfPath(_args.GetCameraPath()));
-        }
+        // else
+        // {
+        //     _engine->SetCameraPath(pxr::SdfPath(_args.GetCameraPath()));
+        // }
         _engine->SetRenderViewport(viewport);
 
         bool const useAovs = !_args.GetRendererAov().IsEmpty();
@@ -341,15 +303,15 @@ public:
 
         glEnable(GL_DEPTH_TEST);
 
-        if (useAovs)
-        {
-            _engine->SetRendererAov(_args.GetRendererAov());
-        }
+        // if (useAovs)
+        // {
+        //     _engine->SetRendererAov(_args.GetRendererAov());
+        // }
 
-        if (_args.IsEnabledTestLighting())
-        {
-            _engine->SetLightingState(_lightingContext);
-        }
+        // if (_args.IsEnabledTestLighting())
+        // {
+        //     _engine->SetLightingState(_lightingContext);
+        // }
 
         if (!GetClipPlanes().empty())
         {
@@ -546,27 +508,27 @@ private:
         {
             std::cout << "Using HD Renderer.\n";
             _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
-                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
-            if (!_args._GetRenderer().IsEmpty())
-            {
-                if (!_engine->SetRendererPlugin(_args._GetRenderer()))
-                {
-                    std::cerr << "Couldn't set renderer plugin: " << _args._GetRenderer().GetText() << std::endl;
-                    exit(-1);
-                }
-                else
-                {
-                    std::cout << "Renderer plugin: " << _args._GetRenderer().GetText()
-                              << std::endl;
-                }
-            }
+                                               _stage->GetPseudoRoot().GetPath(), excludedPaths));
+            // if (!_args._GetRenderer().IsEmpty())
+            // {
+            //     if (!_engine->SetRendererPlugin(_args._GetRenderer()))
+            //     {
+            //         std::cerr << "Couldn't set renderer plugin: " << _args._GetRenderer().GetText() << std::endl;
+            //         exit(-1);
+            //     }
+            //     else
+            //     {
+            //         std::cout << "Renderer plugin: " << _args._GetRenderer().GetText()
+            //                   << std::endl;
+            //     }
+            // }
         }
 
-        for (const auto &renderSetting : _args.GetRenderSettings())
-        {
-            _engine->SetRendererSetting(pxr::TfToken(renderSetting.first),
-                                        renderSetting.second);
-        }
+        // for (const auto &renderSetting : _args.GetRenderSettings())
+        // {
+        //     _engine->SetRendererSetting(pxr::TfToken(renderSetting.first),
+        //                                 renderSetting.second);
+        // }
 
         std::cout << glGetString(GL_VENDOR) << "\n";
         std::cout << glGetString(GL_RENDERER) << "\n";
