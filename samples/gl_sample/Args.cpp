@@ -238,16 +238,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _stageFilePath = argv[++i];
         }
-        else if (strcmp(argv[i], "-renderer") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _renderer = pxr::TfToken(argv[++i]);
-        }
-        else if (strcmp(argv[i], "-rendererAov") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _rendererAov = pxr::TfToken(argv[++i]);
-        }
         else if (strcmp(argv[i], "-renderSetting") == 0)
         {
             CheckForMissingArguments(i, 2, argc, argv);

@@ -170,8 +170,7 @@ public:
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
 
-        bool const useAovs = !_args.GetRendererAov().IsEmpty();
-        frameInfo.fboClearColor = useAovs ? pxr::GfVec4f(0.0f) : GetClearColor();
+        frameInfo.fboClearColor = GetClearColor();
         frameInfo.clearDepth = {1.0f};
 
         frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
