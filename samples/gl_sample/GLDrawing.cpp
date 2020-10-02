@@ -148,11 +148,6 @@ public:
         {
             _drawMode = UsdImagingGLDrawMode::DRAW_WIREFRAME;
         }
-
-        if (!_args.unresolvedStageFilePath.empty())
-        {
-            _args._stageFilePath = _args.unresolvedStageFilePath;
-        }
     }
 
     ~Impl()

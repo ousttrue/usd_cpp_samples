@@ -253,7 +253,7 @@ void Args::Parse(int argc, char *argv[])
         else if (strcmp(argv[i], "-stage") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);
-            unresolvedStageFilePath = argv[++i];
+            _stageFilePath = argv[++i];
         }
         else if (strcmp(argv[i], "-write") == 0)
         {
