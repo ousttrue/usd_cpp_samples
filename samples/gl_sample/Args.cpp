@@ -269,11 +269,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             shading = argv[++i];
         }
-        else if (strcmp(argv[i], "-complexity") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _complexity = ParseDouble(i, argc, argv);
-        }
         else if (strcmp(argv[i], "-renderer") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);

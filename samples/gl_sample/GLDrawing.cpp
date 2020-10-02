@@ -193,7 +193,6 @@ public:
         params.drawMode = GetDrawMode();
         params.enableLighting = _args.IsEnabledTestLighting();
         params.enableIdRender = _args.IsEnabledIdRender();
-        params.complexity = _args._GetComplexity();
         params.clearColor = GetClearColor();
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);

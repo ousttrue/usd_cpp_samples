@@ -20,7 +20,6 @@ struct Args
     bool _testIdRender = false;
     std::string _stageFilePath;
     std::string _outputFilePath;
-    float _complexity = 1.0f;
     pxr::TfToken _renderer;
     pxr::TfToken _rendererAov;
 
@@ -33,7 +32,6 @@ struct Args
     bool IsEnabledSceneLights() const { return _sceneLights; }
     bool IsEnabledCameraLight() const { return _cameraLight; }
     bool IsEnabledIdRender() const { return _testIdRender; }
-    float _GetComplexity() const { return _complexity; }
     pxr::TfToken _GetRenderer() const { return _renderer; }
     pxr::VtDictionary const &GetRenderSettings() const { return _renderSettings; }
     std::string const &GetCameraPath() const { return _cameraPath; }
