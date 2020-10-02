@@ -1,4 +1,3 @@
-#include <pxr/imaging/glf/glew.h>
 #include "GLEngine.h"
 #include "GLDrawing.h"
 #include "Args.h"
@@ -7,18 +6,16 @@
 #include <pxr/base/gf/frustum.h>
 #include <pxr/base/plug/registry.h>
 #include <pxr/base/arch/systemInfo.h>
+#include <pxr/base/tf/getenv.h>
+#include <pxr/base/tf/envSetting.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/bboxCache.h>
 #include <pxr/usd/usdGeom/metrics.h>
-#include <pxr/imaging/glf/simpleLightingContext.h>
-#include <pxr/usdImaging/usdImaging/tokens.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/imaging/glf/simpleLightingContext.h>
 #include <pxr/imaging/glf/drawTarget.h>
-#include "pxr/imaging/glf/contextCaps.h"
-#include "pxr/imaging/glf/glContext.h"
-#include <pxr/base/tf/getenv.h>
 #include <pxr/imaging/hd/rendererPluginRegistry.h>
-#include <pxr/base/tf/envSetting.h>
+#include <pxr/usdImaging/usdImaging/tokens.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -81,34 +78,6 @@ static void UsdImagingGL_UnitTestHelper_InitPlugins()
     printf("registering plugins in: %s\n", pluginDir.c_str());
 
     PlugRegistry::GetInstance().RegisterPlugins(pluginDir);
-}
-
-static bool _InitGL()
-{
-    static std::once_flag initFlag;
-
-    std::call_once(initFlag, [] {
-        // Initialize Glew library for GL Extensions if needed
-        pxr::GlfGlewInit();
-
-        // Initialize if needed and switch to shared GL context.
-        pxr::GlfSharedGLContextScopeHolder sharedContext;
-
-        // Initialize GL context caps based on shared context
-        pxr::GlfContextCaps::InitInstance();
-    });
-
-    // Make sure there is an OpenGL context when
-    // trying to initialize Hydra/Reference
-    pxr::GlfGLContextSharedPtr context = pxr::GlfGLContext::GetCurrentGLContext();
-    if (!context || !context->IsValid())
-    {
-        using namespace pxr;
-        TF_CODING_ERROR("OpenGL context required, using reference renderer");
-        return false;
-    }
-
-    return true;
 }
 
 static pxr::TfToken _GetDefaultRendererPluginId()
@@ -235,7 +204,7 @@ public:
         _drawTarget->Bind();
         _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
-        pxr::TfStopwatch renderTime;
+        // pxr::TfStopwatch renderTime;
 
         auto &perfLog = pxr::HdPerfLog::GetInstance();
         perfLog.Enable();
@@ -251,43 +220,6 @@ public:
         perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingVisibility, 0);
         perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
 
-        pxr::GfVec4d viewport(0, 0, width, height);
-
-        // if (_args.GetCameraPath().empty())
-        {
-            pxr::GfMatrix4d viewMatrix(1.0);
-            viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
-            viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(1, 0, 0), _rotate[1]));
-            viewMatrix *= pxr::GfMatrix4d().SetTranslate(pxr::GfVec3d(_translate[0], _translate[1], _translate[2]));
-
-            pxr::GfMatrix4d modelViewMatrix = viewMatrix;
-            if (pxr::UsdGeomGetStageUpAxis(_stage) == pxr::UsdGeomTokens->z)
-            {
-                // rotate from z-up to y-up
-                modelViewMatrix =
-                    pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(1.0, 0.0, 0.0), -90.0)) *
-                    modelViewMatrix;
-            }
-
-            const double aspectRatio = double(width) / height;
-            pxr::GfFrustum frustum;
-            frustum.SetPerspective(60.0, aspectRatio, 1, 100000.0);
-            const pxr::GfMatrix4d projMatrix = frustum.ComputeProjectionMatrix();
-
-            _engine->SetCameraState(modelViewMatrix, projMatrix);
-        }
-        // else
-        // {
-        //     _engine->SetCameraPath(pxr::SdfPath(_args.GetCameraPath()));
-        // }
-        _engine->SetRenderViewport(viewport);
-
-        bool const useAovs = !_args.GetRendererAov().IsEmpty();
-        pxr::GfVec4f fboClearColor = useAovs ? pxr::GfVec4f(0.0f) : GetClearColor();
-        GLfloat clearDepth[1] = {1.0f};
-        bool const clearOnlyOnce = _args.ShouldClearOnce();
-        bool cleared = false;
-
         pxr::UsdImagingGLRenderParams params;
         params.drawMode = GetDrawMode();
         params.enableLighting = _args.IsEnabledTestLighting();
@@ -299,19 +231,38 @@ public:
         params.showProxy = _args.IsShowProxy();
         params.clearColor = GetClearColor();
 
+        RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
+
+        bool const useAovs = !_args.GetRendererAov().IsEmpty();
+        frameInfo.fboClearColor = useAovs ? pxr::GfVec4f(0.0f) : GetClearColor();
+        frameInfo.clearDepth = {1.0f};
+        frameInfo.clearOnlyOnce = _args.ShouldClearOnce();
+
+        frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
+        {
+            pxr::GfMatrix4d viewMatrix(1.0);
+            viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
+            viewMatrix *= pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(1, 0, 0), _rotate[1]));
+            viewMatrix *= pxr::GfMatrix4d().SetTranslate(pxr::GfVec3d(_translate[0], _translate[1], _translate[2]));
+
+            frameInfo.modelViewMatrix = viewMatrix;
+            if (pxr::UsdGeomGetStageUpAxis(_stage) == pxr::UsdGeomTokens->z)
+            {
+                // rotate from z-up to y-up
+                frameInfo.modelViewMatrix =
+                    pxr::GfMatrix4d().SetRotate(pxr::GfRotation(pxr::GfVec3d(1.0, 0.0, 0.0), -90.0)) *
+                    frameInfo.modelViewMatrix;
+            }
+
+            const double aspectRatio = double(width) / height;
+            pxr::GfFrustum frustum;
+            frustum.SetPerspective(60.0, aspectRatio, 1, 100000.0);
+            frameInfo.projectionMatrix = frustum.ComputeProjectionMatrix();
+        }
+
         glViewport(0, 0, width, height);
 
         glEnable(GL_DEPTH_TEST);
-
-        // if (useAovs)
-        // {
-        //     _engine->SetRendererAov(_args.GetRendererAov());
-        // }
-
-        // if (_args.IsEnabledTestLighting())
-        // {
-        //     _engine->SetLightingState(_lightingContext);
-        // }
 
         if (!GetClipPlanes().empty())
         {
@@ -334,48 +285,15 @@ public:
 
             // Make sure we render to convergence.
             pxr::TfErrorMark mark;
-            int convergenceIterations = 0;
 
-            {
-                TRACE_FUNCTION_SCOPE("test profile: renderTime");
-
-                renderTime.Start();
-
-                do
-                {
-                    TRACE_FUNCTION_SCOPE("iteration render convergence");
-
-                    convergenceIterations++;
-
-                    if (cleared && clearOnlyOnce)
-                    {
-                        // Don't clear the FBO
-                    }
-                    else
-                    {
-                        glClearBufferfv(GL_COLOR, 0, fboClearColor.data());
-                        glClearBufferfv(GL_DEPTH, 0, clearDepth);
-
-                        cleared = true;
-                    }
-
-                    _engine->Render(_stage->GetPseudoRoot(), params);
-                } while (!_engine->IsConverged());
-
-                {
-                    TRACE_FUNCTION_SCOPE("glFinish");
-                    glFinish();
-                }
-
-                renderTime.Stop();
-            }
+            _engine->RenderFrame(frameInfo);
 
             {
                 PXR_NAMESPACE_USING_DIRECTIVE;
                 TF_VERIFY(mark.IsClean(), "Errors occurred while rendering!");
             }
 
-            std::cout << "Iterations to convergence: " << convergenceIterations << std::endl;
+            // std::cout << "Iterations to convergence: " << convergenceIterations << std::endl;
             std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
             std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
 
@@ -398,13 +316,13 @@ public:
         {
             std::ofstream perfstatsRaw(_args.GetPerfStatsFile(), std::ofstream::out);
             PXR_NAMESPACE_USING_DIRECTIVE;
-            if (TF_VERIFY(perfstatsRaw))
-            {
-                perfstatsRaw << "{ 'profile'  : 'renderTime', "
-                             << "   'metric'  : 'time', "
-                             << "   'value'   : " << renderTime.GetSeconds() << ", "
-                             << "   'samples' : " << _args.GetTimes().size() << " }" << std::endl;
-            }
+            // if (TF_VERIFY(perfstatsRaw))
+            // {
+            //     perfstatsRaw << "{ 'profile'  : 'renderTime', "
+            //                  << "   'metric'  : 'time', "
+            //                  << "   'value'   : " << renderTime.GetSeconds() << ", "
+            //                  << "   'samples' : " << _args.GetTimes().size() << " }" << std::endl;
+            // }
         }
 
         _drawTarget->Unbind();
@@ -479,11 +397,6 @@ private:
         {
             return;
         }
-        if (!_InitGL())
-        {
-            assert(false);
-            return;
-        }
         _initialized = true;
 
         TRACE_FUNCTION();
@@ -508,27 +421,8 @@ private:
         {
             std::cout << "Using HD Renderer.\n";
             _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
-                                               _stage->GetPseudoRoot().GetPath(), excludedPaths));
-            // if (!_args._GetRenderer().IsEmpty())
-            // {
-            //     if (!_engine->SetRendererPlugin(_args._GetRenderer()))
-            //     {
-            //         std::cerr << "Couldn't set renderer plugin: " << _args._GetRenderer().GetText() << std::endl;
-            //         exit(-1);
-            //     }
-            //     else
-            //     {
-            //         std::cout << "Renderer plugin: " << _args._GetRenderer().GetText()
-            //                   << std::endl;
-            //     }
-            // }
+                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
         }
-
-        // for (const auto &renderSetting : _args.GetRenderSettings())
-        // {
-        //     _engine->SetRendererSetting(pxr::TfToken(renderSetting.first),
-        //                                 renderSetting.second);
-        // }
 
         std::cout << glGetString(GL_VENDOR) << "\n";
         std::cout << glGetString(GL_RENDERER) << "\n";

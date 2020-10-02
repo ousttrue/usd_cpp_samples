@@ -5,6 +5,7 @@
 #include <pxr/usdImaging/usdImaging/delegate.h>
 #include <pxr/imaging/glf/contextCaps.h>
 #include <pxr/imaging/glf/diagnostic.h>
+#include "pxr/imaging/glf/glContext.h"
 #include <pxr/imaging/hd/rendererPlugin.h>
 #include <pxr/imaging/hd/rendererPluginRegistry.h>
 #include <pxr/imaging/hdx/taskController.h>
@@ -13,6 +14,34 @@
 #include <pxr/imaging/hd/pluginRenderDelegateUniqueHandle.h>
 #include <pxr/imaging/hgi/hgi.h>
 #include <pxr/imaging/hd/driver.h>
+
+static bool _InitGL()
+{
+    static std::once_flag initFlag;
+
+    std::call_once(initFlag, [] {
+        // Initialize Glew library for GL Extensions if needed
+        pxr::GlfGlewInit();
+
+        // Initialize if needed and switch to shared GL context.
+        pxr::GlfSharedGLContextScopeHolder sharedContext;
+
+        // Initialize GL context caps based on shared context
+        pxr::GlfContextCaps::InitInstance();
+    });
+
+    // Make sure there is an OpenGL context when
+    // trying to initialize Hydra/Reference
+    pxr::GlfGLContextSharedPtr context = pxr::GlfGLContext::GetCurrentGLContext();
+    if (!context || !context->IsValid())
+    {
+        using namespace pxr;
+        TF_CODING_ERROR("OpenGL context required, using reference renderer");
+        return false;
+    }
+
+    return true;
+}
 
 bool IsColorCorrectionCapable()
 {
@@ -218,6 +247,59 @@ public:
         _sceneDelegate = nullptr;
         _renderIndex = nullptr;
         _renderDelegate = nullptr;
+    }
+
+    void RenderFrame(const RenderFrameInfo &info)
+    {
+        static bool s_glInitilazed = false;
+        if (!s_glInitilazed)
+        {
+            if (!_InitGL())
+            {
+                assert(false);
+                return;
+            }
+            s_glInitilazed = true;
+        }
+
+        SetRenderViewport(info.viewport);
+        SetCameraState(info.modelViewMatrix, info.projectionMatrix);
+
+        using namespace pxr;
+
+        // TRACE_FUNCTION_SCOPE("test profile: renderTime");
+
+        // renderTime.Start();
+
+        bool cleared = false;
+        for (int convergenceIterations = 0; true; convergenceIterations++)
+        {
+            TRACE_FUNCTION_SCOPE("iteration render convergence");
+
+            if (cleared && info.clearOnlyOnce)
+            {
+                // Don't clear the FBO
+            }
+            else
+            {
+                glClearBufferfv(GL_COLOR, 0, info.fboClearColor.data());
+                glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
+                cleared = true;
+            }
+
+            Render(info.root, info.params);
+            if (IsConverged())
+            {
+                break;
+            }
+        }
+
+        {
+            TRACE_FUNCTION_SCOPE("glFinish");
+            glFinish();
+        }
+
+        // renderTime.Stop();
     }
 
     void Render(const pxr::UsdPrim &root,
@@ -709,25 +791,7 @@ GLEngine::~GLEngine()
     delete _impl;
 }
 
-void GLEngine::Render(
-    const pxr::UsdPrim &root,
-    const pxr::UsdImagingGLRenderParams &params)
+void GLEngine::RenderFrame(const RenderFrameInfo &info)
 {
-    _impl->Render(root, params);
-}
-
-bool GLEngine::IsConverged() const
-{
-    return _impl->IsConverged();
-}
-
-void GLEngine::SetCameraState(const pxr::GfMatrix4d &viewMatrix,
-                                      const pxr::GfMatrix4d &projectionMatrix)
-{
-    _impl->SetCameraState(viewMatrix, projectionMatrix);
-}
-
-void GLEngine::SetRenderViewport(pxr::GfVec4d const &viewport)
-{
-    _impl->SetRenderViewport(viewport);
+    _impl->RenderFrame(info);
 }
