@@ -163,13 +163,12 @@ public:
         perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
 
         pxr::UsdImagingGLRenderParams params;
-        params.drawMode = GetDrawMode();
+        params.drawMode = _drawMode;
         params.enableLighting = false;
-        params.clearColor = GetClearColor();
+        params.clearColor = _clearColor;
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
 
-        frameInfo.fboClearColor = GetClearColor();
         frameInfo.clearDepth = {1.0f};
 
         frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
@@ -262,10 +261,6 @@ public:
     }
 
 private:
-    UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
-    GfVec4f const &GetClearColor() const { return _clearColor; }
-    GfVec3f const &GetTranslate() const { return _translate; }
-
     void _Init(int width, int height)
     {
         if (_initialized)
@@ -302,12 +297,6 @@ private:
         std::cout << glGetString(GL_VENDOR) << "\n";
         std::cout << glGetString(GL_RENDERER) << "\n";
         std::cout << glGetString(GL_VERSION) << "\n";
-
-        {
-            _translate[0] = GetTranslate()[0];
-            _translate[1] = GetTranslate()[1];
-            _translate[2] = GetTranslate()[2];
-        }
     }
 };
 

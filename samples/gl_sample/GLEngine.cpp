@@ -275,7 +275,7 @@ public:
         {
             TRACE_FUNCTION_SCOPE("iteration render convergence");
 
-            glClearBufferfv(GL_COLOR, 0, info.fboClearColor.data());
+            glClearBufferfv(GL_COLOR, 0, info.params.clearColor.data());
             glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
 
             Render(info.root, info.params);

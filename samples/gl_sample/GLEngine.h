@@ -13,7 +13,6 @@ PXR_NAMESPACE_CLOSE_SCOPE
 struct RenderFrameInfo
 {
     pxr::GfVec4d viewport;
-    pxr::GfVec4f fboClearColor;
     std::array<float, 1> clearDepth;
     pxr::GfMatrix4d modelViewMatrix;
     pxr::GfMatrix4d projectionMatrix;
