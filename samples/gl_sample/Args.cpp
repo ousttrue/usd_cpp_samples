@@ -270,14 +270,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _rendererAov = pxr::TfToken(argv[++i]);
         }
-        else if (strcmp(argv[i], "-clear") == 0)
-        {
-            CheckForMissingArguments(i, 4, argc, argv);
-            clearColor[0] = (float)ParseDouble(i, argc, argv);
-            clearColor[1] = (float)ParseDouble(i, argc, argv);
-            clearColor[2] = (float)ParseDouble(i, argc, argv);
-            clearColor[3] = (float)ParseDouble(i, argc, argv);
-        }
         else if (strcmp(argv[i], "-translate") == 0)
         {
             CheckForMissingArguments(i, 3, argc, argv);

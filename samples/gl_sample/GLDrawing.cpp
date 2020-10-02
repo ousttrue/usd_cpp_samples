@@ -113,7 +113,7 @@ class Impl
 {
     Args _args;
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
-    GfVec4f _clearColor;
+    GfVec4f _clearColor = GfVec4f(1.0f, 0.5f, 0.1f, 1.0f);
     GfVec3f _translate;
     bool _initialized = false;
     pxr::GlfDrawTargetRefPtr _drawTarget;
@@ -130,8 +130,6 @@ public:
         : _args(args)
     {
         UsdImagingGL_UnitTestHelper_InitPlugins();
-
-        _clearColor = GfVec4f(_args.clearColor);
         _translate = GfVec3f(_args.translate);
         _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
     }
