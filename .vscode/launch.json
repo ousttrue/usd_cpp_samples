@@ -30,10 +30,6 @@
         "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
         // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
         // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
-        "-translate",
-        "0",
-        "0",
-        "-100"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

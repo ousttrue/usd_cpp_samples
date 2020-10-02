@@ -6,8 +6,6 @@
 
 struct Args
 {
-    float translate[3] = {0.0f, -1000.0f, -2500.0f};
-
     bool _testLighting = false;
     bool _sceneLights = false;
     bool _cameraLight = false;
