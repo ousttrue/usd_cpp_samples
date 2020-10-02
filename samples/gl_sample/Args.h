@@ -7,14 +7,12 @@
 struct Args
 {
     std::string _stageFilePath;
-    std::string _outputFilePath;
     pxr::TfToken _renderer;
     pxr::TfToken _rendererAov;
 
     pxr::VtDictionary _renderSettings;
 
     std::string const &GetStageFilePath() const { return _stageFilePath; }
-    std::string const &GetOutputFilePath() const { return _outputFilePath; }
 
     pxr::TfToken _GetRenderer() const { return _renderer; }
     pxr::VtDictionary const &GetRenderSettings() const { return _renderSettings; }

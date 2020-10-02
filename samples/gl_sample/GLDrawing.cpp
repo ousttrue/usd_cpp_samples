@@ -216,20 +216,6 @@ public:
             // std::cout << "Iterations to convergence: " << convergenceIterations << std::endl;
             std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
             std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
-
-            std::string imageFilePath = _args.GetOutputFilePath();
-            if (!imageFilePath.empty())
-            {
-                if (time != pxr::UsdTimeCode::Default())
-                {
-                    std::stringstream suffix;
-                    suffix << "_" << std::setw(3) << std::setfill('0') << params.frame << ".png";
-                    imageFilePath = pxr::TfStringReplace(imageFilePath, ".png", suffix.str());
-                }
-                std::cout << imageFilePath << "\n";
-                // TODO:
-                WriteToFile("color", imageFilePath);
-            }
         }
 
         _drawTarget->Unbind();
@@ -281,21 +267,6 @@ private:
     UsdImagingGLDrawMode GetDrawMode() const { return _drawMode; }
     GfVec4f const &GetClearColor() const { return _clearColor; }
     GfVec3f const &GetTranslate() const { return _translate; }
-    bool WriteToFile(std::string const &attachment,
-                     std::string const &filename)
-    {
-        // We need to unbind the draw target before writing to file to be sure the
-        // attachment is in a good state.
-        bool isBound = _drawTarget->IsBound();
-        if (isBound)
-            _drawTarget->Unbind();
-
-        bool result = _drawTarget->WriteToFile(attachment, filename);
-
-        if (isBound)
-            _drawTarget->Bind();
-        return result;
-    }
 
     void _Init(int width, int height)
     {

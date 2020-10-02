@@ -238,11 +238,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _stageFilePath = argv[++i];
         }
-        else if (strcmp(argv[i], "-write") == 0)
-        {
-            CheckForMissingArguments(i, 1, argc, argv);
-            _outputFilePath = argv[++i];
-        }
         else if (strcmp(argv[i], "-renderer") == 0)
         {
             CheckForMissingArguments(i, 1, argc, argv);
