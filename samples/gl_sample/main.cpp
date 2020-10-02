@@ -28,40 +28,13 @@ int main(int argc, char *argv[])
         640, 480,
         [&driver](int w, int h) {},
         [&driver](int w, int h) {
-            return driver.Draw(w, h);
+            return driver.Draw(w, h, pxr::UsdTimeCode::Default());
         },
         [&driver]() { driver.Shutdown(); },
         input);
 
     context.Init();
-
-    // RUN
-    if (args.complexities.size() > 0)
-    {
-        // OFFSCREEN
-        std::string imageFilePath = args.GetOutputFilePath();
-        for (auto &compIt : args.complexities)
-        {
-            args._complexity = compIt;
-            if (!imageFilePath.empty())
-            {
-                std::stringstream suffix;
-                suffix << "_" << args._complexity << ".png";
-                args._outputFilePath = pxr::TfStringReplace(imageFilePath, ".png", suffix.str());
-            }
-            driver.Draw(context.GetWidth(), context.GetHeight());
-        }
-    }
-    else if (args.offscreen)
-    {
-        // OFFSCREEN
-        driver.Draw(context.GetWidth(), context.GetHeight());
-    }
-    else
-    {
-        // WINDOW main loop
-        context.Run();
-    }
+    context.Run();
 
     std::cout << "OK" << std::endl;
 }

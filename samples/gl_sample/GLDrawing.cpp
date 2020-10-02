@@ -164,11 +164,6 @@ public:
             _args._stageFilePath = _args.unresolvedStageFilePath;
         }
 
-        if (_args._times.empty())
-        {
-            _args._times.push_back(-999);
-        }
-
         if (!_args._traceFile.empty())
         {
             TraceCollector::GetInstance().SetEnabled(false);
@@ -193,7 +188,7 @@ public:
         // _engine->InvalidateBuffers();
     }
 
-    uint32_t Draw(int width, int height)
+    uint32_t Draw(int width, int height, const pxr::UsdTimeCode &time)
     {
         _Init(width, height);
 
@@ -273,13 +268,13 @@ public:
             }
         }
 
-        for (double const &t : _args.GetTimes())
+        // for (double const &t : _args.GetTimes())
         {
-            pxr::UsdTimeCode time = t;
-            if (t == -999)
-            {
-                time = pxr::UsdTimeCode::Default();
-            }
+            // pxr::UsdTimeCode time = t;
+            // if (t == -999)
+            // {
+            //     time = pxr::UsdTimeCode::Default();
+            // }
 
             params.frame = time;
 
@@ -512,12 +507,12 @@ GLDrawing::~GLDrawing()
 {
     Shutdown();
 }
-uint32_t GLDrawing::Draw(int w, int h)
+uint32_t GLDrawing::Draw(int w, int h, const pxr::UsdTimeCode &time)
 {
     // return fbo id
     if (!_impl)
         return 0;
-    return _impl->Draw(w, h);
+    return _impl->Draw(w, h, time);
 }
 void GLDrawing::Shutdown()
 {

@@ -248,10 +248,6 @@ void Args::Parse(int argc, char *argv[])
         {
             _cullBackfaces = true;
         }
-        else if (strcmp(argv[i], "-offscreen") == 0)
-        {
-            offscreen = true;
-        }
         else if (strcmp(argv[i], "-lighting") == 0)
         {
             _testLighting = true;
@@ -320,14 +316,6 @@ void Args::Parse(int argc, char *argv[])
             clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
             clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
             clipPlaneCoords.push_back(ParseDouble(i, argc, argv));
-        }
-        else if (strcmp(argv[i], "-complexities") == 0)
-        {
-            ParseDoubleVector(i, argc, argv, &complexities);
-        }
-        else if (strcmp(argv[i], "-times") == 0)
-        {
-            ParseDoubleVector(i, argc, argv, &_times);
         }
         else if (strcmp(argv[i], "-clear") == 0)
         {

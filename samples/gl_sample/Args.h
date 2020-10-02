@@ -7,10 +7,10 @@
 struct Args
 {
     std::string unresolvedStageFilePath;
-    bool offscreen = false;
+
     std::string shading;
     std::vector<double> clipPlaneCoords;
-    std::vector<double> complexities;
+
     float clearColor[4] = {1.0f, 0.5f, 0.1f, 1.0f};
     float translate[3] = {0.0f, -1000.0f, -2500.0f};
 
@@ -28,7 +28,7 @@ struct Args
     pxr::TfToken _rendererAov;
     std::string _perfStatsFile;
     std::string _traceFile;
-    std::vector<double> _times;
+
     pxr::VtDictionary _renderSettings;
     bool _showGuides;
     bool _showRender;
@@ -58,7 +58,6 @@ struct Args
     std::string const &GetCameraPath() const { return _cameraPath; }
     pxr::TfToken const &GetRendererAov() const { return _rendererAov; }
     std::string const &GetPerfStatsFile() const { return _perfStatsFile; }
-    std::vector<double> const &GetTimes() const { return _times; }
 
     void Parse(int argc, char *argv[]);
 };
