@@ -233,10 +233,6 @@ void Args::Parse(int argc, char *argv[])
         {
             Usage(argc, argv);
         }
-        else if (strcmp(argv[i], "-lighting") == 0)
-        {
-            _testLighting = true;
-        }
         else if (strcmp(argv[i], "-sceneLights") == 0)
         {
             _sceneLights = true;

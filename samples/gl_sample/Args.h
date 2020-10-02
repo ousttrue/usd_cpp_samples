@@ -6,7 +6,6 @@
 
 struct Args
 {
-    bool _testLighting = false;
     bool _sceneLights = false;
     bool _cameraLight = false;
     std::string _cameraPath;
@@ -20,7 +19,6 @@ struct Args
     std::string const &GetStageFilePath() const { return _stageFilePath; }
     std::string const &GetOutputFilePath() const { return _outputFilePath; }
 
-    bool IsEnabledTestLighting() const { return _testLighting; }
     bool IsEnabledSceneLights() const { return _sceneLights; }
     bool IsEnabledCameraLight() const { return _cameraLight; }
     pxr::TfToken _GetRenderer() const { return _renderer; }

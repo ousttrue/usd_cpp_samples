@@ -119,7 +119,6 @@ class Impl
     pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
     std::shared_ptr<GLEngine> _engine;
-    pxr::GlfSimpleLightingContextRefPtr _lightingContext;
     float _rotate[2] = {0, 0};
     float __translate[3] = {0, 0, 0};
     int _mousePos[2] = {0, 0};
@@ -166,7 +165,7 @@ public:
 
         pxr::UsdImagingGLRenderParams params;
         params.drawMode = GetDrawMode();
-        params.enableLighting = _args.IsEnabledTestLighting();
+        params.enableLighting = false;
         params.clearColor = GetClearColor();
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);
@@ -339,39 +338,6 @@ private:
             _translate[0] = GetTranslate()[0];
             _translate[1] = GetTranslate()[1];
             _translate[2] = GetTranslate()[2];
-        }
-
-        if (_args.IsEnabledTestLighting())
-        {
-            // set same parameter as GlfSimpleLightingContext::SetStateFromOpenGL
-            // OpenGL defaults
-            _lightingContext = pxr::GlfSimpleLightingContext::New();
-            if (!_args.IsEnabledSceneLights())
-            {
-                pxr::GlfSimpleLight light;
-                if (_args.IsEnabledCameraLight())
-                {
-                    light.SetPosition(pxr::GfVec4f(_translate[0], _translate[2], _translate[1], 0));
-                }
-                else
-                {
-                    light.SetPosition(pxr::GfVec4f(0, -.5, .5, 0));
-                }
-                light.SetDiffuse(pxr::GfVec4f(1, 1, 1, 1));
-                light.SetAmbient(pxr::GfVec4f(0, 0, 0, 1));
-                light.SetSpecular(pxr::GfVec4f(1, 1, 1, 1));
-                pxr::GlfSimpleLightVector lights;
-                lights.push_back(light);
-                _lightingContext->SetLights(lights);
-            }
-
-            pxr::GlfSimpleMaterial material;
-            material.SetAmbient(pxr::GfVec4f(0.2, 0.2, 0.2, 1.0));
-            material.SetDiffuse(pxr::GfVec4f(0.8, 0.8, 0.8, 1.0));
-            material.SetSpecular(pxr::GfVec4f(0, 0, 0, 1));
-            material.SetShininess(0.0001f);
-            _lightingContext->SetMaterial(material);
-            _lightingContext->SetSceneAmbient(pxr::GfVec4f(0.2, 0.2, 0.2, 1.0));
         }
     }
 };
