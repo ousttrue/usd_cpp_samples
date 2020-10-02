@@ -238,12 +238,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 1, argc, argv);
             _stageFilePath = argv[++i];
         }
-        else if (strcmp(argv[i], "-renderSetting") == 0)
-        {
-            CheckForMissingArguments(i, 2, argc, argv);
-            const char *const key = ParseString(i, argc, argv);
-            _renderSettings[key] = ParseVtValue(i, argc, argv);
-        }
         else
         {
             ParseError(argv[0], "unknown argument %s", argv[i]);
