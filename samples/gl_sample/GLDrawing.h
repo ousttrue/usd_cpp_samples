@@ -7,7 +7,7 @@ class GLDrawing
     class Impl *_impl = nullptr;
 
 public:
-    GLDrawing(const struct Args &args);
+    GLDrawing(const char *usdFile);
     ~GLDrawing();
 
     uint32_t Draw(int w, int h, const pxr::UsdTimeCode &time);

@@ -1,14 +1,15 @@
 #include <iostream>
-#include "Args.h"
 #include "UnitTestWindow.h"
 #include "GLDrawing.h"
 
 int main(int argc, char *argv[])
 {
-    Args args;
-    args.Parse(argc, argv);
+    if (argc < 2)
+    {
+        return 1;
+    }
 
-    GLDrawing driver(args);
+    GLDrawing driver(argv[1]);
 
     // create GL Context / window
     Input input;

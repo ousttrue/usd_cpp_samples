@@ -1,7 +1,6 @@
 set(TARGET_NAME gl_sample)
 add_executable(${TARGET_NAME}
     main.cpp
-    Args.cpp
     UnitTestWindow.cpp
     GLDrawing.cpp
     GLEngine.cpp

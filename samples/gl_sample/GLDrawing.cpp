@@ -1,6 +1,5 @@
 #include "GLEngine.h"
 #include "GLDrawing.h"
-#include "Args.h"
 #include <pxr/base/trace/collector.h>
 #include <pxr/base/trace/reporter.h>
 #include <pxr/base/gf/frustum.h>
@@ -111,7 +110,7 @@ static pxr::TfToken _GetDefaultRendererPluginId()
 
 class Impl
 {
-    Args _args;
+    std::string _usdFile;
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
     GfVec4f _clearColor = GfVec4f(1.0f, 0.5f, 0.1f, 1.0f);
     GfVec3f _translate = GfVec3f(0.0f, 0.0f, -100.0f);
@@ -125,8 +124,8 @@ class Impl
     bool _mouseButton[3] = {false, false, false};
 
 public:
-    Impl(const Args &args)
-        : _args(args)
+    Impl(const char *usdFile)
+        : _usdFile(usdFile)
     {
         UsdImagingGL_UnitTestHelper_InitPlugins();
     }
@@ -291,7 +290,7 @@ private:
 
         _drawTarget->Unbind();
 
-        _stage = pxr::UsdStage::Open(_args.GetStageFilePath());
+        _stage = pxr::UsdStage::Open(_usdFile);
         pxr::SdfPathVector excludedPaths;
 
         {
@@ -312,8 +311,8 @@ private:
     }
 };
 
-GLDrawing::GLDrawing(const struct Args &args)
-    : _impl(new Impl(args))
+GLDrawing::GLDrawing(const char *usdFile)
+    : _impl(new Impl(usdFile))
 {
 }
 GLDrawing::~GLDrawing()

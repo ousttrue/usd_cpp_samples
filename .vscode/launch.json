@@ -26,7 +26,6 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/debug/bin/gl_sample.exe",
       "args": [
-        "-stage",
         "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
         // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
         // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
