@@ -29,11 +29,6 @@ struct Args
     std::string _traceFile;
 
     pxr::VtDictionary _renderSettings;
-    bool _showGuides;
-    bool _showRender;
-    bool _showProxy;
-
-    Args();
 
     std::string const &GetStageFilePath() const { return _stageFilePath; }
     std::string const &GetOutputFilePath() const { return _outputFilePath; }
@@ -43,9 +38,6 @@ struct Args
     bool IsEnabledCameraLight() const { return _cameraLight; }
     bool IsEnabledCullBackfaces() const { return _cullBackfaces; }
     bool IsEnabledIdRender() const { return _testIdRender; }
-
-    bool IsShowRender() const { return _showRender; }
-    bool IsShowProxy() const { return _showProxy; }
 
     float _GetComplexity() const { return _complexity; }
     bool _ShouldFrameAll() const { return _shouldFrameAll; }

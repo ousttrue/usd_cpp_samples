@@ -216,8 +216,6 @@ public:
         params.enableIdRender = _args.IsEnabledIdRender();
         params.complexity = _args._GetComplexity();
         params.cullStyle = _args.IsEnabledCullBackfaces() ? pxr::UsdImagingGLCullStyle::CULL_STYLE_BACK : pxr::UsdImagingGLCullStyle::CULL_STYLE_NOTHING;
-        params.showRender = _args.IsShowRender();
-        params.showProxy = _args.IsShowProxy();
         params.clearColor = GetClearColor();
 
         RenderFrameInfo frameInfo(_stage->GetPseudoRoot(), params);

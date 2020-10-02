@@ -225,13 +225,6 @@ static pxr::VtValue ParseVtValue(int &i, int argc, char *argv[])
     }
 }
 
-Args::Args()
-    : _showGuides(pxr::UsdImagingGLRenderParams().showGuides),
-      _showRender(pxr::UsdImagingGLRenderParams().showRender),
-      _showProxy(pxr::UsdImagingGLRenderParams().showProxy)
-{
-}
-
 void Args::Parse(int argc, char *argv[])
 {
     for (int i = 1; i != argc; ++i)
@@ -329,18 +322,6 @@ void Args::Parse(int argc, char *argv[])
             CheckForMissingArguments(i, 2, argc, argv);
             const char *const key = ParseString(i, argc, argv);
             _renderSettings[key] = ParseVtValue(i, argc, argv);
-        }
-        else if (strcmp(argv[i], "-guidesPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showGuides);
-        }
-        else if (strcmp(argv[i], "-renderPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showRender);
-        }
-        else if (strcmp(argv[i], "-proxyPurpose") == 0)
-        {
-            ParseShowHide(i, argc, argv, &_showProxy);
         }
         else
         {
