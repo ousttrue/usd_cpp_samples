@@ -3,7 +3,6 @@
 #include "unitTestDelegate.h"
 #include "pxr/imaging/hgi/tokens.h"
 #include "pxr/imaging/hdx/renderTask.h"
-#include "pxr/imaging/hdx/pickTask.h"
 #include "pxr/base/gf/frustum.h"
 #include "pxr/base/gf/matrix4d.h"
 #include "pxr/base/gf/rotation.h"
@@ -246,16 +245,6 @@ public:
         _mouseButton[button] = true;
         _mousePos[0] = x;
         _mousePos[1] = y;
-
-        int instanceIndex = 0;
-        pxr::SdfPath primId = PickScene(x, y, &instanceIndex);
-
-        if (!primId.IsEmpty())
-        {
-            std::cout << "pick(" << x << ", " << y << "): "
-                      << "primId == " << primId << " "
-                      << "instance == " << instanceIndex << "\n";
-        }
     }
 
     void MouseRelease(int button, int x, int y, int modKeys)
@@ -295,27 +284,12 @@ public:
     }
 
 private:
-    struct PickParam
-    {
-        pxr::GfVec2d location;
-        pxr::GfVec4d viewport;
-    };
-
-    void DrawScene(int width, int height, PickParam const *pickParam = nullptr)
+    void DrawScene(int width, int height)
     {
         pxr::GfMatrix4d viewMatrix = GetViewMatrix();
 
         pxr::GfFrustum frustum = GetFrustum(width, height);
         pxr::GfVec4d viewport(0, 0, width, height);
-
-        if (pickParam)
-        {
-            frustum = frustum.ComputeNarrowedFrustum(
-                pxr::GfVec2d((2.0 * pickParam->location[0]) / width - 1.0,
-                             (2.0 * (height - pickParam->location[1])) / height - 1.0),
-                pxr::GfVec2d(1.0 / width, 1.0 / height));
-            viewport = pickParam->viewport;
-        }
 
         pxr::GfMatrix4d projMatrix = frustum.ComputeProjectionMatrix();
         _delegate->SetCamera(viewMatrix, projMatrix);
@@ -331,7 +305,7 @@ private:
         pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
                                                       renderSetupTask, pxr::HdTokens->params)
                                              .Get<pxr::HdxRenderTaskParams>();
-        param.enableIdRender = (pickParam != nullptr);
+        // param.enableIdRender = (pickParam != nullptr);
         param.viewport = viewport;
         _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
 
@@ -342,104 +316,6 @@ private:
         _engine.Execute(&_delegate->GetRenderIndex(), &tasks);
 
         glBindVertexArray(0);
-    }
-
-    pxr::SdfPath PickScene(int pickX, int pickY, int *outInstanceIndex = nullptr)
-    {
-        const int width = 128;
-        const int height = 128;
-
-        pxr::GlfDrawTargetRefPtr drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
-        drawTarget->Bind();
-        drawTarget->AddAttachment(
-            "primId", GL_RGBA, GL_UNSIGNED_BYTE, GL_RGBA8);
-        drawTarget->AddAttachment(
-            "instanceId", GL_RGBA, GL_UNSIGNED_BYTE, GL_RGBA8);
-        drawTarget->AddAttachment(
-            "depth", GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F);
-        drawTarget->Unbind();
-
-        drawTarget->Bind();
-
-        GLenum drawBuffers[] = {
-            GL_COLOR_ATTACHMENT0,
-            GL_COLOR_ATTACHMENT1,
-        };
-        glDrawBuffers(2, drawBuffers);
-
-        glEnable(GL_DEPTH_TEST);
-
-        GLfloat clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        glClearBufferfv(GL_COLOR, 0, clearColor);
-        glClearBufferfv(GL_COLOR, 1, clearColor);
-
-        GLfloat clearDepth[1] = {1.0f};
-        glClearBufferfv(GL_DEPTH, 0, clearDepth);
-
-        PickParam pickParam;
-        pickParam.location = pxr::GfVec2d(pickX, pickY);
-        pickParam.viewport = pxr::GfVec4d(0, 0, width, height);
-
-        DrawScene(width, height, &pickParam);
-
-        drawTarget->Unbind();
-
-        GLubyte primId[width * height * 4];
-        glBindTexture(GL_TEXTURE_2D,
-                      drawTarget->GetAttachments().at("primId")->GetGlTextureName());
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, primId);
-
-        GLubyte instanceId[width * height * 4];
-        glBindTexture(GL_TEXTURE_2D,
-                      drawTarget->GetAttachments().at("instanceId")->GetGlTextureName());
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, instanceId);
-
-        GLfloat depths[width * height];
-        glBindTexture(GL_TEXTURE_2D,
-                      drawTarget->GetAttachments().at("depth")->GetGlTextureName());
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_FLOAT, depths);
-
-        double zMin = 1.0;
-        int zMinIndex = -1;
-        for (int y = 0, i = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++, i++)
-            {
-                if (depths[i] < zMin)
-                {
-                    zMin = depths[i];
-                    zMinIndex = i;
-                }
-            }
-        }
-
-        bool didHit = (zMin < 1.0);
-
-        pxr::SdfPath result;
-        if (didHit)
-        {
-            int idIndex = zMinIndex * 4;
-
-            result = _delegate->GetRenderIndex().GetRprimPathFromPrimId(
-                pxr::HdxPickTask::DecodeIDRenderColor(&primId[idIndex]));
-            if (outInstanceIndex)
-            {
-                *outInstanceIndex = pxr::HdxPickTask::DecodeIDRenderColor(
-                    &instanceId[idIndex]);
-            }
-        }
-
-        return result;
-    }
-
-    void OffscreenTest();
-    void RunTest(int argc, char *argv[]);
-    void Idle() {}
-    bool WriteToFile(std::string const &attachment,
-                     std::string const &filename) const
-    {
-        // return _widget->WriteToFile(attachment, filename);
-        return false;
     }
 
     void SetCameraRotate(float rx, float ry)
