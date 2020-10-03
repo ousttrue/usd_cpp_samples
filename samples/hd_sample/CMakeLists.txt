@@ -1,0 +1,13 @@
+set(TARGET_NAME hd_sample)
+add_executable(${TARGET_NAME}
+    testHdxIdRender.cpp
+    unitTestDelegate.cpp
+)
+target_link_libraries(${TARGET_NAME}
+PRIVATE
+    usd
+)
+target_compile_options(${TARGET_NAME}
+PRIVATE
+    /wd4267
+)

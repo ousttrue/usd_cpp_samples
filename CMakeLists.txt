@@ -12,6 +12,7 @@ subdirs(
     usd
     samples/hello
     samples/gl_sample
+    samples/hd_sample
     samples/tiny
     samples/tinyUSDHyrda
     usd_source/pxr/imaging/hdx
