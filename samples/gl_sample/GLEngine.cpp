@@ -270,12 +270,73 @@ public:
 
         // _renderIndex, _taskController, and _sceneDelegate are initialized
         // by the plugin system.
-        auto rendererID = _GetDefaultRendererPluginId();
-        if (!SetRendererPlugin(rendererID))
+        auto id = _GetDefaultRendererPluginId();
+        // if (!SetRendererPlugin(rendererID))
+        // {
+        // }
+
         {
             using namespace pxr;
-            TF_CODING_ERROR("No renderer plugins found! "
-                            "Check before creation.");
+            _InitializeHgiIfNecessary();
+
+            HdRendererPluginRegistry &registry =
+                HdRendererPluginRegistry::GetInstance();
+
+            // Special case: id = TfToken() selects the first plugin in the list.
+            const TfToken resolvedId =
+                id.IsEmpty() ? registry.GetDefaultPluginId() : id;
+
+            // if (_renderDelegate && _renderDelegate.GetPluginId() == resolvedId)
+            // {
+            //     return true;
+            // }
+
+            TF_PY_ALLOW_THREADS_IN_SCOPE();
+
+            HdPluginRenderDelegateUniqueHandle renderDelegate =
+                registry.CreateRenderDelegate(resolvedId);
+            if (!renderDelegate)
+            {
+                using namespace pxr;
+                TF_CODING_ERROR("No renderer plugins found! "
+                                "Check before creation.");
+            }
+
+            // _SetRenderDelegate(std::move(renderDelegate));
+            {
+                // This relies on SetRendererPlugin to release the GIL...
+
+                // Destruction
+                // _DestroyHydraObjects();
+
+                _isPopulated = false;
+
+                // Creation
+
+                // Use the new render delegate.
+                _renderDelegate = std::move(renderDelegate);
+
+                // Recreate the render index
+                _renderIndex.reset(
+                    pxr::HdRenderIndex::New(
+                        _renderDelegate.Get(), {&_hgiDriver}));
+
+                // Create the new delegate
+                _sceneDelegate = std::make_unique<pxr::UsdImagingDelegate>(
+                    _renderIndex.get(), _sceneDelegateId);
+
+                // Create the new task controller
+                _taskController = std::make_unique<pxr::HdxTaskController>(
+                    _renderIndex.get(),
+                    _ComputeControllerPath(_renderDelegate));
+
+                // The task context holds on to resources in the render
+                // deletegate, so we want to destroy it first and thus
+                // create it last.
+                _engine = std::make_unique<pxr::HdEngine>();
+            }
+
+            // return true;
         }
     }
 
@@ -424,57 +485,6 @@ private:
         }
     }
 
-    bool SetRendererPlugin(pxr::TfToken const &id)
-    {
-        using namespace pxr;
-        _InitializeHgiIfNecessary();
-
-        HdRendererPluginRegistry &registry =
-            HdRendererPluginRegistry::GetInstance();
-
-        // Special case: id = TfToken() selects the first plugin in the list.
-        const TfToken resolvedId =
-            id.IsEmpty() ? registry.GetDefaultPluginId() : id;
-
-        if (_renderDelegate && _renderDelegate.GetPluginId() == resolvedId)
-        {
-            return true;
-        }
-
-        TF_PY_ALLOW_THREADS_IN_SCOPE();
-
-        HdPluginRenderDelegateUniqueHandle renderDelegate =
-            registry.CreateRenderDelegate(resolvedId);
-        if (!renderDelegate)
-        {
-            return false;
-        }
-
-        _SetRenderDelegateAndRestoreState(std::move(renderDelegate));
-
-        return true;
-    }
-
-    void _SetRenderDelegateAndRestoreState(
-        pxr::HdPluginRenderDelegateUniqueHandle &&renderDelegate)
-    {
-        // Pull old delegate/task controller state.
-
-        const pxr::GfMatrix4d rootTransform =
-            _sceneDelegate ? _sceneDelegate->GetRootTransform() : pxr::GfMatrix4d(1.0);
-        const bool isVisible =
-            _sceneDelegate ? _sceneDelegate->GetRootVisibility() : true;
-        pxr::HdSelectionSharedPtr const selection = _GetSelection();
-
-        _SetRenderDelegate(std::move(renderDelegate));
-
-        // Rebuild state in the new delegate/task controller.
-        _sceneDelegate->SetRootVisibility(isVisible);
-        _sceneDelegate->SetRootTransform(rootTransform);
-        _selTracker->SetSelection(selection);
-        _taskController->SetSelectionColor(_selectionColor);
-    }
-
     pxr::HdSelectionSharedPtr
     _GetSelection() const
     {
@@ -484,41 +494,6 @@ private:
         }
 
         return std::make_shared<pxr::HdSelection>();
-    }
-
-    void _SetRenderDelegate(
-        pxr::HdPluginRenderDelegateUniqueHandle &&renderDelegate)
-    {
-        // This relies on SetRendererPlugin to release the GIL...
-
-        // Destruction
-        // _DestroyHydraObjects();
-
-        _isPopulated = false;
-
-        // Creation
-
-        // Use the new render delegate.
-        _renderDelegate = std::move(renderDelegate);
-
-        // Recreate the render index
-        _renderIndex.reset(
-            pxr::HdRenderIndex::New(
-                _renderDelegate.Get(), {&_hgiDriver}));
-
-        // Create the new delegate
-        _sceneDelegate = std::make_unique<pxr::UsdImagingDelegate>(
-            _renderIndex.get(), _sceneDelegateId);
-
-        // Create the new task controller
-        _taskController = std::make_unique<pxr::HdxTaskController>(
-            _renderIndex.get(),
-            _ComputeControllerPath(_renderDelegate));
-
-        // The task context holds on to resources in the render
-        // deletegate, so we want to destroy it first and thus
-        // create it last.
-        _engine = std::make_unique<pxr::HdEngine>();
     }
 
     pxr::SdfPath
