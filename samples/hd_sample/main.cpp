@@ -80,8 +80,7 @@ int main(int argc, char *argv[])
     pxr::TfErrorMark mark;
 
     {
-        My_TestGLDrawing drawing;
-        drawing.ParseArgs(argc, argv);
+        Drawing drawing;
 
         Callback callback;
         callback.OnInitializeGL = [&drawing](int width, int height) {
@@ -93,13 +92,13 @@ int main(int argc, char *argv[])
             std::cout << glGetString(GL_RENDERER) << "\n";
             std::cout << glGetString(GL_VERSION) << "\n";
 
-            drawing.InitTest(width, height);
+            drawing.Init(width, height);
         };
         callback.OnUninitializeGL = [&drawing]() {
-            drawing.UninitTest();
+            drawing.Uninit();
         };
         callback.OnPaintGL = [&drawing](int width, int height) {
-            drawing.DrawTest(width, height);
+            drawing.Draw(width, height);
         };
         callback.OnMousePress = [&drawing](int b, int x, int y, int m) { drawing.MousePress(b, x, y, m); };
         callback.OnMouseRelease = [&drawing](int b, int x, int y, int m) { drawing.MouseRelease(b, x, y, m); };
