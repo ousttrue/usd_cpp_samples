@@ -11,8 +11,6 @@
 #include <pxr/usd/usdGeom/bboxCache.h>
 #include <pxr/usd/usdGeom/metrics.h>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/imaging/glf/simpleLightingContext.h>
-#include <pxr/imaging/glf/drawTarget.h>
 #include <pxr/imaging/hd/rendererPluginRegistry.h>
 #include <pxr/usdImaging/usdImaging/tokens.h>
 
@@ -112,7 +110,6 @@ class Impl
 {
     UsdImagingGLDrawMode _drawMode = UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
     GfVec4f _clearColor = GfVec4f(1.0f, 0.5f, 0.1f, 1.0f);
-    pxr::GlfDrawTargetRefPtr _drawTarget;
     pxr::UsdStageRefPtr _stage;
     std::shared_ptr<GLEngine> _engine;
 
@@ -169,41 +166,15 @@ public:
             frameInfo.projectionMatrix = frustum.ComputeProjectionMatrix();
         }
 
+        if (!_engine)
         {
-            // Make sure we render to convergence.
-            pxr::TfErrorMark mark;
-
-            if (!_engine)
-            {
-                std::cout << "Using HD Renderer.\n";
-                pxr::SdfPathVector excludedPaths;
-                _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
-                                           _stage->GetPseudoRoot().GetPath(), excludedPaths));
-
-                //
-                // Create an offscreen draw target which is the same size as this
-                // widget and initialize the unit test with the draw target bound.
-                //
-                _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
-                _drawTarget->Bind();
-                _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
-                _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
-                                           GL_DEPTH_COMPONENT);
-
-                _drawTarget->Unbind();
-            }
-            _drawTarget->Bind();
-            _drawTarget->SetSize(pxr::GfVec2i(width, height));
-            _engine->RenderFrame(frameInfo);
-            _drawTarget->Unbind();
-
-            {
-                PXR_NAMESPACE_USING_DIRECTIVE;
-                TF_VERIFY(mark.IsClean(), "Errors occurred while rendering!");
-            }
+            std::cout << "Using HD Renderer.\n";
+            pxr::SdfPathVector excludedPaths;
+            _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
+                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
         }
 
-        return _drawTarget->GetFramebufferId();
+        return _engine->RenderFrame(frameInfo);
     }
 
     void MousePress(int button, int x, int y, int modKeys)

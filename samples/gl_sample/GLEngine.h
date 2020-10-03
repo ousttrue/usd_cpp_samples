@@ -43,5 +43,5 @@ public:
             pxr::SdfPath::AbsoluteRootPath(),
         const pxr::HdDriver &driver = pxr::HdDriver());
     ~GLEngine();
-    void RenderFrame(const RenderFrameInfo &info);
+    uint32_t RenderFrame(const RenderFrameInfo &info);
 };

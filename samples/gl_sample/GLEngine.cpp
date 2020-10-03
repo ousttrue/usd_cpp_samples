@@ -14,6 +14,8 @@
 #include <pxr/imaging/hd/pluginRenderDelegateUniqueHandle.h>
 #include <pxr/imaging/hgi/hgi.h>
 #include <pxr/imaging/hd/driver.h>
+#include <pxr/imaging/glf/simpleLightingContext.h>
+#include <pxr/imaging/glf/drawTarget.h>
 
 static bool _InitGL()
 {
@@ -208,6 +210,7 @@ class GLEngineImpl
     pxr::SdfPathVector _invisedPrimPaths;
     bool _isPopulated;
     pxr::HdRprimCollection _renderCollection;
+    pxr::GlfDrawTargetRefPtr _drawTarget;
 
 public:
     GLEngineImpl(
@@ -249,7 +252,7 @@ public:
         _renderDelegate = nullptr;
     }
 
-    void RenderFrame(const RenderFrameInfo &info)
+    uint32_t RenderFrame(const RenderFrameInfo &info)
     {
         static bool s_glInitilazed = false;
         if (!s_glInitilazed)
@@ -257,10 +260,30 @@ public:
             if (!_InitGL())
             {
                 assert(false);
-                return;
+                return 0;
             }
             s_glInitilazed = true;
         }
+
+        auto width = info.viewport.data()[2];
+        auto height = info.viewport.data()[3];
+
+        if (!_drawTarget)
+        {
+            //
+            // Create an offscreen draw target which is the same size as this
+            // widget and initialize the unit test with the draw target bound.
+            //
+            _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
+            _drawTarget->Bind();
+            _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
+            _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
+                                       GL_DEPTH_COMPONENT);
+
+            _drawTarget->Unbind();
+        }
+        _drawTarget->Bind();
+        _drawTarget->SetSize(pxr::GfVec2i(width, height));
 
         SetRenderViewport(info.viewport);
         SetCameraState(info.modelViewMatrix, info.projectionMatrix);
@@ -270,9 +293,6 @@ public:
         // TRACE_FUNCTION_SCOPE("test profile: renderTime");
 
         // renderTime.Start();
-
-        auto width = info.viewport.data()[2];
-        auto height = info.viewport.data()[3];
 
         glViewport(0, 0, width, height);
         glEnable(GL_DEPTH_TEST);
@@ -297,6 +317,10 @@ public:
         }
 
         // renderTime.Stop();
+
+        _drawTarget->Unbind();
+
+        return _drawTarget->GetFramebufferId();
     }
 
     void Render(const pxr::UsdPrim &root,
@@ -788,7 +812,7 @@ GLEngine::~GLEngine()
     delete _impl;
 }
 
-void GLEngine::RenderFrame(const RenderFrameInfo &info)
+uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info)
 {
-    _impl->RenderFrame(info);
+    return _impl->RenderFrame(info);
 }
