@@ -6,11 +6,7 @@ int main(int argc, char *argv[])
 {
     pxr::TfErrorMark mark;
 
-    {
-        My_TestGLDrawing driver;
-
-        driver.RunTest(argc, argv);
-    }
+    RunTest(argc, argv);
 
     if (mark.IsClean())
     {

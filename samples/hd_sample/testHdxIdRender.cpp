@@ -12,20 +12,37 @@
 #include "pxr/base/gf/rotation.h"
 #include "pxr/base/gf/vec2i.h"
 #include "pxr/base/gf/vec4d.h"
-
+#include "unitTestDelegate.h"
+#include <pxr/base/tf/token.h>
+#include <pxr/usd/sdf/path.h>
+#include "pxr/imaging/hdSt/renderDelegate.h"
+#include "pxr/imaging/hd/engine.h"
+#include "pxr/imaging/hgi/hgi.h"
+#include "pxr/base/gf/frustum.h"
+#include "pxr/base/gf/matrix4d.h"
+#include "pxr/base/gf/vec3f.h"
 #include <iostream>
 #include <memory>
+#include <functional>
+
+struct Callback
+{
+    std::function<void(int width, int height)> OnInitializeGL = [](int, int) {};
+    std::function<void()> OnUninitializeGL = []() {};
+    std::function<void(int width, int height)> OnPaintGL = [](int, int) {};
+    std::function<void(int key)> OnKeyRelease = [](int) {};
+    std::function<void(int button, int x, int y, int modKeys)> OnMousePress = [](int, int, int, int) {};
+    std::function<void(int button, int x, int y, int modKeys)> OnMouseRelease = [](int, int, int, int) {};
+    std::function<void(int x, int y, int modKeys)> OnMouseMove = [](int, int, int) {};
+};
 
 class HdSt_UnitTestWindow : public pxr::GarchGLDebugWindow
 {
-public:
-    typedef HdSt_UnitTestWindow This;
+    Callback _callback;
 
 public:
-    HdSt_UnitTestWindow(My_TestGLDrawing *unitTest, int w, int h)
-        : pxr::GarchGLDebugWindow("Hd Test", w, h),
-          _unitTest(unitTest),
-          _animate(false)
+    HdSt_UnitTestWindow(int w, int h, const Callback &callback)
+        : pxr::GarchGLDebugWindow("Hd Test", w, h), _callback(callback)
     {
     }
 
@@ -33,96 +50,19 @@ public:
     {
     }
 
-    void OffscreenTest()
-    {
-        _drawTarget->Bind();
-        _drawTarget->SetSize(pxr::GfVec2i(GetWidth(), GetHeight()));
-
-        _unitTest->OffscreenTest();
-
-        _drawTarget->Unbind();
-    }
-
-    bool WriteToFile(std::string const &attachment,
-                     std::string const &filename)
-    {
-        _drawTarget->Unbind();
-        bool ret = _drawTarget->WriteToFile(attachment, filename);
-        _drawTarget->Bind();
-        return ret;
-    }
-
-    void StartTimer()
-    {
-        _animate = true;
-    }
-
-    // GarchGLDebugWindow overrides
     void OnInitializeGL() override
     {
-        pxr::GlfGlewInit();
-        pxr::GlfRegisterDefaultDebugOutputMessageCallback();
-        pxr::GlfContextCaps::InitInstance();
-
-        std::cout << glGetString(GL_VENDOR) << "\n";
-        std::cout << glGetString(GL_RENDERER) << "\n";
-        std::cout << glGetString(GL_VERSION) << "\n";
-
-        //
-        // Create an offscreen draw target which is the same size as this
-        // widget and initialize the unit test with the draw target bound.
-        //
-        _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(GetWidth(), GetHeight()));
-        _drawTarget->Bind();
-        _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
-        _drawTarget->AddAttachment("depth", GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8,
-                                   GL_DEPTH24_STENCIL8);
-        _unitTest->InitTest();
-
-        _drawTarget->Unbind();
+        _callback.OnInitializeGL(GetWidth(), GetHeight());
     }
 
     void OnUninitializeGL() override
     {
-        _drawTarget = pxr::GlfDrawTargetRefPtr();
-        _unitTest->UninitTest();
-    }
-
-    void OnIdle() override
-    {
-        if (_animate)
-        {
-            _unitTest->Idle();
-        }
+        _callback.OnUninitializeGL();
     }
 
     void OnPaintGL() override
     {
-        //
-        // Update the draw target's size and execute the unit test with
-        // the draw target bound.
-        //
-        _drawTarget->Bind();
-        _drawTarget->SetSize(pxr::GfVec2i(GetWidth(), GetHeight()));
-
-        _unitTest->DrawTest();
-
-        _drawTarget->Unbind();
-
-        //
-        // Blit the resulting color buffer to the window (this is a noop
-        // if we're drawing offscreen).
-        //
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, _drawTarget->GetFramebufferId());
-
-        glBlitFramebuffer(0, 0, GetWidth(), GetHeight(),
-                          0, 0, GetWidth(), GetHeight(),
-                          GL_COLOR_BUFFER_BIT,
-                          GL_NEAREST);
-
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        _callback.OnPaintGL(GetWidth(), GetHeight());
     }
 
     void OnKeyRelease(int key) override
@@ -133,28 +73,89 @@ public:
             ExitApp();
             return;
         }
-        _unitTest->KeyRelease(key);
+        _callback.OnKeyRelease(key);
     }
 
     void OnMousePress(int button, int x, int y, int modKeys) override
     {
-        _unitTest->MousePress(button, x, y, modKeys);
+        _callback.OnMousePress(button, x, y, modKeys);
     }
 
     void OnMouseRelease(int button, int x, int y, int modKeys) override
     {
-        _unitTest->MouseRelease(button, x, y, modKeys);
+        _callback.OnMouseRelease(button, x, y, modKeys);
     }
 
     void OnMouseMove(int x, int y, int modKeys) override
     {
-        _unitTest->MouseMove(x, y, modKeys);
+        _callback.OnMouseMove(x, y, modKeys);
     }
+};
+
+class My_TestGLDrawing
+{
+public:
+    My_TestGLDrawing();
+
+    struct PickParam
+    {
+        pxr::GfVec2d location;
+        pxr::GfVec4d viewport;
+    };
+
+    void DrawScene(int width, int height, PickParam const *pickParam = nullptr);
+    pxr::SdfPath PickScene(int pickX, int pickY, int *outInstanceIndex = nullptr);
+    void InitTest(int width, int height);
+    void UninitTest();
+    void DrawTest(int width, int height);
+    void OffscreenTest();
+    void MousePress(int button, int x, int y, int modKeys);
+    void RunTest(int argc, char *argv[]);
+    void MouseRelease(int button, int x, int y, int modKeys);
+    void MouseMove(int x, int y, int modKeys);
+    void KeyRelease(int key);
+    void Idle() {}
+    bool WriteToFile(std::string const &attachment,
+                     std::string const &filename) const;
+
+    void ParseArgs(int argc, char *argv[]);
 
 private:
-    My_TestGLDrawing *_unitTest;
+    void SetCameraRotate(float rx, float ry)
+    {
+        _rotate[0] = rx;
+        _rotate[1] = ry;
+    }
+    void SetCameraTranslate(pxr::GfVec3f t)
+    {
+        _translate = t;
+    }
+    pxr::GfVec3f GetCameraTranslate() const
+    {
+        return _translate;
+    }
+    pxr::GfMatrix4d GetViewMatrix() const;
+    pxr::GfMatrix4d GetProjectionMatrix(int width, int height) const;
+    pxr::GfFrustum GetFrustum(int width, int height) const;
+    pxr::GfVec2i GetMousePos() const { return pxr::GfVec2i(_mousePos[0], _mousePos[1]); }
+
+private:
+    float _rotate[2];
+    pxr::GfVec3f _translate;
+    int _mousePos[2];
+    bool _mouseButton[3];
+
+    // Hgi and HdDriver should be constructed before HdEngine to ensure they
+    // are destructed last. Hgi may be used during engine/delegate destruction.
+    pxr::HgiUniquePtr _hgi;
+    std::unique_ptr<pxr::HdDriver> _driver;
+    pxr::HdEngine _engine;
+    pxr::HdStRenderDelegate _renderDelegate;
+    pxr::HdRenderIndex *_renderIndex;
+    pxr::Hdx_UnitTestDelegate *_delegate;
+    pxr::TfToken _reprName;
+    int _refineLevel;
     pxr::GlfDrawTargetRefPtr _drawTarget;
-    bool _animate;
 };
 
 ////////////////////////////////////////////////////////////
@@ -172,7 +173,6 @@ _GetTranslate(float tx, float ty, float tz)
 PXR_NAMESPACE_USING_DIRECTIVE
 
 My_TestGLDrawing::My_TestGLDrawing()
-    : _widget(NULL)
 {
     _rotate[0] = _rotate[1] = 0;
     _translate[0] = _translate[1] = _translate[2] = 0;
@@ -186,8 +186,19 @@ My_TestGLDrawing::My_TestGLDrawing()
     _refineLevel = 0;
 }
 
-void My_TestGLDrawing::InitTest()
+void My_TestGLDrawing::InitTest(int width, int height)
 {
+    //
+    // Create an offscreen draw target which is the same size as this
+    // widget and initialize the unit test with the draw target bound.
+    //
+    _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
+    _drawTarget->Bind();
+    _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
+    _drawTarget->AddAttachment("depth", GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8,
+                               GL_DEPTH24_STENCIL8);
+    _drawTarget->Unbind();
+
     _hgi = Hgi::CreatePlatformDefaultHgi();
     _driver.reset(new HdDriver{HgiTokens->renderDriver, VtValue(_hgi.get())});
 
@@ -326,46 +337,47 @@ void My_TestGLDrawing::UninitTest()
     delete _renderIndex;
 }
 
-void My_TestGLDrawing::DrawTest()
+void My_TestGLDrawing::DrawTest(int width, int height)
 {
+    //
+    // Update the draw target's size and execute the unit test with
+    // the draw target bound.
+    //
+    _drawTarget->Bind();
+    _drawTarget->SetSize(pxr::GfVec2i(width, height));
+
     GLfloat clearColor[4] = {0.1f, 0.1f, 0.1f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
     GLfloat clearDepth[1] = {1.0f};
     glClearBufferfv(GL_DEPTH, 0, clearDepth);
 
-    DrawScene();
-}
+    DrawScene(width, height);
 
-void My_TestGLDrawing::OffscreenTest()
-{
-    SdfPath primId;
-    int instanceIndex = -1;
+    _drawTarget->Unbind();
 
-    primId = PickScene(175, 90, &instanceIndex);
-    TF_VERIFY(primId == SdfPath("/cube1") && instanceIndex == 0);
+    //
+    // Blit the resulting color buffer to the window (this is a noop
+    // if we're drawing offscreen).
+    //
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, _drawTarget->GetFramebufferId());
 
-    primId = PickScene(470, 90, &instanceIndex);
-    TF_VERIFY(primId == SdfPath("/cube0") && instanceIndex == 0);
+    glBlitFramebuffer(0, 0, width, height,
+                      0, 0, width, height,
+                      GL_COLOR_BUFFER_BIT,
+                      GL_NEAREST);
 
-    primId = PickScene(470, 364, &instanceIndex);
-    TF_VERIFY(primId == SdfPath("/cube3") && instanceIndex == 0);
-
-    primId = PickScene(250, 190, &instanceIndex);
-    TF_VERIFY(primId == SdfPath("/protoTop") && instanceIndex == 2);
-
-    primId = PickScene(320, 290, &instanceIndex);
-    TF_VERIFY(primId == SdfPath("/protoBottom") && instanceIndex == 1);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
 void My_TestGLDrawing::
-    DrawScene(PickParam const *pickParam)
+    DrawScene(int width, int height, PickParam const *pickParam)
 {
-    int width = GetWidth(), height = GetHeight();
-
     GfMatrix4d viewMatrix = GetViewMatrix();
 
-    GfFrustum frustum = GetFrustum();
+    GfFrustum frustum = GetFrustum(width, height);
     GfVec4d viewport(0, 0, width, height);
 
     if (pickParam)
@@ -441,7 +453,7 @@ My_TestGLDrawing::PickScene(int pickX, int pickY, int *outInstanceIndex)
     pickParam.location = GfVec2d(pickX, pickY);
     pickParam.viewport = GfVec4d(0, 0, width, height);
 
-    DrawScene(&pickParam);
+    DrawScene(width, height, &pickParam);
 
     drawTarget->Unbind();
 
@@ -526,55 +538,11 @@ void My_TestGLDrawing::ParseArgs(int argc, char *argv[])
     }
 }
 
-int My_TestGLDrawing::GetWidth() const
-{
-    return _widget->GetWidth();
-}
-
-int My_TestGLDrawing::GetHeight() const
-{
-    return _widget->GetHeight();
-}
-
 bool My_TestGLDrawing::WriteToFile(std::string const &attachment,
                                    std::string const &filename) const
 {
-    return _widget->WriteToFile(attachment, filename);
-}
-
-void My_TestGLDrawing::RunTest(int argc, char *argv[])
-{
-    bool offscreen = false;
-    bool animate = false;
-    for (int i = 0; i < argc; ++i)
-    {
-        if (std::string(argv[i]) == "--offscreen")
-        {
-            offscreen = true;
-        }
-        else if (std::string(argv[i]) == "--animate")
-        {
-            animate = true;
-        }
-    }
-
-    this->ParseArgs(argc, argv);
-
-    _widget = new HdSt_UnitTestWindow(this, 640, 480);
-    _widget->Init();
-
-    if (offscreen)
-    {
-        // no GUI mode (automated test)
-        _widget->OffscreenTest();
-    }
-    else
-    {
-        // Interactive mode
-        if (animate)
-            _widget->StartTimer();
-        _widget->Run();
-    }
+    // return _widget->WriteToFile(attachment, filename);
+    return false;
 }
 
 void My_TestGLDrawing::MouseRelease(int button, int x, int y, int modKeys)
@@ -628,19 +596,49 @@ My_TestGLDrawing::GetViewMatrix() const
 }
 
 GfMatrix4d
-My_TestGLDrawing::GetProjectionMatrix() const
+My_TestGLDrawing::GetProjectionMatrix(int width, int height) const
 {
-    return GetFrustum().ComputeProjectionMatrix();
+    return GetFrustum(width, height).ComputeProjectionMatrix();
 }
 
 GfFrustum
-My_TestGLDrawing::GetFrustum() const
+My_TestGLDrawing::GetFrustum(int width, int height) const
 {
-    int width = GetWidth();
-    int height = GetHeight();
     double aspectRatio = double(width) / height;
 
     GfFrustum frustum;
     frustum.SetPerspective(45.0, aspectRatio, 1, 100000.0);
     return frustum;
+}
+
+void RunTest(int argc, char *argv[])
+{
+    bool offscreen = false;
+    bool animate = false;
+
+    My_TestGLDrawing drawing;
+    drawing.ParseArgs(argc, argv);
+
+    Callback callback;
+    callback.OnInitializeGL = [&drawing](int width, int height) {
+        pxr::GlfGlewInit();
+        pxr::GlfRegisterDefaultDebugOutputMessageCallback();
+        pxr::GlfContextCaps::InitInstance();
+
+        std::cout << glGetString(GL_VENDOR) << "\n";
+        std::cout << glGetString(GL_RENDERER) << "\n";
+        std::cout << glGetString(GL_VERSION) << "\n";
+
+        drawing.InitTest(width, height);
+    };
+    callback.OnUninitializeGL = [&drawing]() {
+        drawing.UninitTest();
+    };
+    callback.OnPaintGL = [&drawing](int width, int height) {
+        drawing.DrawTest(width, height);
+    };
+
+    HdSt_UnitTestWindow window(640, 480, callback);
+    window.Init();
+    window.Run();
 }
