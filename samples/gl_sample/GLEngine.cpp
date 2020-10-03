@@ -2,24 +2,25 @@
 #include "GLEngine.h"
 #include <assert.h>
 #include <memory>
-#include <pxr/usdImaging/usdImaging/delegate.h>
+#include <pxr/usd/usd/prim.h>
 #include <pxr/imaging/glf/contextCaps.h>
 #include <pxr/imaging/glf/diagnostic.h>
 #include "pxr/imaging/glf/glContext.h"
+#include <pxr/imaging/hgi/hgi.h>
+#include <pxr/imaging/hgi/tokens.h>
 #include <pxr/imaging/hd/rendererPlugin.h>
 #include <pxr/imaging/hd/rendererPluginRegistry.h>
-#include <pxr/imaging/hdx/taskController.h>
-#include <pxr/imaging/hgi/tokens.h>
+#include <pxr/imaging/hd/driver.h>
 #include <pxr/imaging/hd/engine.h>
 #include <pxr/imaging/hd/pluginRenderDelegateUniqueHandle.h>
-#include <pxr/imaging/hgi/hgi.h>
 #include <pxr/imaging/hd/driver.h>
+#include <pxr/imaging/hdx/taskController.h>
 #include <pxr/imaging/glf/simpleLightingContext.h>
 #include <pxr/imaging/glf/drawTarget.h>
 #include <pxr/base/tf/getenv.h>
 #include <pxr/base/arch/systemInfo.h>
-// #include <pxr/imaging/hd/rendererPluginRegistry.h>
 #include <pxr/base/plug/registry.h>
+#include <pxr/usdImaging/usdImagingGL/renderParams.h>
 
 static void UsdImagingGL_UnitTestHelper_InitPlugins()
 {
@@ -64,62 +65,6 @@ static bool _InitGL()
 bool IsColorCorrectionCapable()
 {
     return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled;
-}
-
-static int
-_GetRefineLevel(float c)
-{
-    // TODO: Change complexity to refineLevel when we refactor UsdImaging.
-    //
-    // Convert complexity float to refine level int.
-    int refineLevel = 0;
-
-    // to avoid floating point inaccuracy (e.g. 1.3 > 1.3f)
-    c = std::min(c + 0.01f, 2.0f);
-
-    if (1.0f <= c && c < 1.1f)
-    {
-        refineLevel = 0;
-    }
-    else if (1.1f <= c && c < 1.2f)
-    {
-        refineLevel = 1;
-    }
-    else if (1.2f <= c && c < 1.3f)
-    {
-        refineLevel = 2;
-    }
-    else if (1.3f <= c && c < 1.4f)
-    {
-        refineLevel = 3;
-    }
-    else if (1.4f <= c && c < 1.5f)
-    {
-        refineLevel = 4;
-    }
-    else if (1.5f <= c && c < 1.6f)
-    {
-        refineLevel = 5;
-    }
-    else if (1.6f <= c && c < 1.7f)
-    {
-        refineLevel = 6;
-    }
-    else if (1.7f <= c && c < 1.8f)
-    {
-        refineLevel = 7;
-    }
-    else if (1.8f <= c && c <= 2.0f)
-    {
-        refineLevel = 8;
-    }
-    else
-    {
-        using namespace pxr;
-        TF_CODING_ERROR("Invalid complexity %f, expected range is [1.0,2.0]\n",
-                        c);
-    }
-    return refineLevel;
 }
 
 //static
@@ -239,32 +184,20 @@ static pxr::TfToken _GetDefaultRendererPluginId()
 class GLEngineImpl
 {
     pxr::HgiUniquePtr _hgi;
-    // Similar for HdDriver.
     pxr::HdDriver _hgiDriver;
-    pxr::SdfPath const _sceneDelegateId;
 
     std::unique_ptr<pxr::HdxTaskController> _taskController;
     pxr::HdPluginRenderDelegateUniqueHandle _renderDelegate;
     std::unique_ptr<pxr::HdRenderIndex> _renderIndex;
-    std::unique_ptr<pxr::UsdImagingDelegate> _sceneDelegate;
     std::unique_ptr<pxr::HdEngine> _engine;
     pxr::HdxSelectionTrackerSharedPtr _selTracker;
-    pxr::GfVec4f _selectionColor;
-    pxr::SdfPath _rootPath;
-    pxr::SdfPathVector _excludedPrimPaths;
-    pxr::SdfPathVector _invisedPrimPaths;
-    bool _isPopulated;
+    pxr::GfVec4f _selectionColor = {1.0f, 1.0f, 0.0f, 1.0f};
     pxr::HdRprimCollection _renderCollection;
     pxr::GlfDrawTargetRefPtr _drawTarget;
 
 public:
-    GLEngineImpl(const pxr::SdfPath &rootPath)
-        : _hgi(),
-          _sceneDelegateId(pxr::SdfPath::AbsoluteRootPath()),
-          _selTracker(std::make_shared<pxr::HdxSelectionTracker>()),
-          _selectionColor(1.0f, 1.0f, 0.0f, 1.0f),
-          _rootPath(rootPath),
-          _isPopulated(false)
+    GLEngineImpl(const CreateSceneDelegate &createSceneDelegate)
+        : _selTracker(std::make_shared<pxr::HdxSelectionTracker>())
     {
         UsdImagingGL_UnitTestHelper_InitPlugins();
 
@@ -320,7 +253,7 @@ public:
                 // Destruction
                 // _DestroyHydraObjects();
 
-                _isPopulated = false;
+                // _isPopulated = false;
 
                 // Creation
 
@@ -333,8 +266,7 @@ public:
                         _renderDelegate.Get(), {&_hgiDriver}));
 
                 // Create the new delegate
-                _sceneDelegate = std::make_unique<pxr::UsdImagingDelegate>(
-                    _renderIndex.get(), _sceneDelegateId);
+                createSceneDelegate(_renderIndex.get());
 
                 // Create the new task controller
                 _taskController = std::make_unique<pxr::HdxTaskController>(
@@ -358,12 +290,11 @@ public:
         // Destroy objects in opposite order of construction.
         _engine = nullptr;
         _taskController = nullptr;
-        _sceneDelegate = nullptr;
         _renderIndex = nullptr;
         _renderDelegate = nullptr;
     }
 
-    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root)
+    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::SdfPathVector &paths)
     {
         static bool s_glInitilazed = false;
         if (!s_glInitilazed)
@@ -420,7 +351,7 @@ public:
             glClearBufferfv(GL_COLOR, 0, params.clearColor.data());
             glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
 
-            Render(root, params);
+            Render(params, paths);
             if (IsConverged())
             {
                 break;
@@ -439,20 +370,12 @@ public:
         return _drawTarget->GetFramebufferId();
     }
 
-    void Render(const pxr::UsdPrim &root,
-                const pxr::UsdImagingGLRenderParams &params)
+    void Render(const pxr::UsdImagingGLRenderParams &params,
+                const pxr::SdfPathVector &paths)
     {
         using namespace pxr;
 
         TF_VERIFY(_taskController);
-
-        PrepareBatch(root, params);
-
-        // XXX(UsdImagingPaths): Is it correct to map USD root path directly
-        // to the cachePath here?
-        const SdfPath cachePath = root.GetPath();
-        const SdfPathVector paths = {
-            _sceneDelegate->ConvertCachePathToIndexPath(cachePath)};
 
         // RenderBatch(paths, params);
         {
@@ -526,70 +449,7 @@ private:
         const pxr::TfToken rendererName(
             pxr::TfStringPrintf("_UsdImaging_%s_%p", pluginId.c_str(), this));
 
-        return _sceneDelegateId.AppendChild(rendererName);
-    }
-
-    bool _CanPrepareBatch(
-        const pxr::UsdPrim &root,
-        const pxr::UsdImagingGLRenderParams &params)
-    {
-        using namespace pxr;
-        HD_TRACE_FUNCTION();
-
-        if (!TF_VERIFY(root, "Attempting to draw an invalid/null prim\n"))
-            return false;
-
-        if (!root.GetPath().HasPrefix(_rootPath))
-        {
-            TF_CODING_ERROR("Attempting to draw path <%s>, but engine is rooted"
-                            "at <%s>\n",
-                            root.GetPath().GetText(),
-                            _rootPath.GetText());
-            return false;
-        }
-
-        return true;
-    }
-
-    void PrepareBatch(
-        const pxr::UsdPrim &root,
-        const pxr::UsdImagingGLRenderParams &params)
-    {
-        using namespace pxr;
-
-        HD_TRACE_FUNCTION();
-
-        TF_VERIFY(_sceneDelegate);
-
-        if (_CanPrepareBatch(root, params))
-        {
-            if (!_isPopulated)
-            {
-                _sceneDelegate->SetUsdDrawModesEnabled(params.enableUsdDrawModes);
-                _sceneDelegate->Populate(
-                    root.GetStage()->GetPrimAtPath(_rootPath),
-                    _excludedPrimPaths);
-                _sceneDelegate->SetInvisedPrimPaths(_invisedPrimPaths);
-                _isPopulated = true;
-            }
-
-            // _PreSetTime(root, params);
-            {
-                using namespace pxr;
-                HD_TRACE_FUNCTION();
-
-                // Set the fallback refine level, if this changes from the existing value,
-                // all prim refine levels will be dirtied.
-                const int refineLevel = _GetRefineLevel(params.complexity);
-                _sceneDelegate->SetRefineLevelFallback(refineLevel);
-
-                // Apply any queued up scene edits.
-                _sceneDelegate->ApplyPendingUpdates();
-            }
-
-            // SetTime will only react if time actually changes.
-            _sceneDelegate->SetTime(params.frame);
-        }
+        return pxr::SdfPath::AbsoluteRootPath().AppendChild(rendererName);
     }
 
     void SetColorCorrectionSettings(
@@ -782,8 +642,8 @@ private:
 //----------------------------------------------------------------------------
 // Construction
 //----------------------------------------------------------------------------
-GLEngine::GLEngine(const pxr::SdfPath &rootPath)
-    : _impl(new GLEngineImpl(rootPath))
+GLEngine::GLEngine(const CreateSceneDelegate &createSceneDelegate)
+    : _impl(new GLEngineImpl(createSceneDelegate))
 {
 }
 
@@ -792,7 +652,7 @@ GLEngine::~GLEngine()
     delete _impl;
 }
 
-uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root)
+uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info, const pxr::SdfPathVector &paths)
 {
-    return _impl->RenderFrame(info, root);
+    return _impl->RenderFrame(info, paths);
 }

@@ -1,14 +1,16 @@
 #pragma once
 
 #include <pxr/base/gf/frustum.h>
-#include <pxr/imaging/hd/driver.h>
 #include <pxr/usd/sdf/path.h>
-#include <pxr/usdImaging/usdImagingGL/renderParams.h>
 #include <array>
+#include <functional>
 
 PXR_NAMESPACE_OPEN_SCOPE
 class UsdPrim;
+class HdRenderIndex;
 PXR_NAMESPACE_CLOSE_SCOPE
+
+using CreateSceneDelegate = std::function<void(pxr::HdRenderIndex *)>;
 
 struct RenderFrameInfo
 {
@@ -27,7 +29,7 @@ class GLEngine
     GLEngine &operator=(const GLEngine &) = delete;
 
 public:
-    GLEngine(const pxr::SdfPath &rootPath);
+    GLEngine(const CreateSceneDelegate &createSceneDelegate);
     ~GLEngine();
-    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root);
+    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::SdfPathVector &paths);
 };
