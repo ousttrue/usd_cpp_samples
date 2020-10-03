@@ -21,6 +21,8 @@
 #include "pxr/imaging/hd/engine.h"
 #include "pxr/imaging/hgi/hgi.h"
 #include "pxr/imaging/glf/drawTarget.h"
+#include "pxr/imaging/glf/contextCaps.h"
+#include "pxr/imaging/glf/diagnostic.h"
 
 GLuint vao;
 
@@ -47,6 +49,14 @@ public:
 
     void InitTest(int width, int height)
     {
+        pxr::GlfGlewInit();
+        pxr::GlfRegisterDefaultDebugOutputMessageCallback();
+        pxr::GlfContextCaps::InitInstance();
+
+        std::cout << glGetString(GL_VENDOR) << "\n";
+        std::cout << glGetString(GL_RENDERER) << "\n";
+        std::cout << glGetString(GL_VERSION) << "\n";
+
         //
         // Create an offscreen draw target which is the same size as this
         // widget and initialize the unit test with the draw target bound.

@@ -1,11 +1,7 @@
-#include "pxr/imaging/glf/glew.h"
-#include "pxr/imaging/glf/contextCaps.h"
-#include "pxr/imaging/glf/diagnostic.h"
 #include "testHdxRenderer.h"
+#include <pxr/imaging/garch/glDebugWindow.h>
 #include <pxr/base/tf/errorMark.h>
 #include <iostream>
-
-#include <pxr/imaging/garch/glDebugWindow.h>
 #include <functional>
 
 struct Callback
@@ -84,14 +80,6 @@ int main(int argc, char *argv[])
 
         Callback callback;
         callback.OnInitializeGL = [&drawing](int width, int height) {
-            pxr::GlfGlewInit();
-            pxr::GlfRegisterDefaultDebugOutputMessageCallback();
-            pxr::GlfContextCaps::InitInstance();
-
-            std::cout << glGetString(GL_VENDOR) << "\n";
-            std::cout << glGetString(GL_RENDERER) << "\n";
-            std::cout << glGetString(GL_VERSION) << "\n";
-
             drawing.Init(width, height);
         };
         callback.OnUninitializeGL = [&drawing]() {
