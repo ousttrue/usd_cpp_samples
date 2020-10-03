@@ -1,9 +1,6 @@
 #include "pxr/imaging/glf/glew.h"
 #include "testHdxRenderer.h"
-#include <pxr/imaging/garch/glDebugWindow.h>
-#include "pxr/imaging/glf/contextCaps.h"
-#include "pxr/imaging/glf/diagnostic.h"
-#include "pxr/imaging/glf/drawTarget.h"
+#include "unitTestDelegate.h"
 #include "pxr/imaging/hgi/tokens.h"
 #include "pxr/imaging/hdx/renderTask.h"
 #include "pxr/imaging/hdx/pickTask.h"
@@ -12,153 +9,10 @@
 #include "pxr/base/gf/rotation.h"
 #include "pxr/base/gf/vec2i.h"
 #include "pxr/base/gf/vec4d.h"
-#include "unitTestDelegate.h"
-#include <pxr/base/tf/token.h>
-#include <pxr/usd/sdf/path.h>
-#include "pxr/imaging/hdSt/renderDelegate.h"
-#include "pxr/imaging/hd/engine.h"
-#include "pxr/imaging/hgi/hgi.h"
-#include "pxr/base/gf/frustum.h"
-#include "pxr/base/gf/matrix4d.h"
-#include "pxr/base/gf/vec3f.h"
+#include <pxr/imaging/garch/glDebugWindow.h>
 #include <iostream>
 #include <memory>
-#include <functional>
 
-struct Callback
-{
-    std::function<void(int width, int height)> OnInitializeGL = [](int, int) {};
-    std::function<void()> OnUninitializeGL = []() {};
-    std::function<void(int width, int height)> OnPaintGL = [](int, int) {};
-    std::function<void(int key)> OnKeyRelease = [](int) {};
-    std::function<void(int button, int x, int y, int modKeys)> OnMousePress = [](int, int, int, int) {};
-    std::function<void(int button, int x, int y, int modKeys)> OnMouseRelease = [](int, int, int, int) {};
-    std::function<void(int x, int y, int modKeys)> OnMouseMove = [](int, int, int) {};
-};
-
-class HdSt_UnitTestWindow : public pxr::GarchGLDebugWindow
-{
-    Callback _callback;
-
-public:
-    HdSt_UnitTestWindow(int w, int h, const Callback &callback)
-        : pxr::GarchGLDebugWindow("Hd Test", w, h), _callback(callback)
-    {
-    }
-
-    ~HdSt_UnitTestWindow()
-    {
-    }
-
-    void OnInitializeGL() override
-    {
-        _callback.OnInitializeGL(GetWidth(), GetHeight());
-    }
-
-    void OnUninitializeGL() override
-    {
-        _callback.OnUninitializeGL();
-    }
-
-    void OnPaintGL() override
-    {
-        _callback.OnPaintGL(GetWidth(), GetHeight());
-    }
-
-    void OnKeyRelease(int key) override
-    {
-        switch (key)
-        {
-        case 'q':
-            ExitApp();
-            return;
-        }
-        _callback.OnKeyRelease(key);
-    }
-
-    void OnMousePress(int button, int x, int y, int modKeys) override
-    {
-        _callback.OnMousePress(button, x, y, modKeys);
-    }
-
-    void OnMouseRelease(int button, int x, int y, int modKeys) override
-    {
-        _callback.OnMouseRelease(button, x, y, modKeys);
-    }
-
-    void OnMouseMove(int x, int y, int modKeys) override
-    {
-        _callback.OnMouseMove(x, y, modKeys);
-    }
-};
-
-class My_TestGLDrawing
-{
-public:
-    My_TestGLDrawing();
-
-    struct PickParam
-    {
-        pxr::GfVec2d location;
-        pxr::GfVec4d viewport;
-    };
-
-    void DrawScene(int width, int height, PickParam const *pickParam = nullptr);
-    pxr::SdfPath PickScene(int pickX, int pickY, int *outInstanceIndex = nullptr);
-    void InitTest(int width, int height);
-    void UninitTest();
-    void DrawTest(int width, int height);
-    void OffscreenTest();
-    void MousePress(int button, int x, int y, int modKeys);
-    void RunTest(int argc, char *argv[]);
-    void MouseRelease(int button, int x, int y, int modKeys);
-    void MouseMove(int x, int y, int modKeys);
-    void KeyRelease(int key);
-    void Idle() {}
-    bool WriteToFile(std::string const &attachment,
-                     std::string const &filename) const;
-
-    void ParseArgs(int argc, char *argv[]);
-
-private:
-    void SetCameraRotate(float rx, float ry)
-    {
-        _rotate[0] = rx;
-        _rotate[1] = ry;
-    }
-    void SetCameraTranslate(pxr::GfVec3f t)
-    {
-        _translate = t;
-    }
-    pxr::GfVec3f GetCameraTranslate() const
-    {
-        return _translate;
-    }
-    pxr::GfMatrix4d GetViewMatrix() const;
-    pxr::GfMatrix4d GetProjectionMatrix(int width, int height) const;
-    pxr::GfFrustum GetFrustum(int width, int height) const;
-    pxr::GfVec2i GetMousePos() const { return pxr::GfVec2i(_mousePos[0], _mousePos[1]); }
-
-private:
-    float _rotate[2];
-    pxr::GfVec3f _translate;
-    int _mousePos[2];
-    bool _mouseButton[3];
-
-    // Hgi and HdDriver should be constructed before HdEngine to ensure they
-    // are destructed last. Hgi may be used during engine/delegate destruction.
-    pxr::HgiUniquePtr _hgi;
-    std::unique_ptr<pxr::HdDriver> _driver;
-    pxr::HdEngine _engine;
-    pxr::HdStRenderDelegate _renderDelegate;
-    pxr::HdRenderIndex *_renderIndex;
-    pxr::Hdx_UnitTestDelegate *_delegate;
-    pxr::TfToken _reprName;
-    int _refineLevel;
-    pxr::GlfDrawTargetRefPtr _drawTarget;
-};
-
-////////////////////////////////////////////////////////////
 
 GLuint vao;
 
@@ -609,36 +463,4 @@ My_TestGLDrawing::GetFrustum(int width, int height) const
     GfFrustum frustum;
     frustum.SetPerspective(45.0, aspectRatio, 1, 100000.0);
     return frustum;
-}
-
-void RunTest(int argc, char *argv[])
-{
-    bool offscreen = false;
-    bool animate = false;
-
-    My_TestGLDrawing drawing;
-    drawing.ParseArgs(argc, argv);
-
-    Callback callback;
-    callback.OnInitializeGL = [&drawing](int width, int height) {
-        pxr::GlfGlewInit();
-        pxr::GlfRegisterDefaultDebugOutputMessageCallback();
-        pxr::GlfContextCaps::InitInstance();
-
-        std::cout << glGetString(GL_VENDOR) << "\n";
-        std::cout << glGetString(GL_RENDERER) << "\n";
-        std::cout << glGetString(GL_VERSION) << "\n";
-
-        drawing.InitTest(width, height);
-    };
-    callback.OnUninitializeGL = [&drawing]() {
-        drawing.UninitTest();
-    };
-    callback.OnPaintGL = [&drawing](int width, int height) {
-        drawing.DrawTest(width, height);
-    };
-
-    HdSt_UnitTestWindow window(640, 480, callback);
-    window.Init();
-    window.Run();
 }
