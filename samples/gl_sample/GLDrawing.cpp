@@ -137,22 +137,6 @@ public:
     {
         TRACE_FUNCTION();
 
-        // pxr::TfStopwatch renderTime;
-
-        // auto &perfLog = pxr::HdPerfLog::GetInstance();
-        // perfLog.Enable();
-
-        // // Reset all counters we care about.
-        // perfLog.ResetCache(pxr::HdTokens->extent);
-        // perfLog.ResetCache(pxr::HdTokens->points);
-        // perfLog.ResetCache(pxr::HdTokens->topology);
-        // perfLog.ResetCache(pxr::HdTokens->transform);
-        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingExtent, 0);
-        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingPrimvar, 0);
-        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingTopology, 0);
-        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingVisibility, 0);
-        // perfLog.SetCounter(pxr::UsdImagingTokens->usdVaryingXform, 0);
-
         pxr::UsdImagingGLRenderParams params;
         params.drawMode = _drawMode;
         params.enableLighting = false;
@@ -189,22 +173,35 @@ public:
             // Make sure we render to convergence.
             pxr::TfErrorMark mark;
 
-            _Init(width, height);
+            if (!_engine)
+            {
+                std::cout << "Using HD Renderer.\n";
+                pxr::SdfPathVector excludedPaths;
+                _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
+                                           _stage->GetPseudoRoot().GetPath(), excludedPaths));
+
+                //
+                // Create an offscreen draw target which is the same size as this
+                // widget and initialize the unit test with the draw target bound.
+                //
+                _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
+                _drawTarget->Bind();
+                _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
+                _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
+                                           GL_DEPTH_COMPONENT);
+
+                _drawTarget->Unbind();
+            }
             _drawTarget->Bind();
             _drawTarget->SetSize(pxr::GfVec2i(width, height));
             _engine->RenderFrame(frameInfo);
+            _drawTarget->Unbind();
 
             {
                 PXR_NAMESPACE_USING_DIRECTIVE;
                 TF_VERIFY(mark.IsClean(), "Errors occurred while rendering!");
             }
-
-            // std::cout << "Iterations to convergence: " << convergenceIterations << std::endl;
-            // std::cout << "itemsDrawn " << perfLog.GetCounter(pxr::HdTokens->itemsDrawn) << std::endl;
-            // std::cout << "totalItemCount " << perfLog.GetCounter(pxr::HdTokens->totalItemCount) << std::endl;
         }
-
-        _drawTarget->Unbind();
 
         return _drawTarget->GetFramebufferId();
     }
@@ -247,44 +244,6 @@ public:
 
     void KeyRelease(int key)
     {
-    }
-
-private:
-    void _Init(int width, int height)
-    {
-        static bool s_initialized = false;
-        if (s_initialized)
-        {
-            return;
-        }
-        s_initialized = true;
-
-        {
-            std::cout << "Using HD Renderer.\n";
-            pxr::SdfPathVector excludedPaths;
-            _engine.reset(new GLEngine(_GetDefaultRendererPluginId(),
-                                       _stage->GetPseudoRoot().GetPath(), excludedPaths));
-        }
-
-        TRACE_FUNCTION();
-
-        std::cout << "UnitTestGLDrawing::InitTest()\n";
-
-        //
-        // Create an offscreen draw target which is the same size as this
-        // widget and initialize the unit test with the draw target bound.
-        //
-        _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
-        _drawTarget->Bind();
-        _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
-        _drawTarget->AddAttachment("depth", GL_DEPTH_COMPONENT, GL_FLOAT,
-                                   GL_DEPTH_COMPONENT);
-
-        _drawTarget->Unbind();
-
-        std::cout << glGetString(GL_VENDOR) << "\n";
-        std::cout << glGetString(GL_RENDERER) << "\n";
-        std::cout << glGetString(GL_VERSION) << "\n";
     }
 };
 
