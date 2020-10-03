@@ -21,84 +21,18 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-#include "pxr/pxr.h"
 
 #include "pxr/imaging/glf/glew.h"
-#include "pxr/imaging/glf/drawTarget.h"
-
-#include "pxr/imaging/hd/driver.h"
-#include "pxr/imaging/hd/engine.h"
-#include "pxr/imaging/hd/renderPassState.h"
-
-#include "pxr/imaging/hdSt/renderDelegate.h"
-#include "pxr/imaging/hdSt/unitTestGLDrawing.h"
-
+#include "testHdxRenderer.h"
 #include "pxr/imaging/hdx/pickTask.h"
-#include "pxr/imaging/hdx/renderTask.h"
-#include "pxr/imaging/hdx/renderSetupTask.h"
-#include "unitTestDelegate.h"
-
-#include "pxr/imaging/hgi/hgi.h"
 #include "pxr/imaging/hgi/tokens.h"
-
-#include "pxr/base/gf/frustum.h"
-#include "pxr/base/gf/matrix4d.h"
-#include "pxr/base/gf/vec2d.h"
-#include "pxr/base/gf/vec3f.h"
-#include "pxr/base/gf/vec4f.h"
-#include "pxr/base/gf/vec4d.h"
-#include "pxr/base/tf/errorMark.h"
 
 #include <iostream>
 #include <memory>
 
-PXR_NAMESPACE_USING_DIRECTIVE
-
-class My_TestGLDrawing : public HdSt_UnitTestGLDrawing {
-public:
-    My_TestGLDrawing()
-    {
-        SetCameraRotate(0, 0);
-        SetCameraTranslate(GfVec3f(0));
-        _reprName = HdReprTokens->hull;
-        _refineLevel = 0;
-    }
-
-    struct PickParam {
-        GfVec2d location;
-        GfVec4d viewport;
-    };
-
-    void DrawScene(PickParam const * pickParam = nullptr);
-
-    SdfPath PickScene(int pickX, int pickY, int * outInstanceIndex = nullptr);
-
-    // HdSt_UnitTestGLDrawing overrides
-    void InitTest() override;
-    void UninitTest() override;
-    void DrawTest() override;
-    void OffscreenTest() override;
-
-    void MousePress(int button, int x, int y, int modKeys) override;
-
-protected:
-    void ParseArgs(int argc, char *argv[]) override;
-
-private:
-    // Hgi and HdDriver should be constructed before HdEngine to ensure they
-    // are destructed last. Hgi may be used during engine/delegate destruction.
-    HgiUniquePtr _hgi;
-    std::unique_ptr<HdDriver> _driver;
-    HdEngine              _engine;
-    HdStRenderDelegate    _renderDelegate;
-    HdRenderIndex        *_renderIndex;
-    Hdx_UnitTestDelegate *_delegate;
-
-    TfToken _reprName;
-    int _refineLevel;
-};
 
 ////////////////////////////////////////////////////////////
+PXR_NAMESPACE_USING_DIRECTIVE
 
 GLuint vao;
 
@@ -441,29 +375,6 @@ My_TestGLDrawing::ParseArgs(int argc, char *argv[])
         } else if (arg == "--refineLevel") {
             _refineLevel = atoi(argv[++i]);
         }
-    }
-}
-
-void
-BasicTest(int argc, char *argv[])
-{
-    My_TestGLDrawing driver;
-
-    driver.RunTest(argc, argv);
-}
-
-int main(int argc, char *argv[])
-{
-    TfErrorMark mark;
-
-    BasicTest(argc, argv);
-
-    if (mark.IsClean()) {
-        std::cout << "OK" << std::endl;
-        return EXIT_SUCCESS;
-    } else {
-        std::cout << "FAILED" << std::endl;
-        return EXIT_FAILURE;
     }
 }
 

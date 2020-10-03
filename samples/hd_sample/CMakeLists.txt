@@ -1,5 +1,6 @@
 set(TARGET_NAME hd_sample)
 add_executable(${TARGET_NAME}
+    main.cpp
     testHdxIdRender.cpp
     unitTestDelegate.cpp
 )
