@@ -530,28 +530,6 @@ private:
         return true;
     }
 
-    void _PreSetTime(const pxr::UsdPrim &root,
-                     const pxr::UsdImagingGLRenderParams &params)
-    {
-        using namespace pxr;
-        HD_TRACE_FUNCTION();
-
-        // Set the fallback refine level, if this changes from the existing value,
-        // all prim refine levels will be dirtied.
-        const int refineLevel = _GetRefineLevel(params.complexity);
-        _sceneDelegate->SetRefineLevelFallback(refineLevel);
-
-        // Apply any queued up scene edits.
-        _sceneDelegate->ApplyPendingUpdates();
-    }
-
-    void _PostSetTime(
-        const pxr::UsdPrim &root,
-        const pxr::UsdImagingGLRenderParams &params)
-    {
-        HD_TRACE_FUNCTION();
-    }
-
     void PrepareBatch(
         const pxr::UsdPrim &root,
         const pxr::UsdImagingGLRenderParams &params)
@@ -574,10 +552,22 @@ private:
                 _isPopulated = true;
             }
 
-            _PreSetTime(root, params);
+            // _PreSetTime(root, params);
+            {
+                using namespace pxr;
+                HD_TRACE_FUNCTION();
+
+                // Set the fallback refine level, if this changes from the existing value,
+                // all prim refine levels will be dirtied.
+                const int refineLevel = _GetRefineLevel(params.complexity);
+                _sceneDelegate->SetRefineLevelFallback(refineLevel);
+
+                // Apply any queued up scene edits.
+                _sceneDelegate->ApplyPendingUpdates();
+            }
+
             // SetTime will only react if time actually changes.
             _sceneDelegate->SetTime(params.frame);
-            _PostSetTime(root, params);
         }
     }
 
