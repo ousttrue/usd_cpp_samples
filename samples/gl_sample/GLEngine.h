@@ -16,13 +16,6 @@ struct RenderFrameInfo
     std::array<float, 1> clearDepth;
     pxr::GfMatrix4d modelViewMatrix;
     pxr::GfMatrix4d projectionMatrix;
-    const pxr::UsdPrim &root;
-    const pxr::UsdImagingGLRenderParams &params;
-
-    RenderFrameInfo(const pxr::UsdPrim &prim, const pxr::UsdImagingGLRenderParams &glParams)
-        : root(prim), params(glParams)
-    {
-    }
 };
 
 class GLEngine
@@ -34,14 +27,7 @@ class GLEngine
     GLEngine &operator=(const GLEngine &) = delete;
 
 public:
-    GLEngine(
-        const pxr::TfToken &renderID,
-        const pxr::SdfPath &rootPath,
-        const pxr::SdfPathVector &excludedPaths,
-        const pxr::SdfPathVector &invisedPaths = pxr::SdfPathVector(),
-        const pxr::SdfPath &sceneDelegateID =
-            pxr::SdfPath::AbsoluteRootPath(),
-        const pxr::HdDriver &driver = pxr::HdDriver());
+    GLEngine(const pxr::SdfPath &rootPath);
     ~GLEngine();
-    uint32_t RenderFrame(const RenderFrameInfo &info);
+    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root);
 };

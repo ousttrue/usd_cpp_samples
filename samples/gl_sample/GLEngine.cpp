@@ -16,6 +16,22 @@
 #include <pxr/imaging/hd/driver.h>
 #include <pxr/imaging/glf/simpleLightingContext.h>
 #include <pxr/imaging/glf/drawTarget.h>
+#include <pxr/base/tf/getenv.h>
+#include <pxr/base/arch/systemInfo.h>
+// #include <pxr/imaging/hd/rendererPluginRegistry.h>
+#include <pxr/base/plug/registry.h>
+
+static void UsdImagingGL_UnitTestHelper_InitPlugins()
+{
+    // Unfortunately, in order to properly find plugins in our test setup, we
+    // need to know where the test is running.
+    std::string testDir = pxr::TfGetPathName(pxr::ArchGetExecutablePath());
+    std::string pluginDir = pxr::TfStringCatPaths(testDir,
+                                                  "UsdImagingPlugins/lib/UsdImagingTest.framework/Resources");
+    printf("registering plugins in: %s\n", pluginDir.c_str());
+
+    pxr::PlugRegistry::GetInstance().RegisterPlugins(pluginDir);
+}
 
 static bool _InitGL()
 {
@@ -191,6 +207,35 @@ _MakeHydraUsdImagingGLRenderParams(
     return params;
 }
 
+static pxr::TfToken _GetDefaultRendererPluginId()
+{
+    static const std::string defaultRendererDisplayName =
+        pxr::TfGetenv("HD_DEFAULT_RENDERER", "");
+
+    if (defaultRendererDisplayName.empty())
+    {
+        return pxr::TfToken();
+    }
+
+    pxr::HfPluginDescVector pluginDescs;
+    pxr::HdRendererPluginRegistry::GetInstance().GetPluginDescs(&pluginDescs);
+
+    // Look for the one with the matching display name
+    for (size_t i = 0; i < pluginDescs.size(); ++i)
+    {
+        if (pluginDescs[i].displayName == defaultRendererDisplayName)
+        {
+            return pluginDescs[i].id;
+        }
+    }
+
+    using namespace pxr;
+    TF_WARN("Failed to find default renderer with display name '%s'.",
+            defaultRendererDisplayName.c_str());
+
+    return TfToken();
+}
+
 class GLEngineImpl
 {
     pxr::HgiUniquePtr _hgi;
@@ -213,25 +258,19 @@ class GLEngineImpl
     pxr::GlfDrawTargetRefPtr _drawTarget;
 
 public:
-    GLEngineImpl(
-        const pxr::TfToken &rendererID,
-        const pxr::SdfPath &rootPath,
-        const pxr::SdfPathVector &excludedPaths,
-        const pxr::SdfPathVector &invisedPaths,
-        const pxr::SdfPath &sceneDelegateID,
-        const pxr::HdDriver &driver)
+    GLEngineImpl(const pxr::SdfPath &rootPath)
         : _hgi(),
-          _hgiDriver(driver),
-          _sceneDelegateId(sceneDelegateID),
+          _sceneDelegateId(pxr::SdfPath::AbsoluteRootPath()),
           _selTracker(std::make_shared<pxr::HdxSelectionTracker>()),
           _selectionColor(1.0f, 1.0f, 0.0f, 1.0f),
           _rootPath(rootPath),
-          _excludedPrimPaths(excludedPaths),
-          _invisedPrimPaths(invisedPaths),
           _isPopulated(false)
     {
+        UsdImagingGL_UnitTestHelper_InitPlugins();
+
         // _renderIndex, _taskController, and _sceneDelegate are initialized
         // by the plugin system.
+        auto rendererID = _GetDefaultRendererPluginId();
         if (!SetRendererPlugin(rendererID))
         {
             using namespace pxr;
@@ -252,7 +291,7 @@ public:
         _renderDelegate = nullptr;
     }
 
-    uint32_t RenderFrame(const RenderFrameInfo &info)
+    uint32_t RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root)
     {
         static bool s_glInitilazed = false;
         if (!s_glInitilazed)
@@ -297,14 +336,19 @@ public:
         glViewport(0, 0, width, height);
         glEnable(GL_DEPTH_TEST);
 
+        pxr::UsdImagingGLRenderParams params;
+        params.drawMode = pxr::UsdImagingGLDrawMode::DRAW_SHADED_SMOOTH;
+        params.enableLighting = false;
+        params.clearColor = pxr::GfVec4f(1.0f, 0.5f, 0.1f, 1.0f);
+        params.frame = pxr::UsdTimeCode::Default();
         for (int convergenceIterations = 0; true; convergenceIterations++)
         {
             TRACE_FUNCTION_SCOPE("iteration render convergence");
 
-            glClearBufferfv(GL_COLOR, 0, info.params.clearColor.data());
+            glClearBufferfv(GL_COLOR, 0, params.clearColor.data());
             glClearBufferfv(GL_DEPTH, 0, info.clearDepth.data());
 
-            Render(info.root, info.params);
+            Render(root, params);
             if (IsConverged())
             {
                 break;
@@ -796,14 +840,8 @@ private:
 //----------------------------------------------------------------------------
 // Construction
 //----------------------------------------------------------------------------
-GLEngine::GLEngine(
-    const pxr::TfToken &rendererID,
-    const pxr::SdfPath &rootPath,
-    const pxr::SdfPathVector &excludedPaths,
-    const pxr::SdfPathVector &invisedPaths,
-    const pxr::SdfPath &sceneDelegateID,
-    const pxr::HdDriver &driver)
-    : _impl(new GLEngineImpl(rendererID, rootPath, excludedPaths, invisedPaths, sceneDelegateID, driver))
+GLEngine::GLEngine(const pxr::SdfPath &rootPath)
+    : _impl(new GLEngineImpl(rootPath))
 {
 }
 
@@ -812,7 +850,7 @@ GLEngine::~GLEngine()
     delete _impl;
 }
 
-uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info)
+uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info, const pxr::UsdPrim &root)
 {
-    return _impl->RenderFrame(info);
+    return _impl->RenderFrame(info, root);
 }

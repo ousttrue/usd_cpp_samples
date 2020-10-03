@@ -2,7 +2,6 @@ set(TARGET_NAME gl_sample)
 add_executable(${TARGET_NAME}
     main.cpp
     UnitTestWindow.cpp
-    GLDrawing.cpp
     GLEngine.cpp
 )
 target_link_libraries(${TARGET_NAME}
