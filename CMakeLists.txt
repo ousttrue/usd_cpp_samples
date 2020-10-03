@@ -14,6 +14,7 @@ subdirs(
     samples/gl_sample
     samples/tiny
     samples/tinyUSDHyrda
+    usd_source/pxr/imaging/hdx
     usd_source/pxr/usdImaging/usddImagingGL
     usd_source/extras/imaging/examples/hdTiny
     IETutorials/hydra/helloWorld

@@ -1,133 +1,149 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "samples:hello",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/hello.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "samples:gl_sample",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/gl_sample.exe",
-      "args": [
-        "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
-        // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
-        // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
-      ],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "samples:hello",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/hello.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "samples:tiny",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "samples:gl_sample",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/gl_sample.exe",
+            "args": [
+                "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "samples:tinyUSDHyrda",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/tinyUSDHyrda.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "samples:tiny",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "hydra:helloWorld",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/helloWorld.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "samples:tinyUSDHyrda",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/tinyUSDHyrda.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "extras:testHdTiny",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/testHdTiny.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "hydra:helloWorld",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/helloWorld.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-    {
-      "name": "extras:testUsdImagingGLBasicDrawing",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
-      "args": [
-        "-stage",
-        "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
-        // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
-        // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
-        "-translate",
-        "0",
-        "0",
-        "-100"
-      ],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
-      "environment": [
+            "name": "extras:testHdTiny",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/testHdTiny.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
         {
-          "name": "PATH",
-          "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        }
-      ],
-      "externalConsole": false
-    },
-  ]
+            "name": "source:testHdxIdRender",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/testHdxIdRender.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
+        {
+            "name": "source:testUsdImagingGLBasicDrawing",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
+            "args": [
+                "-stage",
+                "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+                "-translate",
+                "0",
+                "0",
+                "-100"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
+                }
+            ],
+            "externalConsole": false
+        },
+    ]
 }
