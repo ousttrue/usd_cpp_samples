@@ -277,7 +277,18 @@ public:
 
         {
             using namespace pxr;
-            _InitializeHgiIfNecessary();
+            // _InitializeHgiIfNecessary();
+            // If the client of GLEngine does not provide a HdDriver, we
+            // construct a default one that is owned by GLEngine.
+            // The cleanest pattern is for the client app to provide this since you
+            // may have multiple UsdImagingGLEngines in one app that ideally all use
+            // the same HdDriver and Hgi to share GPU resources.
+            if (_hgiDriver.driver.IsEmpty())
+            {
+                _hgi = pxr::Hgi::CreatePlatformDefaultHgi();
+                _hgiDriver.name = pxr::HgiTokens->renderDriver;
+                _hgiDriver.driver = pxr::VtValue(_hgi.get());
+            }
 
             HdRendererPluginRegistry &registry =
                 HdRendererPluginRegistry::GetInstance();
@@ -470,32 +481,6 @@ public:
     }
 
 private:
-    void _InitializeHgiIfNecessary()
-    {
-        // If the client of GLEngine does not provide a HdDriver, we
-        // construct a default one that is owned by GLEngine.
-        // The cleanest pattern is for the client app to provide this since you
-        // may have multiple UsdImagingGLEngines in one app that ideally all use
-        // the same HdDriver and Hgi to share GPU resources.
-        if (_hgiDriver.driver.IsEmpty())
-        {
-            _hgi = pxr::Hgi::CreatePlatformDefaultHgi();
-            _hgiDriver.name = pxr::HgiTokens->renderDriver;
-            _hgiDriver.driver = pxr::VtValue(_hgi.get());
-        }
-    }
-
-    pxr::HdSelectionSharedPtr
-    _GetSelection() const
-    {
-        if (pxr::HdSelectionSharedPtr const selection = _selTracker->GetSelectionMap())
-        {
-            return selection;
-        }
-
-        return std::make_shared<pxr::HdSelection>();
-    }
-
     pxr::SdfPath
     _ComputeControllerPath(
         const pxr::HdPluginRenderDelegateUniqueHandle &renderDelegate)
