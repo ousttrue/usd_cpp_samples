@@ -454,7 +454,43 @@ public:
         const SdfPathVector paths = {
             _sceneDelegate->ConvertCachePathToIndexPath(cachePath)};
 
-        RenderBatch(paths, params);
+        // RenderBatch(paths, params);
+        {
+            using namespace pxr;
+
+            TF_VERIFY(_taskController);
+
+            _taskController->SetFreeCameraClipPlanes(params.clipPlanes);
+            _UpdateHydraCollection(&_renderCollection, paths, params);
+            _taskController->SetCollection(_renderCollection);
+
+            TfTokenVector renderTags;
+            _ComputeRenderTags(params, &renderTags);
+            _taskController->SetRenderTags(renderTags);
+
+            HdxRenderTaskParams hdParams = _MakeHydraUsdImagingGLRenderParams(params);
+
+            _taskController->SetRenderParams(hdParams);
+            _taskController->SetEnableSelection(params.highlight);
+
+            SetColorCorrectionSettings(params.colorCorrectionMode);
+
+            // XXX App sets the clear color via 'params' instead of setting up Aovs
+            // that has clearColor in their descriptor. So for now we must pass this
+            // clear color to the color AOV.
+            HdAovDescriptor colorAovDesc =
+                _taskController->GetRenderOutputSettings(HdAovTokens->color);
+            if (colorAovDesc.format != HdFormatInvalid)
+            {
+                colorAovDesc.clearValue = VtValue(params.clearColor);
+                _taskController->SetRenderOutputSettings(
+                    HdAovTokens->color, colorAovDesc);
+            }
+
+            VtValue selectionValue(_selTracker);
+            _engine->SetTaskContextData(HdxTokens->selectionState, selectionValue);
+            _Execute(params, _taskController->GetRenderingTasks());
+        }
     }
 
     bool IsConverged()
@@ -554,49 +590,6 @@ private:
             // SetTime will only react if time actually changes.
             _sceneDelegate->SetTime(params.frame);
         }
-    }
-
-    void RenderBatch(
-        const pxr::SdfPathVector &paths,
-        const pxr::UsdImagingGLRenderParams &params)
-    {
-        using namespace pxr;
-
-        TF_VERIFY(_taskController);
-
-        _taskController->SetFreeCameraClipPlanes(params.clipPlanes);
-        _UpdateHydraCollection(&_renderCollection, paths, params);
-        _taskController->SetCollection(_renderCollection);
-
-        TfTokenVector renderTags;
-        _ComputeRenderTags(params, &renderTags);
-        _taskController->SetRenderTags(renderTags);
-
-        HdxRenderTaskParams hdParams = _MakeHydraUsdImagingGLRenderParams(params);
-
-        _taskController->SetRenderParams(hdParams);
-        _taskController->SetEnableSelection(params.highlight);
-
-        SetColorCorrectionSettings(params.colorCorrectionMode);
-
-        // XXX App sets the clear color via 'params' instead of setting up Aovs
-        // that has clearColor in their descriptor. So for now we must pass this
-        // clear color to the color AOV.
-        HdAovDescriptor colorAovDesc =
-            _taskController->GetRenderOutputSettings(HdAovTokens->color);
-        if (colorAovDesc.format != HdFormatInvalid)
-        {
-            colorAovDesc.clearValue = VtValue(params.clearColor);
-            _taskController->SetRenderOutputSettings(
-                HdAovTokens->color, colorAovDesc);
-        }
-
-        // Forward scene materials enable option to delegate
-        _sceneDelegate->SetSceneMaterialsEnabled(params.enableSceneMaterials);
-
-        VtValue selectionValue(_selTracker);
-        _engine->SetTaskContextData(HdxTokens->selectionState, selectionValue);
-        _Execute(params, _taskController->GetRenderingTasks());
     }
 
     void SetColorCorrectionSettings(
@@ -704,7 +697,6 @@ private:
                   pxr::HdTaskSharedPtrVector tasks)
     {
         using namespace pxr;
-        TF_VERIFY(_sceneDelegate);
 
         // User is responsible for initializing GL context and glew
         const bool isCoreProfileContext = GlfContextCaps::GetInstance().coreProfile;
