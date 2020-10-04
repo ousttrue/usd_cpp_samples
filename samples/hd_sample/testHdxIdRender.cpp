@@ -18,8 +18,6 @@
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/diagnostic.h"
 
-GLuint vao;
-
 class My_TestGLDrawing
 {
     // Hgi and HdDriver should be constructed before HdEngine to ensure they
@@ -30,6 +28,7 @@ class My_TestGLDrawing
     pxr::HdStRenderDelegate _renderDelegate;
     pxr::HdRenderIndex *_renderIndex;
     pxr::GlfDrawTargetRefPtr _drawTarget;
+    GLuint _vao = 0;
 
 public:
     My_TestGLDrawing()
@@ -68,8 +67,8 @@ public:
         // TF_VERIFY(_renderIndex != nullptr);
 
         // XXX: Setup a VAO, the current drawing engine will not yet do this.
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        glGenVertexArrays(1, &_vao);
+        glBindVertexArray(_vao);
         glBindVertexArray(0);
 
         return _renderIndex;
@@ -126,7 +125,7 @@ private:
 
         glEnable(GL_DEPTH_TEST);
 
-        glBindVertexArray(vao);
+        glBindVertexArray(_vao);
 
         pxr::HdTaskSharedPtrVector tasks;
         pxr::SdfPath renderSetupTask("/renderSetupTask");
