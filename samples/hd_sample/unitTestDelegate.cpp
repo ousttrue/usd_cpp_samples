@@ -590,31 +590,6 @@ Hdx_UnitTestDelegate::GetCameraParamValue(SdfPath const &cameraId,
     return VtValue();
 }
 
-
-HdTextureResourceSharedPtr
-Hdx_UnitTestDelegate::GetTextureResource(SdfPath const& textureId)
-{
-    if (_drawTargets.find(textureId) != _drawTargets.end()) {
-        HdStDrawTarget const *drawTarget = static_cast<HdStDrawTarget const *> (
-                        GetRenderIndex().GetSprim(HdPrimTypeTokens->drawTarget,
-                                                  textureId));
-
-        if (drawTarget != nullptr) {
-            HdTextureResourceSharedPtr texResource(
-                new DrawTargetTextureResource(
-                    drawTarget->GetGlfDrawTarget()));
-            return texResource;
-        }
-    }
-    return HdTextureResourceSharedPtr();
-}
-
-HdTextureResource::ID
-Hdx_UnitTestDelegate::GetTextureResourceID(SdfPath const& textureId)
-{
-    return SdfPath::Hash()(textureId);
-}
-
 TfTokenVector
 Hdx_UnitTestDelegate::GetTaskRenderTags(SdfPath const& taskId)
 {

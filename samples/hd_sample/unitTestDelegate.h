@@ -145,10 +145,6 @@ public:
     VtValue GetCameraParamValue(
         SdfPath const &cameraId,
         TfToken const &paramName) override;
-    HdTextureResource::ID GetTextureResourceID(SdfPath const& textureId) 
-        override;
-    HdTextureResourceSharedPtr GetTextureResource(SdfPath const& textureId) 
-        override;
 
     TfTokenVector GetTaskRenderTags(SdfPath const& taskId) override;
 
