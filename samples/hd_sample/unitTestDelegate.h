@@ -117,8 +117,6 @@ public:
         SdfPath const &cameraId,
         TfToken const &paramName) override;
 
-    TfTokenVector GetTaskRenderTags(SdfPath const& taskId) override;
-
 private:
     struct _Mesh {
         _Mesh() { }

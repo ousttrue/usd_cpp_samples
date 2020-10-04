@@ -451,22 +451,4 @@ Hdx_UnitTestDelegate::GetCameraParamValue(SdfPath const &cameraId,
     return VtValue();
 }
 
-TfTokenVector
-Hdx_UnitTestDelegate::GetTaskRenderTags(SdfPath const &taskId)
-{
-    const auto it1 = _valueCacheMap.find(taskId);
-    if (it1 == _valueCacheMap.end())
-    {
-        return {};
-    }
-
-    const auto it2 = it1->second.find(HdTokens->renderTags);
-    if (it2 == it1->second.end())
-    {
-        return {};
-    }
-
-    return it2->second.Get<TfTokenVector>();
-}
-
 PXR_NAMESPACE_CLOSE_SCOPE
