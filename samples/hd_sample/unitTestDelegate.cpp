@@ -174,6 +174,9 @@ Hdx_UnitTestDelegate::Hdx_UnitTestDelegate(HdRenderIndex *index)
     // Add draw target state tracking support.
     GetRenderIndex().GetChangeTracker().AddState(
         HdStDrawTargetTokens->drawTargetSet);
+
+    // HdRenderIndex &index = GetRenderIndex();
+    index->InsertRprim(HdPrimTypeTokens->mesh, this, SdfPath("/cube0"));
 }
 
 void Hdx_UnitTestDelegate::SetCamera(SdfPath const &cameraId,
@@ -211,106 +214,11 @@ void Hdx_UnitTestDelegate::AddRenderSetupTask(SdfPath const &id)
     cache[HdTokens->params] = VtValue(params);
 }
 
-//------------------------------------------------------------------------------
-//                                  PRIMS
-//------------------------------------------------------------------------------
-void Hdx_UnitTestDelegate::AddMesh(SdfPath const &id,
-                                   GfMatrix4d const &transform,
-                                   VtVec3fArray const &points,
-                                   VtIntArray const &numVerts,
-                                   VtIntArray const &verts,
-                                   PxOsdSubdivTags const &subdivTags,
-                                   VtValue const &color,
-                                   HdInterpolation colorInterpolation,
-                                   VtValue const &opacity,
-                                   HdInterpolation opacityInterpolation,
-                                   bool guide,
-                                   SdfPath const &instancerId,
-                                   TfToken const &scheme,
-                                   TfToken const &orientation,
-                                   bool doubleSided)
-{
-    HdRenderIndex &index = GetRenderIndex();
-    index.InsertRprim(HdPrimTypeTokens->mesh, this, id, instancerId);
-
-    _meshes[id] = _Mesh(scheme, orientation, transform,
-                        points, numVerts, verts, subdivTags,
-                        color, colorInterpolation, opacity,
-                        opacityInterpolation, guide, doubleSided);
-}
-
-void Hdx_UnitTestDelegate::AddCube(SdfPath const &id, GfMatrix4d const &transform,
-                                   bool guide, SdfPath const &instancerId,
-                                   TfToken const &scheme, VtValue const &color,
-                                   HdInterpolation colorInterpolation,
-                                   VtValue const &opacity,
-                                   HdInterpolation opacityInterpolation)
-{
-    GfVec3f points[] = {
-        GfVec3f(1.0f, 1.0f, 1.0f),
-        GfVec3f(-1.0f, 1.0f, 1.0f),
-        GfVec3f(-1.0f, -1.0f, 1.0f),
-        GfVec3f(1.0f, -1.0f, 1.0f),
-        GfVec3f(-1.0f, -1.0f, -1.0f),
-        GfVec3f(-1.0f, 1.0f, -1.0f),
-        GfVec3f(1.0f, 1.0f, -1.0f),
-        GfVec3f(1.0f, -1.0f, -1.0f),
-    };
-
-    {
-        int numVerts[] = {4, 4, 4, 4, 4, 4};
-        int verts[] = {
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            0,
-            6,
-            5,
-            1,
-            4,
-            7,
-            3,
-            2,
-            0,
-            3,
-            7,
-            6,
-            4,
-            2,
-            1,
-            5,
-        };
-        AddMesh(
-            id,
-            transform,
-            _BuildArray(points, sizeof(points) / sizeof(points[0])),
-            _BuildArray(numVerts, sizeof(numVerts) / sizeof(numVerts[0])),
-            _BuildArray(verts, sizeof(verts) / sizeof(verts[0])),
-            PxOsdSubdivTags(),
-            color,
-            colorInterpolation,
-            opacity,
-            opacityInterpolation,
-            guide,
-            instancerId,
-            scheme);
-    }
-}
-
 GfRange3d
 Hdx_UnitTestDelegate::GetExtent(SdfPath const &id)
 {
     GfRange3d range;
     VtVec3fArray points;
-    if (_meshes.find(id) != _meshes.end())
-    {
-        points = _meshes[id].points;
-    }
     TF_FOR_ALL(it, points)
     {
         range.UnionWith(*it);
@@ -321,10 +229,6 @@ Hdx_UnitTestDelegate::GetExtent(SdfPath const &id)
 GfMatrix4d
 Hdx_UnitTestDelegate::GetTransform(SdfPath const &id)
 {
-    if (_meshes.find(id) != _meshes.end())
-    {
-        return _meshes[id].transform;
-    }
     return GfMatrix4d(1);
 }
 
@@ -336,13 +240,13 @@ bool Hdx_UnitTestDelegate::GetVisible(SdfPath const &id)
 HdMeshTopology
 Hdx_UnitTestDelegate::GetMeshTopology(SdfPath const &id)
 {
-    HdMeshTopology topology;
-    const _Mesh &mesh = _meshes[id];
-
-    return HdMeshTopology(PxOsdOpenSubdivTokens->catmullClark,
-                          HdTokens->rightHanded,
-                          mesh.numVerts,
-                          mesh.verts);
+    pxr::VtArray<int> vertCountsPerFace;
+    vertCountsPerFace.push_back(3);
+    pxr::VtArray<int> verts;
+    verts.push_back(0);
+    verts.push_back(1);
+    verts.push_back(2);
+    return pxr::HdMeshTopology(pxr::PxOsdOpenSubdivTokens->none, pxr::HdTokens->rightHanded, vertCountsPerFace, verts);
 }
 
 VtValue
@@ -359,25 +263,13 @@ Hdx_UnitTestDelegate::Get(SdfPath const &id, TfToken const &key)
     // prims
     if (key == HdTokens->points)
     {
-        if (_meshes.find(id) != _meshes.end())
-        {
-            return VtValue(_meshes[id].points);
-        }
+        pxr::VtVec3fArray points;
+        points.push_back(pxr::GfVec3f(0, 0, 0));
+        points.push_back(pxr::GfVec3f(1, 0, 0));
+        points.push_back(pxr::GfVec3f(0, 0, 1));
+        return pxr::VtValue(points);
     }
-    else if (key == HdTokens->displayColor)
-    {
-        if (_meshes.find(id) != _meshes.end())
-        {
-            return VtValue(_meshes[id].color);
-        }
-    }
-    else if (key == HdTokens->displayOpacity)
-    {
-        if (_meshes.find(id) != _meshes.end())
-        {
-            return VtValue(_meshes[id].opacity);
-        }
-    }
+
     return VtValue();
 }
 
@@ -390,18 +282,6 @@ Hdx_UnitTestDelegate::GetPrimvarDescriptors(SdfPath const &id,
     {
         primvars.emplace_back(HdTokens->points, interpolation,
                               HdPrimvarRoleTokens->point);
-    }
-    if (_meshes.find(id) != _meshes.end())
-    {
-        if (_meshes[id].colorInterpolation == interpolation)
-        {
-            primvars.emplace_back(HdTokens->displayColor, interpolation,
-                                  HdPrimvarRoleTokens->color);
-        }
-        if (_meshes[id].opacityInterpolation == interpolation)
-        {
-            primvars.emplace_back(HdTokens->displayOpacity, interpolation);
-        }
     }
     return primvars;
 }

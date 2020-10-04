@@ -66,12 +66,6 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
                                  black, blue, magenta, red};
     pxr::VtValue vertColor = pxr::VtValue(_BuildArray(&vertColors[0],
                                                       sizeof(vertColors) / sizeof(vertColors[0])));
-
-    _delegate->AddCube(pxr::SdfPath("/cube0"), _GetTranslate(5, 0, 5),
-                       /*guide=*/false, /*instancerId=*/pxr::SdfPath(),
-                       /*scheme=*/pxr::PxOsdOpenSubdivTokens->catmullClark,
-                       /*color=*/faceColor,
-                       /*colorInterpolation=*/pxr::HdInterpolationUniform);
 }
 
 pxr::HdSceneDelegate *SceneManager::Prepare(int width, int height)

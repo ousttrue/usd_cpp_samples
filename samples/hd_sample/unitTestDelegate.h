@@ -46,12 +46,20 @@ static VtArray<T>
 _BuildArray(T values[], int numValues)
 {
     VtArray<T> result(numValues);
-    std::copy(values, values+numValues, result.begin());
+    std::copy(values, values + numValues, result.begin());
     return result;
 }
 
 class Hdx_UnitTestDelegate : public HdSceneDelegate
 {
+    typedef std::map<SdfPath, SdfPath> SdfPathMap;
+
+    typedef TfHashMap<TfToken, VtValue, TfToken::HashFunctor> _ValueCache;
+    typedef TfHashMap<SdfPath, _ValueCache, SdfPath::Hash> _ValueCacheMap;
+    _ValueCacheMap _valueCacheMap;
+
+    SdfPath _cameraId;
+
 public:
     Hdx_UnitTestDelegate(HdRenderIndex *renderIndex);
 
@@ -62,107 +70,29 @@ public:
     }
 
     void SetCamera(
-        SdfPath const &id, 
-        GfMatrix4d const &viewMatrix, 
+        SdfPath const &id,
+        GfMatrix4d const &viewMatrix,
         GfMatrix4d const &projMatrix);
 
     // tasks
     void AddRenderTask(SdfPath const &id);
     void AddRenderSetupTask(SdfPath const &id);
 
-    // prims       
-    void AddMesh(SdfPath const &id,
-                 GfMatrix4d const &transform,
-                 VtVec3fArray const &points,
-                 VtIntArray const &numVerts,
-                 VtIntArray const &verts,
-                 PxOsdSubdivTags const &subdivTags,
-                 VtValue const &color,
-                 HdInterpolation colorInterpolation,
-                 VtValue const &opacity,
-                 HdInterpolation opacityInterpolation,
-                 bool guide=false,
-                 SdfPath const &instancerId=SdfPath(),
-                 TfToken const &scheme=PxOsdOpenSubdivTokens->catmullClark,
-                 TfToken const &orientation=HdTokens->rightHanded,
-                 bool doubleSided=false);
-
-public:
-    void AddCube(SdfPath const &id, GfMatrix4d const &transform, 
-                 bool guide=false,
-                 SdfPath const &instancerId=SdfPath(),
-                 TfToken const &scheme=PxOsdOpenSubdivTokens->catmullClark,
-                 VtValue const &color = VtValue(GfVec3f(1,1,1)),
-                 HdInterpolation colorInterpolation = HdInterpolationConstant,
-                 VtValue const &opacity = VtValue(1.0f),
-                 HdInterpolation opacityInterpolation = HdInterpolationConstant);
-
-public:
     // delegate methods
-    GfRange3d GetExtent(SdfPath const & id) override;
-    GfMatrix4d GetTransform(SdfPath const & id) override;
-    bool GetVisible(SdfPath const& id) override;
-    HdMeshTopology GetMeshTopology(SdfPath const& id) override;
-    VtValue Get(SdfPath const& id, TfToken const& key) override;
+    GfRange3d GetExtent(SdfPath const &id) override;
+    GfMatrix4d GetTransform(SdfPath const &id) override;
+    bool GetVisible(SdfPath const &id) override;
+    HdMeshTopology GetMeshTopology(SdfPath const &id) override;
+    VtValue Get(SdfPath const &id, TfToken const &key) override;
     HdPrimvarDescriptorVector GetPrimvarDescriptors(
-        SdfPath const& id, 
+        SdfPath const &id,
         HdInterpolation interpolation) override;
 
     VtValue GetCameraParamValue(
         SdfPath const &cameraId,
         TfToken const &paramName) override;
-
-private:
-    struct _Mesh {
-        _Mesh() { }
-        _Mesh(TfToken const &scheme,
-              TfToken const &orientation,
-              GfMatrix4d const &transform,
-              VtVec3fArray const &points,
-              VtIntArray const &numVerts,
-              VtIntArray const &verts,
-              PxOsdSubdivTags const &subdivTags,
-              VtValue const &color,
-              HdInterpolation colorInterpolation,
-              VtValue const &opacity,
-              HdInterpolation opacityInterpolation,
-              bool guide,
-              bool doubleSided) :
-            scheme(scheme), orientation(orientation),
-            transform(transform),
-            points(points), numVerts(numVerts), verts(verts),
-            subdivTags(subdivTags), color(color),
-            colorInterpolation(colorInterpolation), opacity(opacity),
-            opacityInterpolation(opacityInterpolation), guide(guide),
-            doubleSided(doubleSided) { }
-
-        TfToken scheme;
-        TfToken orientation;
-        GfMatrix4d transform;
-        VtVec3fArray points;
-        VtIntArray numVerts;
-        VtIntArray verts;
-        PxOsdSubdivTags subdivTags;
-        VtValue color;
-        HdInterpolation colorInterpolation;
-        VtValue opacity;
-        HdInterpolation opacityInterpolation;
-        bool guide;
-        bool doubleSided;
-        TfToken reprName;
-    };
-    
-    std::map<SdfPath, _Mesh> _meshes;
-
-    typedef std::map<SdfPath, SdfPath> SdfPathMap;
-
-    typedef TfHashMap<TfToken, VtValue, TfToken::HashFunctor> _ValueCache;
-    typedef TfHashMap<SdfPath, _ValueCache, SdfPath::Hash> _ValueCacheMap;
-    _ValueCacheMap _valueCacheMap;
-
-    SdfPath _cameraId;
 };
 
 PXR_NAMESPACE_CLOSE_SCOPE
 
-#endif  // PXR_IMAGING_HDX_UNIT_TEST_DELEGATE_H
+#endif // PXR_IMAGING_HDX_UNIT_TEST_DELEGATE_H
