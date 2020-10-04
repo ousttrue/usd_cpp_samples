@@ -59,6 +59,8 @@ public:
 
     // camera
     void SetCamera(GfMatrix4d const &viewMatrix, GfMatrix4d const &projMatrix);
+
+private:
     void SetCamera(
         SdfPath const &id, 
         GfMatrix4d const &viewMatrix, 
@@ -73,9 +75,12 @@ public:
     void AddDrawTarget(SdfPath const &id);
     void SetDrawTarget(SdfPath const &id, TfToken const &key, VtValue value);
 
+public:
     // tasks
     void AddRenderTask(SdfPath const &id);
     void AddRenderSetupTask(SdfPath const &id);
+
+private:
     void AddSimpleLightTask(SdfPath const &id);
     void AddShadowTask(SdfPath const &id);
     void AddSelectionTask(SdfPath const &id);
@@ -83,8 +88,11 @@ public:
     void AddDrawTargetResolveTask(SdfPath const &id);
     void AddPickTask(SdfPath const &id);
 
+public:
     void SetTaskParam(SdfPath const &id, TfToken const &name, VtValue val);
     VtValue GetTaskParam(SdfPath const &id, TfToken const &name);
+
+private:
     HdRenderBufferDescriptor GetRenderBufferDescriptor(SdfPath const &id);
 
     /// Instancer
@@ -132,6 +140,7 @@ public:
                  TfToken const &orientation=HdTokens->rightHanded,
                  bool doubleSided=false);
 
+public:
     void AddCube(SdfPath const &id, GfMatrix4d const &transform, 
                  bool guide=false,
                  SdfPath const &instancerId=SdfPath(),
@@ -141,6 +150,7 @@ public:
                  VtValue const &opacity = VtValue(1.0f),
                  HdInterpolation opacityInterpolation = HdInterpolationConstant);
 
+private:
     void AddGrid(SdfPath const &id, GfMatrix4d const &transform,
                  bool guide=false, SdfPath const &instancerId=SdfPath());
 
@@ -152,6 +162,7 @@ public:
 
     void SetReprName(SdfPath const &id, TfToken const &reprName);
 
+public:
     // delegate methods
     GfRange3d GetExtent(SdfPath const & id) override;
     GfMatrix4d GetTransform(SdfPath const & id) override;
