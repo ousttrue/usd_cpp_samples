@@ -71,14 +71,6 @@ public:
     void AddRenderTask(SdfPath const &id);
     void AddRenderSetupTask(SdfPath const &id);
 
-private:
-    void AddSimpleLightTask(SdfPath const &id);
-    void AddShadowTask(SdfPath const &id);
-    void AddSelectionTask(SdfPath const &id);
-    void AddDrawTargetTask(SdfPath const &id);
-    void AddDrawTargetResolveTask(SdfPath const &id);
-    void AddPickTask(SdfPath const &id);
-
 public:
     void SetTaskParam(SdfPath const &id, TfToken const &name, VtValue val);
     VtValue GetTaskParam(SdfPath const &id, TfToken const &name);

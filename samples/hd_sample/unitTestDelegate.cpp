@@ -224,69 +224,6 @@ Hdx_UnitTestDelegate::AddRenderSetupTask(SdfPath const &id)
 }
 
 void
-Hdx_UnitTestDelegate::AddSimpleLightTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxSimpleLightTask>(this, id);
-    _ValueCache &cache = _valueCacheMap[id];
-    HdxSimpleLightTaskParams params;
-    params.cameraPath = _cameraId;
-    params.viewport = GfVec4f(0,0,512,512);
-    params.enableShadows = true;
-    
-    cache[HdTokens->params] = VtValue(params);
-
-}
-
-void
-Hdx_UnitTestDelegate::AddShadowTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxShadowTask>(this, id);
-    _ValueCache &cache = _valueCacheMap[id];
-    HdxShadowTaskParams params;
-    params.camera = _cameraId;
-    params.viewport = GfVec4f(0,0,512,512);
-    cache[HdTokens->params] = VtValue(params);
-}
-
-void
-Hdx_UnitTestDelegate::AddSelectionTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxSelectionTask>(this, id);
-}
-
-void
-Hdx_UnitTestDelegate::AddDrawTargetTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxDrawTargetTask>(this, id);
-    _ValueCache &cache = _valueCacheMap[id];
-
-    HdxDrawTargetTaskParams params;
-    params.enableLighting = true;
-    cache[HdTokens->params] = params;
-}
-
-void
-Hdx_UnitTestDelegate::AddDrawTargetResolveTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxDrawTargetResolveTask>(this, id);
-}
-
-void
-Hdx_UnitTestDelegate::AddPickTask(SdfPath const &id)
-{
-    GetRenderIndex().InsertTask<HdxPickTask>(this, id);
-    _ValueCache &cache = _valueCacheMap[id];
-
-    HdxPickTaskParams params;
-    cache[HdTokens->params] = params;
-
-    // Don't filter on render tag.
-    // XXX: However, this will mean no prim passes if any stage defines a tag
-    cache[HdTokens->renderTags] = TfTokenVector();
-
-}
-
-void
 Hdx_UnitTestDelegate::SetTaskParam(
     SdfPath const &id, TfToken const &name, VtValue val)
 {
