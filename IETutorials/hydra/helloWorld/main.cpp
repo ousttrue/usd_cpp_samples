@@ -11,12 +11,10 @@
 #include "pxr/imaging/hdx/renderTask.h"
 #include "pxr/imaging/hd/renderPassState.h"
 
-
 #include "pxr/imaging/hdSt/renderDelegate.h"
 #include "pxr/imaging/hdSt/renderPass.h"
 
 #include "pxr/usd/sdf/path.h"
-
 
 #include <glWindow.h>
 
@@ -27,88 +25,86 @@
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/glContext.h"
 
-
 class DebugWindow : public GarchGLDebugWindow
 {
-    pxr::HgiUniquePtr hgi;
-    pxr::HdDriver driver;
+    pxr::HgiUniquePtr _hgi;
+    pxr::HdDriver _driver;
+
+    std::shared_ptr<pxr::HdStRenderDelegate> _renderDelegate;
+    pxr::HdRenderIndex *_index = nullptr;
+    SceneDelegate *_sceneDelegate;
+    pxr::HdEngine _engine;
+    pxr::HdTaskSharedPtrVector _tasks;
 
 public:
-	DebugWindow(const char *title, int width, int height) : GarchGLDebugWindow(title, width, height)
-	{
-		// create a RenderDelegate which is required for the RenderIndex
-		renderDelegate.reset( new pxr::HdStRenderDelegate() );
+    DebugWindow(const char *title, int width, int height) : GarchGLDebugWindow(title, width, height)
+    {
+        // create a RenderDelegate which is required for the RenderIndex
+        _renderDelegate.reset(new pxr::HdStRenderDelegate());
 
         // Hgi and HdDriver should be constructed before HdEngine to ensure they
         // are destructed last. Hgi may be used during engine/delegate destruction.
-        hgi = pxr::Hgi::CreatePlatformDefaultHgi();
-        driver = {pxr::HgiTokens->renderDriver, pxr::VtValue(hgi.get())};
+        _hgi = pxr::Hgi::CreatePlatformDefaultHgi();
+        _driver = {pxr::HgiTokens->renderDriver, pxr::VtValue(_hgi.get())};
 
-		// RenderIndex which stores a flat list of the scene to render
-		index = pxr::HdRenderIndex::New( renderDelegate.get(), {&driver} );
+        // RenderIndex which stores a flat list of the scene to render
+        _index = pxr::HdRenderIndex::New(_renderDelegate.get(), {&_driver});
 
-		// names for elements in the RenderIndex
-		pxr::SdfPath renderSetupId("/renderSetup");
-		pxr::SdfPath renderId("/render");
-		pxr::SdfPath sceneId("/");
+        // SceneDelegate can query information from the client SceneGraph to update the renderer
+        pxr::SdfPath sceneId("/");
+        _sceneDelegate = new SceneDelegate(_index, sceneId);
 
-		// SceneDelegate can query information from the client SceneGraph to update the renderer
-		sceneDelegate = new SceneDelegate( index, sceneId );
+        {
+            pxr::SdfPath renderSetupId("/renderSetup");
+            _sceneDelegate->AddRenderSetupTask(renderSetupId);
+            _tasks.push_back(_index->GetTask(renderSetupId));
+        }
 
-		// Create two tasks (render setup & render) to the RenderIndex
-		sceneDelegate->AddRenderSetupTask(renderSetupId);
-		sceneDelegate->AddRenderTask(renderId);
-		
-		// I can move these into return values for SceneDelegate::AddRenderSetupTask && AddRenderTask functions 
-		pxr::HdTaskSharedPtr renderSetupTask = index->GetTask(renderSetupId);
-		pxr::HdTaskSharedPtr renderTask      = index->GetTask(renderId);
-	
-		tasks = {renderSetupTask, renderTask};
-	}
+        {
+            pxr::SdfPath renderId("/render");
+            _sceneDelegate->AddRenderTask(renderId);
+            _tasks.push_back(_index->GetTask(renderId));
+        }
+    }
 
-	void OnPaintGL() override
-	{
-		GarchGLDebugWindow::OnPaintGL();
+    void OnInitializeGL() override
+    {
+        pxr::GlfGlewInit();
+        // Test uses ContextCaps, so need to create a GL instance.
+        // pxr::GlfTestGLContext::RegisterGLContextCallbacks();
+        static pxr::GlfSharedGLContextScopeHolder sharedContext;
+        pxr::GlfContextCaps::InitInstance();
+    }
 
-		// clear to blue
-		glClearColor(0.1f, 0.1f, 0.3f, 1.0 );
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    void OnPaintGL() override
+    {
+        GarchGLDebugWindow::OnPaintGL();
 
-		glDepthFunc(GL_LESS);
-		glEnable(GL_DEPTH_TEST);
+        // clear to blue
+        glClearColor(0.1f, 0.1f, 0.3f, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// execute the render tasks
-		engine.Execute(index, &tasks);
-	}
+        glDepthFunc(GL_LESS);
+        glEnable(GL_DEPTH_TEST);
 
-private:
-	SceneDelegate *sceneDelegate;
-	pxr::HdTaskSharedPtrVector tasks;
-	pxr::HdEngine engine;
-	pxr::HdRenderIndex *index;
-	std::shared_ptr<pxr::HdStRenderDelegate> renderDelegate;
+        // execute the render tasks
+        _engine.Execute(_index, &_tasks);
+    }
 };
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	if (false)
-	{
-		pxr::TfDebug::Enable(pxr::HD_MDI);
-	}
+    if (false)
+    {
+        pxr::TfDebug::Enable(pxr::HD_MDI);
+    }
 
-	// create a window, GLContext & extensions
-	DebugWindow window("hydra - Hello World", 1280, 720);
-	window.Init();
-	bool glewInit = pxr::GlfGlewInit();
-	std::cout << "glew:" << glewInit << std::endl;
+    // create a window, GLContext & extensions
+    DebugWindow window("hydra - Hello World", 1280, 720);
+    window.Init();
 
-    // Test uses ContextCaps, so need to create a GL instance.
-    // pxr::GlfTestGLContext::RegisterGLContextCallbacks();
-    pxr::GlfSharedGLContextScopeHolder sharedContext;
-    pxr::GlfContextCaps::InitInstance();
+    // display the window & run the *event* loop until the window is closed
+    window.Run();
 
-	// display the window & run the *event* loop until the window is closed
-	window.Run();
-
-	return 0;
+    return 0;
 }
