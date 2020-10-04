@@ -76,18 +76,6 @@ public:
     VtValue GetTaskParam(SdfPath const &id, TfToken const &name);
 
 private:
-    HdRenderBufferDescriptor GetRenderBufferDescriptor(SdfPath const &id);
-
-    /// Instancer
-    void AddInstancer(SdfPath const &id,
-                      SdfPath const &parentId=SdfPath(),
-                      GfMatrix4f const &rootTransform=GfMatrix4f(1));
-
-    void SetInstancerProperties(SdfPath const &id,
-                                VtIntArray const &prototypeIndex,
-                                VtVec3fArray const &scale,
-                                VtVec4fArray const &rotate,
-                                VtVec3fArray const &translate);
 
     /// Material
     void AddMaterialResource(SdfPath const &id,

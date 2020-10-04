@@ -245,45 +245,6 @@ Hdx_UnitTestDelegate::GetTaskParam(SdfPath const &id, TfToken const &name)
     return _valueCacheMap[id][name];
 }
 
-void
-Hdx_UnitTestDelegate::AddInstancer(SdfPath const &id,
-                                   SdfPath const &parentId,
-                                   GfMatrix4f const &rootTransform)
-{
-    HD_TRACE_FUNCTION();
-
-    HdRenderIndex& index = GetRenderIndex();
-    // add instancer
-    index.InsertInstancer(this, id, parentId);
-    _instancers[id] = _Instancer();
-    _instancers[id].rootTransform = rootTransform;
-
-    if (!parentId.IsEmpty()) {
-        _instancers[parentId].prototypes.push_back(id);
-    }
-}
-
-void
-Hdx_UnitTestDelegate::SetInstancerProperties(SdfPath const &id,
-                                             VtIntArray const &prototypeIndex,
-                                             VtVec3fArray const &scale,
-                                             VtVec4fArray const &rotate,
-                                             VtVec3fArray const &translate)
-{
-    HD_TRACE_FUNCTION();
-
-    if (!TF_VERIFY(prototypeIndex.size() == scale.size())  ||
-        !TF_VERIFY(prototypeIndex.size() == rotate.size()) || 
-        !TF_VERIFY(prototypeIndex.size() == translate.size())) {
-        return;
-    }
-
-    _instancers[id].scale = scale;
-    _instancers[id].rotate = rotate;
-    _instancers[id].translate = translate;
-    _instancers[id].prototypeIndices = prototypeIndex;
-}
-
 //------------------------------------------------------------------------------
 //                                  PRIMS
 //------------------------------------------------------------------------------
@@ -727,25 +688,6 @@ Hdx_UnitTestDelegate::GetCameraParamValue(SdfPath const &cameraId,
     return VtValue();
 }
 
-HdRenderBufferDescriptor
-Hdx_UnitTestDelegate::GetRenderBufferDescriptor(SdfPath const &id)
-{
-    _ValueCache *vcache = TfMapLookupPtr(_valueCacheMap, id);
-    if (!vcache) {
-        return HdRenderBufferDescriptor();
-    }
-    
-    VtValue ret;
-    if (!TfMapLookup(*vcache, _tokens->renderBufferDescriptor, &ret)) {
-        return HdRenderBufferDescriptor();
-    }
-
-    if (!ret.IsHolding<HdRenderBufferDescriptor>()) {
-        return HdRenderBufferDescriptor();
-    }
-
-    return ret.UncheckedGet<HdRenderBufferDescriptor>();
-}
 
 HdTextureResourceSharedPtr
 Hdx_UnitTestDelegate::GetTextureResource(SdfPath const& textureId)
