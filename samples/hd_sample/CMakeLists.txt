@@ -3,6 +3,7 @@ add_executable(${TARGET_NAME}
     main.cpp
     testHdxIdRender.cpp
     unitTestDelegate.cpp
+    SceneManager.cpp
 )
 target_link_libraries(${TARGET_NAME}
 PRIVATE
