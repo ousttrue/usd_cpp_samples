@@ -55,8 +55,6 @@ class Hdx_UnitTestDelegate : public HdSceneDelegate
 public:
     Hdx_UnitTestDelegate(HdRenderIndex *renderIndex);
 
-    void SetRefineLevel(int level);
-
     // camera
     void SetCamera(GfMatrix4d const &viewMatrix, GfMatrix4d const &projMatrix);
 
@@ -115,9 +113,6 @@ public:
         SdfPath const& id, 
         HdInterpolation interpolation) override;
 
-    HdDisplayStyle GetDisplayStyle(SdfPath const& id) override;
-    HdReprSelector GetReprSelector(SdfPath const &id) override;
-
     VtValue GetCameraParamValue(
         SdfPath const &cameraId,
         TfToken const &paramName) override;
@@ -164,13 +159,7 @@ private:
         TfToken reprName;
     };
     
-    struct _DrawTarget {
-    };
     std::map<SdfPath, _Mesh> _meshes;
-
-    std::map<SdfPath, int> _refineLevels;
-    std::map<SdfPath, _DrawTarget> _drawTargets;
-    int _refineLevel;
 
     typedef std::map<SdfPath, SdfPath> SdfPathMap;
 

@@ -35,8 +35,6 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
 {
     _delegate = new pxr::Hdx_UnitTestDelegate(renderIndex);
 
-    _delegate->SetRefineLevel(_refineLevel);
-
     // prepare render task
     pxr::SdfPath renderSetupTask("/renderSetupTask");
     pxr::SdfPath renderTask("/renderTask");

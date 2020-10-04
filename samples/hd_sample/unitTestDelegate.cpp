@@ -162,7 +162,7 @@ namespace
 
 // ------------------------------------------------------------------------
 Hdx_UnitTestDelegate::Hdx_UnitTestDelegate(HdRenderIndex *index)
-    : HdSceneDelegate(index, SdfPath::AbsoluteRootPath()), _refineLevel(0)
+    : HdSceneDelegate(index, SdfPath::AbsoluteRootPath())
 {
     // add camera
     _cameraId = SdfPath("/camera");
@@ -174,20 +174,6 @@ Hdx_UnitTestDelegate::Hdx_UnitTestDelegate(HdRenderIndex *index)
     // Add draw target state tracking support.
     GetRenderIndex().GetChangeTracker().AddState(
         HdStDrawTargetTokens->drawTargetSet);
-}
-
-void Hdx_UnitTestDelegate::SetRefineLevel(int level)
-{
-    _refineLevel = level;
-    TF_FOR_ALL(it, _meshes)
-    {
-        GetRenderIndex().GetChangeTracker().MarkRprimDirty(
-            it->first, HdChangeTracker::DirtyDisplayStyle);
-    }
-    TF_FOR_ALL(it, _refineLevels)
-    {
-        it->second = level;
-    }
 }
 
 void Hdx_UnitTestDelegate::SetCamera(GfMatrix4d const &viewMatrix,
@@ -346,17 +332,6 @@ void Hdx_UnitTestDelegate::AddCube(SdfPath const &id, GfMatrix4d const &transfor
     }
 }
 
-HdReprSelector
-Hdx_UnitTestDelegate::GetReprSelector(SdfPath const &id)
-{
-    if (_meshes.find(id) != _meshes.end())
-    {
-        return HdReprSelector(_meshes[id].reprName);
-    }
-
-    return HdReprSelector();
-}
-
 GfRange3d
 Hdx_UnitTestDelegate::GetExtent(SdfPath const &id)
 {
@@ -434,17 +409,6 @@ Hdx_UnitTestDelegate::Get(SdfPath const &id, TfToken const &key)
         }
     }
     return VtValue();
-}
-
-/*virtual*/
-HdDisplayStyle
-Hdx_UnitTestDelegate::GetDisplayStyle(SdfPath const &id)
-{
-    if (_refineLevels.find(id) != _refineLevels.end())
-    {
-        return HdDisplayStyle(_refineLevels[id]);
-    }
-    return HdDisplayStyle(_refineLevel);
 }
 
 HdPrimvarDescriptorVector
