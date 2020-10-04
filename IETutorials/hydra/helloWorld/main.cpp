@@ -18,7 +18,7 @@
 #include "pxr/usd/sdf/path.h"
 
 
-#include "pxr/imaging/garch/glDebugWindow.h"
+#include <glWindow.h>
 
 #include "SceneDelegate.h"
 #include <iostream>
@@ -28,7 +28,7 @@
 #include "pxr/imaging/glf/glContext.h"
 
 
-class DebugWindow : public pxr::GarchGLDebugWindow
+class DebugWindow : public GarchGLDebugWindow
 {
     pxr::HgiUniquePtr hgi;
     pxr::HdDriver driver;
@@ -68,7 +68,7 @@ public:
 
 	void OnPaintGL() override
 	{
-		pxr::GarchGLDebugWindow::OnPaintGL();
+		GarchGLDebugWindow::OnPaintGL();
 
 		// clear to blue
 		glClearColor(0.1f, 0.1f, 0.3f, 1.0 );

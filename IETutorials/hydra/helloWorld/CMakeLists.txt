@@ -5,4 +5,5 @@ SceneDelegate.cpp
 target_link_libraries(helloWorld
 PUBLIC
     usd
+    glwindow
 )
