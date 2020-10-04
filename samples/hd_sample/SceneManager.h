@@ -12,7 +12,7 @@ PXR_NAMESPACE_CLOSE_SCOPE
 
 class SceneManager
 {
-    pxr::Hdx_UnitTestDelegate *_delegate;
+    pxr::Hdx_UnitTestDelegate *_sceneDelegate;
     pxr::TfToken _reprName = pxr::HdReprTokens->hull;
 
     float _rotate[2] = {0, 0};

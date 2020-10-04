@@ -24,30 +24,30 @@ SceneManager::~SceneManager()
 
 void SceneManager::Uninit()
 {
-    if (_delegate)
+    if (_sceneDelegate)
     {
-        delete _delegate;
-        _delegate = nullptr;
+        delete _sceneDelegate;
+        _sceneDelegate = nullptr;
     }
 }
 
 void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
 {
-    _delegate = new pxr::Hdx_UnitTestDelegate(renderIndex);
+    _sceneDelegate = new pxr::Hdx_UnitTestDelegate(renderIndex);
 
     // prepare render task
     pxr::SdfPath renderSetupTask("/renderSetupTask");
     pxr::SdfPath renderTask("/renderTask");
-    _delegate->AddRenderSetupTask(renderSetupTask);
-    _delegate->AddRenderTask(renderTask);
+    _sceneDelegate->AddRenderSetupTask(renderSetupTask);
+    _sceneDelegate->AddRenderTask(renderTask);
 
     // render task parameters.
-    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    // pxr::HdxRenderTaskParams param = _sceneDelegate->GetTaskParam(
     //                                               renderSetupTask, pxr::HdTokens->params)
     //                                      .Get<pxr::HdxRenderTaskParams>();
     // param.enableLighting = true; // use default lighting
-    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
-    // _delegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
+    // _sceneDelegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // _sceneDelegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
     //                         pxr::VtValue(pxr::HdRprimCollection(pxr::HdTokens->geometry,
     //                                                             pxr::HdReprSelector(_reprName))));
 
@@ -76,17 +76,17 @@ pxr::HdSceneDelegate *SceneManager::Prepare(int width, int height)
     pxr::GfVec4d viewport(0, 0, width, height);
 
     pxr::GfMatrix4d projMatrix = frustum.ComputeProjectionMatrix();
-    _delegate->SetCamera(viewMatrix, projMatrix);
+    _sceneDelegate->SetCamera(viewMatrix, projMatrix);
 
     pxr::SdfPath renderSetupTask("/renderSetupTask");
-    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    // pxr::HdxRenderTaskParams param = _sceneDelegate->GetTaskParam(
     //                                               renderSetupTask, pxr::HdTokens->params)
     //                                      .Get<pxr::HdxRenderTaskParams>();
     // param.enableIdRender = (pickParam != nullptr);
     // param.viewport = viewport;
-    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // _sceneDelegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
 
-    return _delegate;
+    return _sceneDelegate;
 }
 
 void SceneManager::MousePress(int button, int x, int y, int modKeys)
