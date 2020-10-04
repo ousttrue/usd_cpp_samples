@@ -83,18 +83,7 @@ private:
 
     void BindMaterial(SdfPath const &rprimId, SdfPath const &materialId);
 
-    // prims    
-    void AddMesh(SdfPath const &id,
-                 GfMatrix4d const &transform,
-                 VtVec3fArray const &points,
-                 VtIntArray const &numVerts,
-                 VtIntArray const &verts,
-                 bool guide=false,
-                 SdfPath const &instancerId=SdfPath(),
-                 TfToken const &scheme=PxOsdOpenSubdivTokens->catmullClark,
-                 TfToken const &orientation=HdTokens->rightHanded,
-                 bool doubleSided=false);
-    
+    // prims       
     void AddMesh(SdfPath const &id,
                  GfMatrix4d const &transform,
                  VtVec3fArray const &points,
