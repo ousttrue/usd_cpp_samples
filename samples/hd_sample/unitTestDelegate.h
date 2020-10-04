@@ -77,12 +77,6 @@ public:
 
 private:
 
-    /// Material
-    void AddMaterialResource(SdfPath const &id,
-                             VtValue materialResource);
-
-    void BindMaterial(SdfPath const &rprimId, SdfPath const &materialId);
-
     // prims       
     void AddMesh(SdfPath const &id,
                  GfMatrix4d const &transform,
@@ -127,9 +121,6 @@ public:
     GfMatrix4d GetInstancerTransform(SdfPath const& instancerId) override;
     HdDisplayStyle GetDisplayStyle(SdfPath const& id) override;
     HdReprSelector GetReprSelector(SdfPath const &id) override;
-
-    SdfPath GetMaterialId(SdfPath const &rprimId) override;
-    VtValue GetMaterialResource(SdfPath const &materialId) override;
 
     VtValue GetCameraParamValue(
         SdfPath const &cameraId,

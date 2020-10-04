@@ -550,40 +550,6 @@ Hdx_UnitTestDelegate::GetPrimvarDescriptors(SdfPath const &id,
     return primvars;
 }
 
-void Hdx_UnitTestDelegate::AddMaterialResource(SdfPath const &id,
-                                               VtValue materialResource)
-{
-    HdRenderIndex &index = GetRenderIndex();
-    index.InsertSprim(HdPrimTypeTokens->material, this, id);
-    _materials[id] = materialResource;
-}
-
-void Hdx_UnitTestDelegate::BindMaterial(SdfPath const &rprimId,
-                                        SdfPath const &materialId)
-{
-    _materialBindings[rprimId] = materialId;
-}
-
-/*virtual*/
-SdfPath
-Hdx_UnitTestDelegate::GetMaterialId(SdfPath const &rprimId)
-{
-    SdfPath materialId;
-    TfMapLookup(_materialBindings, rprimId, &materialId);
-    return materialId;
-}
-
-/*virtual*/
-VtValue
-Hdx_UnitTestDelegate::GetMaterialResource(SdfPath const &materialId)
-{
-    if (VtValue *material = TfMapLookupPtr(_materials, materialId))
-    {
-        return *material;
-    }
-    return VtValue();
-}
-
 /*virtual*/
 VtValue
 Hdx_UnitTestDelegate::GetCameraParamValue(SdfPath const &cameraId,
