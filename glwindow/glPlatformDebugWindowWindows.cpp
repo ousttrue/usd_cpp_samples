@@ -5,6 +5,8 @@
 #include <iostream>
 #include <GL/gl.h>
 #include <tchar.h>
+#include <GL/wglext.h>
+#include <assert.h>
 
 #define TF_FATAL_ERROR(msg)              \
     {                                    \
@@ -61,9 +63,9 @@ void Garch_GLPlatformDebugWindow::Init(const char *title,
     DWORD exFlags = 0;
 
     _hWND = CreateWindowExA(exFlags, _className,
-                           title, flags, 100, 100, width, height,
-                           (HWND)NULL, (HMENU)NULL, hInstance,
-                           (LPVOID)NULL);
+                            title, flags, 100, 100, width, height,
+                            (HWND)NULL, (HMENU)NULL, hInstance,
+                            (LPVOID)NULL);
     if (_hWND == 0)
     {
         TF_FATAL_ERROR("CreateWindowEx failed");
@@ -103,8 +105,37 @@ void Garch_GLPlatformDebugWindow::Init(const char *title,
         TF_FATAL_ERROR("wglCreateContext failed");
         exit(1);
     }
-
     wglMakeCurrent(_hDC, _hGLRC);
+
+    //
+    // upgrade WGLContext
+    //
+    auto wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+    assert(wglCreateContextAttribsARB);
+
+    // 使用する OpenGL のバージョンとプロファイルの指定
+    static const int att[] = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB,
+        4,
+        WGL_CONTEXT_MINOR_VERSION_ARB,
+        6,
+        WGL_CONTEXT_FLAGS_ARB,
+        0,
+        WGL_CONTEXT_PROFILE_MASK_ARB,
+        WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        0,
+    };
+
+    // 新しい HGLRC の作成
+    {
+        HGLRC hglrc = wglCreateContextAttribsARB(_hDC, NULL, att);
+        wglMakeCurrent(_hDC, hglrc);
+
+        // 古い HGLRC の削除と置き換え
+        wglDeleteContext(_hGLRC);
+        _hGLRC = hglrc;
+    }
+
     _callback->OnInitializeGL();
 }
 
