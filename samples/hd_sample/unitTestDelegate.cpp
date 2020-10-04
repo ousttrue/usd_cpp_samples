@@ -281,10 +281,6 @@ void Hdx_UnitTestDelegate::AddMesh(SdfPath const &id,
                         points, numVerts, verts, subdivTags,
                         color, colorInterpolation, opacity,
                         opacityInterpolation, guide, doubleSided);
-    if (!instancerId.IsEmpty())
-    {
-        _instancers[instancerId].prototypes.push_back(id);
-    }
 }
 
 void Hdx_UnitTestDelegate::AddCube(SdfPath const &id, GfMatrix4d const &transform,
@@ -437,74 +433,7 @@ Hdx_UnitTestDelegate::Get(SdfPath const &id, TfToken const &key)
             return VtValue(_meshes[id].opacity);
         }
     }
-    else if (key == HdInstancerTokens->scale)
-    {
-        if (_instancers.find(id) != _instancers.end())
-        {
-            return VtValue(_instancers[id].scale);
-        }
-    }
-    else if (key == HdInstancerTokens->rotate)
-    {
-        if (_instancers.find(id) != _instancers.end())
-        {
-            return VtValue(_instancers[id].rotate);
-        }
-    }
-    else if (key == HdInstancerTokens->translate)
-    {
-        if (_instancers.find(id) != _instancers.end())
-        {
-            return VtValue(_instancers[id].translate);
-        }
-    }
     return VtValue();
-}
-
-/*virtual*/
-VtIntArray
-Hdx_UnitTestDelegate::GetInstanceIndices(SdfPath const &instancerId,
-                                         SdfPath const &prototypeId)
-{
-    HD_TRACE_FUNCTION();
-    VtIntArray indices(0);
-    //
-    // XXX: this is very naive implementation for unit test.
-    //
-    //   transpose prototypeIndices/instances to instanceIndices/prototype
-    if (_Instancer *instancer = TfMapLookupPtr(_instancers, instancerId))
-    {
-        size_t prototypeIndex = 0;
-        for (; prototypeIndex < instancer->prototypes.size(); ++prototypeIndex)
-        {
-            if (instancer->prototypes[prototypeIndex] == prototypeId)
-                break;
-        }
-        if (prototypeIndex == instancer->prototypes.size())
-            return indices;
-
-        // XXX use const_ptr
-        for (size_t i = 0; i < instancer->prototypeIndices.size(); ++i)
-        {
-            if (static_cast<size_t>(instancer->prototypeIndices[i]) == prototypeIndex)
-            {
-                indices.push_back(i);
-            }
-        }
-    }
-    return indices;
-}
-
-/*virtual*/
-GfMatrix4d
-Hdx_UnitTestDelegate::GetInstancerTransform(SdfPath const &instancerId)
-{
-    HD_TRACE_FUNCTION();
-    if (_Instancer *instancer = TfMapLookupPtr(_instancers, instancerId))
-    {
-        return GfMatrix4d(instancer->rootTransform);
-    }
-    return GfMatrix4d(1);
 }
 
 /*virtual*/
@@ -539,13 +468,6 @@ Hdx_UnitTestDelegate::GetPrimvarDescriptors(SdfPath const &id,
         {
             primvars.emplace_back(HdTokens->displayOpacity, interpolation);
         }
-    }
-    if (interpolation == HdInterpolationInstance &&
-        _instancers.find(id) != _instancers.end())
-    {
-        primvars.emplace_back(HdInstancerTokens->scale, interpolation);
-        primvars.emplace_back(HdInstancerTokens->rotate, interpolation);
-        primvars.emplace_back(HdInstancerTokens->translate, interpolation);
     }
     return primvars;
 }

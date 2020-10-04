@@ -114,11 +114,7 @@ public:
     HdPrimvarDescriptorVector GetPrimvarDescriptors(
         SdfPath const& id, 
         HdInterpolation interpolation) override;
-    VtIntArray GetInstanceIndices(
-        SdfPath const& instancerId,
-        SdfPath const& prototypeId) override;
 
-    GfMatrix4d GetInstancerTransform(SdfPath const& instancerId) override;
     HdDisplayStyle GetDisplayStyle(SdfPath const& id) override;
     HdReprSelector GetReprSelector(SdfPath const &id) override;
 
@@ -168,34 +164,15 @@ private:
         TfToken reprName;
     };
     
-    struct _Instancer {
-        _Instancer() { }
-        _Instancer(VtVec3fArray const &scale,
-                   VtVec4fArray const &rotate,
-                   VtVec3fArray const &translate,
-                   GfMatrix4f const &rootTransform) :
-            scale(scale), rotate(rotate), translate(translate),
-            rootTransform(rootTransform) {
-        }
-        VtVec3fArray scale;
-        VtVec4fArray rotate;
-        VtVec3fArray translate;
-        VtIntArray prototypeIndices;
-        GfMatrix4f rootTransform;
-
-        std::vector<SdfPath> prototypes;
-    };
     struct _DrawTarget {
     };
     std::map<SdfPath, _Mesh> _meshes;
-    std::map<SdfPath, _Instancer> _instancers;
-    std::map<SdfPath, VtValue> _materials;
+
     std::map<SdfPath, int> _refineLevels;
     std::map<SdfPath, _DrawTarget> _drawTargets;
     int _refineLevel;
 
     typedef std::map<SdfPath, SdfPath> SdfPathMap;
-    SdfPathMap _materialBindings;
 
     typedef TfHashMap<TfToken, VtValue, TfToken::HashFunctor> _ValueCache;
     typedef TfHashMap<SdfPath, _ValueCache, SdfPath::Hash> _ValueCacheMap;
