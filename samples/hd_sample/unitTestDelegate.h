@@ -65,15 +65,6 @@ private:
         SdfPath const &id, 
         GfMatrix4d const &viewMatrix, 
         GfMatrix4d const &projMatrix);
-    void AddCamera(SdfPath const &id);
-
-    // light
-    void AddLight(SdfPath const &id, GlfSimpleLight const &light);
-    void SetLight(SdfPath const &id, TfToken const &key, VtValue value);
-
-    // draw target
-    void AddDrawTarget(SdfPath const &id);
-    void SetDrawTarget(SdfPath const &id, TfToken const &key, VtValue value);
 
 public:
     // tasks
