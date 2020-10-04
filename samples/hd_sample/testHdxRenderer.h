@@ -1,5 +1,11 @@
 #pragma once
 
+#include <pxr/pxr.h>
+PXR_NAMESPACE_OPEN_SCOPE
+class HdRenderIndex;
+class HdSceneDelegate;
+PXR_NAMESPACE_CLOSE_SCOPE
+
 class Drawing
 {
     class My_TestGLDrawing *_impl = nullptr;
@@ -7,11 +13,8 @@ class Drawing
 public:
     Drawing();
     ~Drawing();
-    void Init(int width, int height);
+    pxr::HdRenderIndex* Init(int width, int height);
     void Uninit();
-    void Draw(int width, int height);
-    void MousePress(int button, int x, int y, int modKeys);
-    void MouseRelease(int button, int x, int y, int modKeys);
-    void MouseMove(int x, int y, int modKeys);
+    void Draw(int width, int height, pxr::HdSceneDelegate *sceneDelegate);
     void KeyRelease(int key);
 };
