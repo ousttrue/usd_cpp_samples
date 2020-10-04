@@ -176,12 +176,6 @@ Hdx_UnitTestDelegate::Hdx_UnitTestDelegate(HdRenderIndex *index)
         HdStDrawTargetTokens->drawTargetSet);
 }
 
-void Hdx_UnitTestDelegate::SetCamera(GfMatrix4d const &viewMatrix,
-                                     GfMatrix4d const &projMatrix)
-{
-    SetCamera(_cameraId, viewMatrix, projMatrix);
-}
-
 void Hdx_UnitTestDelegate::SetCamera(SdfPath const &cameraId,
                                      GfMatrix4d const &viewMatrix,
                                      GfMatrix4d const &projMatrix)
@@ -215,30 +209,6 @@ void Hdx_UnitTestDelegate::AddRenderSetupTask(SdfPath const &id)
     params.camera = _cameraId;
     params.viewport = GfVec4f(0, 0, 512, 512);
     cache[HdTokens->params] = VtValue(params);
-}
-
-void Hdx_UnitTestDelegate::SetTaskParam(
-    SdfPath const &id, TfToken const &name, VtValue val)
-{
-    _ValueCache &cache = _valueCacheMap[id];
-    cache[name] = val;
-
-    if (name == HdTokens->collection)
-    {
-        GetRenderIndex().GetChangeTracker().MarkTaskDirty(
-            id, HdChangeTracker::DirtyCollection);
-    }
-    else if (name == HdTokens->params)
-    {
-        GetRenderIndex().GetChangeTracker().MarkTaskDirty(
-            id, HdChangeTracker::DirtyParams);
-    }
-}
-
-VtValue
-Hdx_UnitTestDelegate::GetTaskParam(SdfPath const &id, TfToken const &name)
-{
-    return _valueCacheMap[id][name];
 }
 
 //------------------------------------------------------------------------------

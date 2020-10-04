@@ -42,14 +42,14 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
     _delegate->AddRenderTask(renderTask);
 
     // render task parameters.
-    pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
-                                                  renderSetupTask, pxr::HdTokens->params)
-                                         .Get<pxr::HdxRenderTaskParams>();
-    param.enableLighting = true; // use default lighting
-    _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
-    _delegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
-                            pxr::VtValue(pxr::HdRprimCollection(pxr::HdTokens->geometry,
-                                                                pxr::HdReprSelector(_reprName))));
+    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    //                                               renderSetupTask, pxr::HdTokens->params)
+    //                                      .Get<pxr::HdxRenderTaskParams>();
+    // param.enableLighting = true; // use default lighting
+    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // _delegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
+    //                         pxr::VtValue(pxr::HdRprimCollection(pxr::HdTokens->geometry,
+    //                                                             pxr::HdReprSelector(_reprName))));
 
     // prepare scene
     // To ensure that the non-aggregated element index returned via picking,
@@ -85,12 +85,12 @@ pxr::HdSceneDelegate *SceneManager::Prepare(int width, int height)
     _delegate->SetCamera(viewMatrix, projMatrix);
 
     pxr::SdfPath renderSetupTask("/renderSetupTask");
-    pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
-                                                  renderSetupTask, pxr::HdTokens->params)
-                                         .Get<pxr::HdxRenderTaskParams>();
+    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    //                                               renderSetupTask, pxr::HdTokens->params)
+    //                                      .Get<pxr::HdxRenderTaskParams>();
     // param.enableIdRender = (pickParam != nullptr);
-    param.viewport = viewport;
-    _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // param.viewport = viewport;
+    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
 
     return _delegate;
 }

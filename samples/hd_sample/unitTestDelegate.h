@@ -56,24 +56,19 @@ public:
     Hdx_UnitTestDelegate(HdRenderIndex *renderIndex);
 
     // camera
-    void SetCamera(GfMatrix4d const &viewMatrix, GfMatrix4d const &projMatrix);
+    void SetCamera(GfMatrix4d const &viewMatrix, GfMatrix4d const &projMatrix)
+    {
+        SetCamera(_cameraId, viewMatrix, projMatrix);
+    }
 
-private:
     void SetCamera(
         SdfPath const &id, 
         GfMatrix4d const &viewMatrix, 
         GfMatrix4d const &projMatrix);
 
-public:
     // tasks
     void AddRenderTask(SdfPath const &id);
     void AddRenderSetupTask(SdfPath const &id);
-
-public:
-    void SetTaskParam(SdfPath const &id, TfToken const &name, VtValue val);
-    VtValue GetTaskParam(SdfPath const &id, TfToken const &name);
-
-private:
 
     // prims       
     void AddMesh(SdfPath const &id,
@@ -167,7 +162,6 @@ private:
 
     SdfPath _cameraId;
 };
-
 
 PXR_NAMESPACE_CLOSE_SCOPE
 
