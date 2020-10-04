@@ -27,7 +27,6 @@ class My_TestGLDrawing
     pxr::HdEngine _engine;
     pxr::HdStRenderDelegate _renderDelegate;
     pxr::HdRenderIndex *_renderIndex;
-    pxr::GlfDrawTargetRefPtr _drawTarget;
     GLuint _vao = 0;
 
 public:
@@ -44,25 +43,12 @@ public:
         pxr::GlfGlewInit();
         pxr::GlfRegisterDefaultDebugOutputMessageCallback();
         pxr::GlfContextCaps::InitInstance();
-
         std::cout << glGetString(GL_VENDOR) << "\n";
         std::cout << glGetString(GL_RENDERER) << "\n";
         std::cout << glGetString(GL_VERSION) << "\n";
 
-        //
-        // Create an offscreen draw target which is the same size as this
-        // widget and initialize the unit test with the draw target bound.
-        //
-        _drawTarget = pxr::GlfDrawTarget::New(pxr::GfVec2i(width, height));
-        _drawTarget->Bind();
-        _drawTarget->AddAttachment("color", GL_RGBA, GL_FLOAT, GL_RGBA);
-        _drawTarget->AddAttachment("depth", GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8,
-                                   GL_DEPTH24_STENCIL8);
-        _drawTarget->Unbind();
-
         _hgi = pxr::Hgi::CreatePlatformDefaultHgi();
         _driver.reset(new pxr::HdDriver{pxr::HgiTokens->renderDriver, pxr::VtValue(_hgi.get())});
-
         _renderIndex = pxr::HdRenderIndex::New(&_renderDelegate, {_driver.get()});
         // TF_VERIFY(_renderIndex != nullptr);
 
@@ -81,37 +67,12 @@ public:
 
     void Draw(int width, int height, pxr::HdSceneDelegate *sceneDelegate)
     {
-        //
-        // Update the draw target's size and execute the unit test with
-        // the draw target bound.
-        //
-        _drawTarget->Bind();
-        _drawTarget->SetSize(pxr::GfVec2i(width, height));
-
         GLfloat clearColor[4] = {0.1f, 0.1f, 0.1f, 1.0f};
         glClearBufferfv(GL_COLOR, 0, clearColor);
-
         GLfloat clearDepth[1] = {1.0f};
         glClearBufferfv(GL_DEPTH, 0, clearDepth);
 
         DrawScene(width, height, sceneDelegate);
-
-        _drawTarget->Unbind();
-
-        //
-        // Blit the resulting color buffer to the window (this is a noop
-        // if we're drawing offscreen).
-        //
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, _drawTarget->GetFramebufferId());
-
-        glBlitFramebuffer(0, 0, width, height,
-                          0, 0, width, height,
-                          GL_COLOR_BUFFER_BIT,
-                          GL_NEAREST);
-
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     }
 
     void KeyRelease(int key)
