@@ -374,95 +374,6 @@ Hdx_UnitTestDelegate::AddCube(SdfPath const &id, GfMatrix4d const &transform,
     }
 }
 
-void
-Hdx_UnitTestDelegate::AddGrid(SdfPath const &id,
-                             GfMatrix4d const &transform,
-                             bool guide,
-                             SdfPath const &instancerId)
-{
-    VtVec3fArray points;
-    VtIntArray numVerts;
-    VtIntArray verts;
-    _CreateGrid(10, 10, &points, &numVerts, &verts);
-
-    AddMesh(id,
-            transform,
-            _BuildArray(&points[0], points.size()),
-            _BuildArray(&numVerts[0], numVerts.size()),
-            _BuildArray(&verts[0], verts.size()),
-            PxOsdSubdivTags(),
-            /*color=*/VtValue(GfVec3f(1,1,0)),
-            /*colorInterpolation=*/HdInterpolationConstant,
-            /*opacity=*/VtValue(1.0f),
-            HdInterpolationConstant,
-            false,
-            instancerId);
-}
-
-void
-Hdx_UnitTestDelegate::AddTet(SdfPath const &id, GfMatrix4d const &transform,
-
-                             bool guide, SdfPath const &instancerId,
-                             TfToken const &scheme)
-{
-    GfVec3f points[] = {
-        GfVec3f(-1, -1, -1),
-        GfVec3f(-1, -1, -1),
-        GfVec3f(1, 1, -1),
-        GfVec3f(1, -1, 1),
-        GfVec3f(-1, 1, 1),
-        GfVec3f(-0.3, -0.3, -0.3),
-        GfVec3f(0.3, 0.3, -0.3),
-        GfVec3f(0.3, -0.3, 0.3),
-        GfVec3f(-0.3, 0.3, 0.3),
-        GfVec3f(-0.2, -0.6, -0.6),
-        GfVec3f(0.6, 0.2, -0.6),
-        GfVec3f(0.6, -0.6, 0.2),
-        GfVec3f(-0.6, -0.6, -0.2),
-        GfVec3f(0.2, -0.6, 0.6),
-        GfVec3f(-0.6, 0.2, 0.6),
-        GfVec3f(-0.6, -0.2, -0.6),
-        GfVec3f(-0.6, 0.6, 0.2),
-        GfVec3f(0.2, 0.6, -0.6),
-        GfVec3f(0.6, 0.6, -0.2),
-        GfVec3f(-0.2, 0.6, 0.6),
-        GfVec3f(0.6, -0.2, 0.6) };
-
-    int numVerts[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-                       4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
-    int verts[] = { 1, 2, 10, 9, 9, 10, 6, 5, 2, 3, 11, 10,
-                    10, 11, 7, 6, 3, 1, 9, 11, 11, 9, 5, 7,
-                    1, 3, 13, 12, 12, 13, 7, 5, 3, 4, 14, 13,
-                    13, 14, 8, 7, 4, 1, 12, 14, 14, 12, 5, 8,
-                    1, 4, 16, 15, 15, 16, 8, 5, 4, 2, 17, 16,
-                    16, 17, 6, 8, 2, 1, 15, 17, 17, 15, 5, 6,
-                    2, 4, 19, 18, 18, 19, 8, 6, 4, 3, 20, 19,
-                    19, 20, 7, 8, 3, 2, 18, 20, 20, 18, 6, 7 };
-
-     AddMesh(
-            id,
-            transform,
-            _BuildArray(points, sizeof(points)/sizeof(points[0])),
-            _BuildArray(numVerts, sizeof(numVerts)/sizeof(numVerts[0])),
-            _BuildArray(verts, sizeof(verts)/sizeof(verts[0])),
-            PxOsdSubdivTags(),
-            /*color=*/VtValue(GfVec3f(1,1,1)),
-            /*colorInterpolation=*/HdInterpolationConstant,
-            /*opacity=*/VtValue(1.0f),
-            HdInterpolationConstant,
-            guide,
-            instancerId,
-            scheme);
-}
-
-void
-Hdx_UnitTestDelegate::SetRefineLevel(SdfPath const &id, int level)
-{
-    _refineLevels[id] = level;
-    GetRenderIndex().GetChangeTracker().MarkRprimDirty(
-        id, HdChangeTracker::DirtyDisplayStyle);
-}
-
 HdReprSelector
 Hdx_UnitTestDelegate::GetReprSelector(SdfPath const &id)
 {
@@ -473,15 +384,6 @@ Hdx_UnitTestDelegate::GetReprSelector(SdfPath const &id)
     return HdReprSelector();
 }
 
-void
-Hdx_UnitTestDelegate::SetReprName(SdfPath const &id, TfToken const &reprName)
-{
-   if (_meshes.find(id) != _meshes.end()) {
-        _meshes[id].reprName = reprName;
-        GetRenderIndex().GetChangeTracker().MarkRprimDirty(
-            id, HdChangeTracker::DirtyRepr);
-   }
-}
 
 GfRange3d
 Hdx_UnitTestDelegate::GetExtent(SdfPath const & id)

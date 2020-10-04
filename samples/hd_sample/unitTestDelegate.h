@@ -121,18 +121,6 @@ public:
                  VtValue const &opacity = VtValue(1.0f),
                  HdInterpolation opacityInterpolation = HdInterpolationConstant);
 
-private:
-    void AddGrid(SdfPath const &id, GfMatrix4d const &transform,
-                 bool guide=false, SdfPath const &instancerId=SdfPath());
-
-    void AddTet(SdfPath const &id, GfMatrix4d const &transform,
-                 bool guide=false, SdfPath const &instancerId=SdfPath(),
-                 TfToken const &scheme=PxOsdOpenSubdivTokens->catmullClark);
-
-    void SetRefineLevel(SdfPath const &id, int level);
-
-    void SetReprName(SdfPath const &id, TfToken const &reprName);
-
 public:
     // delegate methods
     GfRange3d GetExtent(SdfPath const & id) override;
