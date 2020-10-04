@@ -58,6 +58,11 @@ public:
         // RenderIndex which stores a flat list of the scene to render
         _renderIndex = pxr::HdRenderIndex::New(&_renderDelegate, {_driver.get()});
 
+        // XXX: Setup a VAO, the current drawing engine will not yet do this.
+        glGenVertexArrays(1, &_vao);
+        glBindVertexArray(_vao);
+        glBindVertexArray(0);
+
         // SceneDelegate can query information from the client SceneGraph to update the renderer
         pxr::SdfPath sceneId("/");
         _sceneDelegate = new SceneDelegate(_renderIndex, sceneId);
@@ -70,6 +75,10 @@ public:
 
     void OnPaintGL() override
     {
+        // pxr::GfMatrix4d viewMatrix;
+        // viewMatrix.SetIdentity();
+        // _sceneDelegate->SetCamera(viewMatrix, viewMatrix);
+
         GarchGLDebugWindow::OnPaintGL();
 
         // clear to blue
@@ -80,6 +89,8 @@ public:
         glEnable(GL_DEPTH_TEST);
         glViewport(0, 0, GetWidth(), GetHeight());
 
+        glBindVertexArray(_vao);
+
         // execute the render tasks
         pxr::HdTaskSharedPtrVector tasks;
         pxr::SdfPath renderSetupTask("/renderSetupTask");
@@ -87,6 +98,8 @@ public:
         tasks.push_back(_sceneDelegate->GetRenderIndex().GetTask(renderSetupTask));
         tasks.push_back(_sceneDelegate->GetRenderIndex().GetTask(renderTask));
         _engine.Execute(_renderIndex, &tasks);
+
+        glBindVertexArray(0);
     }
 };
 

@@ -25,7 +25,7 @@ public:
 	pxr::HdMeshTopology GetMeshTopology(pxr::SdfPath const &id) override;
 
 	pxr::HdPrimvarDescriptorVector GetPrimvarDescriptors(pxr::SdfPath const& id, pxr::HdInterpolation interpolation) override;
-
+    pxr::VtValue GetCameraParamValue(pxr::SdfPath const &cameraId, pxr::TfToken const &paramName);
 private:
 	// per location (SdfPath) cache of dictionaries (TfToken -> VtValue) 
 	typedef pxr::TfHashMap<pxr::TfToken, pxr::VtValue, pxr::TfToken::HashFunctor> _ValueCache;
