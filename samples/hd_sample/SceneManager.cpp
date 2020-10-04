@@ -35,8 +35,6 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
 {
     _delegate = new pxr::Hdx_UnitTestDelegate(renderIndex);
 
-    _delegate->SetRefineLevel(_refineLevel);
-
     // prepare render task
     pxr::SdfPath renderSetupTask("/renderSetupTask");
     pxr::SdfPath renderTask("/renderTask");
@@ -44,14 +42,14 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
     _delegate->AddRenderTask(renderTask);
 
     // render task parameters.
-    pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
-                                                  renderSetupTask, pxr::HdTokens->params)
-                                         .Get<pxr::HdxRenderTaskParams>();
-    param.enableLighting = true; // use default lighting
-    _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
-    _delegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
-                            pxr::VtValue(pxr::HdRprimCollection(pxr::HdTokens->geometry,
-                                                                pxr::HdReprSelector(_reprName))));
+    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    //                                               renderSetupTask, pxr::HdTokens->params)
+    //                                      .Get<pxr::HdxRenderTaskParams>();
+    // param.enableLighting = true; // use default lighting
+    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // _delegate->SetTaskParam(renderTask, pxr::HdTokens->collection,
+    //                         pxr::VtValue(pxr::HdRprimCollection(pxr::HdTokens->geometry,
+    //                                                             pxr::HdReprSelector(_reprName))));
 
     // prepare scene
     // To ensure that the non-aggregated element index returned via picking,
@@ -68,89 +66,6 @@ void SceneManager::CreateDelegate(pxr::HdRenderIndex *renderIndex)
                                  black, blue, magenta, red};
     pxr::VtValue vertColor = pxr::VtValue(_BuildArray(&vertColors[0],
                                                       sizeof(vertColors) / sizeof(vertColors[0])));
-
-    _delegate->AddCube(pxr::SdfPath("/cube0"), _GetTranslate(5, 0, 5),
-                       /*guide=*/false, /*instancerId=*/pxr::SdfPath(),
-                       /*scheme=*/pxr::PxOsdOpenSubdivTokens->catmullClark,
-                       /*color=*/faceColor,
-                       /*colorInterpolation=*/pxr::HdInterpolationUniform);
-    _delegate->AddCube(pxr::SdfPath("/cube1"), _GetTranslate(-5, 0, 5),
-                       /*guide=*/false, /*instancerId=*/pxr::SdfPath(),
-                       /*scheme=*/pxr::PxOsdOpenSubdivTokens->catmullClark,
-                       /*color=*/faceColor,
-                       /*colorInterpolation=*/pxr::HdInterpolationUniform);
-    _delegate->AddCube(pxr::SdfPath("/cube2"), _GetTranslate(-5, 0, -5));
-    _delegate->AddCube(pxr::SdfPath("/cube3"), _GetTranslate(5, 0, -5),
-                       /*guide=*/false, /*instancerId=*/pxr::SdfPath(),
-                       /*scheme=*/pxr::PxOsdOpenSubdivTokens->catmullClark,
-                       /*color=*/vertColor,
-                       /*colorInterpolation=*/pxr::HdInterpolationVertex);
-
-    {
-        _delegate->AddInstancer(pxr::SdfPath("/instancerTop"));
-        _delegate->AddCube(pxr::SdfPath("/protoTop"),
-                           pxr::GfMatrix4d(1), false, pxr::SdfPath("/instancerTop"));
-
-        std::vector<pxr::SdfPath> prototypes;
-        prototypes.push_back(pxr::SdfPath("/protoTop"));
-
-        pxr::VtVec3fArray scale(3);
-        pxr::VtVec4fArray rotate(3);
-        pxr::VtVec3fArray translate(3);
-        pxr::VtIntArray prototypeIndex(3);
-
-        scale[0] = pxr::GfVec3f(1);
-        rotate[0] = pxr::GfVec4f(0);
-        translate[0] = pxr::GfVec3f(3, 0, 2);
-        prototypeIndex[0] = 0;
-
-        scale[1] = pxr::GfVec3f(1);
-        rotate[1] = pxr::GfVec4f(0);
-        translate[1] = pxr::GfVec3f(0, 0, 2);
-        prototypeIndex[1] = 0;
-
-        scale[2] = pxr::GfVec3f(1);
-        rotate[2] = pxr::GfVec4f(0);
-        translate[2] = pxr::GfVec3f(-3, 0, 2);
-        prototypeIndex[2] = 0;
-
-        _delegate->SetInstancerProperties(pxr::SdfPath("/instancerTop"),
-                                          prototypeIndex,
-                                          scale, rotate, translate);
-    }
-
-    {
-        _delegate->AddInstancer(pxr::SdfPath("/instancerBottom"));
-        _delegate->AddCube(pxr::SdfPath("/protoBottom"),
-                           pxr::GfMatrix4d(1), false, pxr::SdfPath("/instancerBottom"));
-
-        std::vector<pxr::SdfPath> prototypes;
-        prototypes.push_back(pxr::SdfPath("/protoBottom"));
-
-        pxr::VtVec3fArray scale(3);
-        pxr::VtVec4fArray rotate(3);
-        pxr::VtVec3fArray translate(3);
-        pxr::VtIntArray prototypeIndex(3);
-
-        scale[0] = pxr::GfVec3f(1);
-        rotate[0] = pxr::GfVec4f(0);
-        translate[0] = pxr::GfVec3f(3, 0, -2);
-        prototypeIndex[0] = 0;
-
-        scale[1] = pxr::GfVec3f(1);
-        rotate[1] = pxr::GfVec4f(0);
-        translate[1] = pxr::GfVec3f(0, 0, -2);
-        prototypeIndex[1] = 0;
-
-        scale[2] = pxr::GfVec3f(1);
-        rotate[2] = pxr::GfVec4f(0);
-        translate[2] = pxr::GfVec3f(-3, 0, -2);
-        prototypeIndex[2] = 0;
-
-        _delegate->SetInstancerProperties(pxr::SdfPath("/instancerBottom"),
-                                          prototypeIndex,
-                                          scale, rotate, translate);
-    }
 }
 
 pxr::HdSceneDelegate *SceneManager::Prepare(int width, int height)
@@ -164,12 +79,12 @@ pxr::HdSceneDelegate *SceneManager::Prepare(int width, int height)
     _delegate->SetCamera(viewMatrix, projMatrix);
 
     pxr::SdfPath renderSetupTask("/renderSetupTask");
-    pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
-                                                  renderSetupTask, pxr::HdTokens->params)
-                                         .Get<pxr::HdxRenderTaskParams>();
+    // pxr::HdxRenderTaskParams param = _delegate->GetTaskParam(
+    //                                               renderSetupTask, pxr::HdTokens->params)
+    //                                      .Get<pxr::HdxRenderTaskParams>();
     // param.enableIdRender = (pickParam != nullptr);
-    param.viewport = viewport;
-    _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
+    // param.viewport = viewport;
+    // _delegate->SetTaskParam(renderSetupTask, pxr::HdTokens->params, pxr::VtValue(param));
 
     return _delegate;
 }
