@@ -1,6 +1,6 @@
 #include "testHdxRenderer.h"
 #include "SceneManager.h"
-#include <pxr/imaging/garch/glDebugWindow.h>
+#include <glwindow.h>
 #include <pxr/base/tf/errorMark.h>
 #include <iostream>
 #include <functional>
@@ -16,13 +16,13 @@ struct Callback
     std::function<void(int x, int y, int modKeys)> OnMouseMove = [](int, int, int) {};
 };
 
-class HdSt_UnitTestWindow : public pxr::GarchGLDebugWindow
+class HdSt_UnitTestWindow : public GarchGLDebugWindow
 {
     Callback _callback;
 
 public:
     HdSt_UnitTestWindow(int w, int h, const Callback &callback)
-        : pxr::GarchGLDebugWindow("Hd Test", w, h), _callback(callback)
+        : GarchGLDebugWindow("Hd Test", w, h), _callback(callback)
     {
     }
 

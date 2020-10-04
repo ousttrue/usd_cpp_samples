@@ -8,6 +8,7 @@ add_executable(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
 PRIVATE
     usd
+    glwindow
 )
 target_compile_options(${TARGET_NAME}
 PRIVATE
