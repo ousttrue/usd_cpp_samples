@@ -60,8 +60,6 @@ public:
 
         // XXX: Setup a VAO, the current drawing engine will not yet do this.
         glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
-        glBindVertexArray(0);
 
         // SceneDelegate can query information from the client SceneGraph to update the renderer
         pxr::SdfPath sceneId("/");
