@@ -1,5 +1,4 @@
 #include "UnitTestWindow.h"
-#include "pxr/imaging/glf/glew.h"
 #include "pxr/imaging/glf/contextCaps.h"
 #include "pxr/imaging/glf/diagnostic.h"
 
@@ -18,7 +17,7 @@ UnitTestWindow::~UnitTestWindow()
 /* virtual */
 void UnitTestWindow::OnInitializeGL()
 {
-    pxr::GlfGlewInit();
+    // pxr::GlfGlewInit();
     pxr::GlfRegisterDefaultDebugOutputMessageCallback();
     pxr::GlfContextCaps::InitInstance();
 

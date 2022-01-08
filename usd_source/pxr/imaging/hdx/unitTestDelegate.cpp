@@ -28,16 +28,12 @@
 #include "pxr/imaging/hd/engine.h"
 #include "pxr/imaging/hd/mesh.h"
 #include "pxr/imaging/hd/sprim.h"
-#include "pxr/imaging/hd/texture.h"
-#include "pxr/imaging/hd/textureResource.h"
 
 #include "pxr/imaging/hd/camera.h"
 #include "pxr/imaging/hdSt/drawTarget.h"
-#include "pxr/imaging/hdSt/drawTargetAttachmentDescArray.h"
 #include "pxr/imaging/hdSt/light.h"
 
 #include "pxr/imaging/hdx/drawTargetTask.h"
-#include "pxr/imaging/hdx/drawTargetResolveTask.h"
 #include "pxr/imaging/hdx/pickTask.h"
 #include "pxr/imaging/hdx/renderTask.h"
 #include "pxr/imaging/hdx/selectionTask.h"

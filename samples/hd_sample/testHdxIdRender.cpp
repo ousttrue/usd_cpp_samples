@@ -1,4 +1,3 @@
-#include "pxr/imaging/glf/glew.h"
 #include "testHdxRenderer.h"
 #include "pxr/imaging/hgi/tokens.h"
 #include "pxr/base/gf/frustum.h"
@@ -40,7 +39,6 @@ public:
 
     pxr::HdRenderIndex *Init(int width, int height)
     {
-        pxr::GlfGlewInit();
         pxr::GlfRegisterDefaultDebugOutputMessageCallback();
         pxr::GlfContextCaps::InitInstance();
         std::cout << glGetString(GL_VENDOR) << "\n";

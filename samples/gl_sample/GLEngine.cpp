@@ -1,4 +1,3 @@
-#include <pxr/imaging/glf/glew.h>
 #include "GLEngine.h"
 #include <assert.h>
 #include <memory>
@@ -40,7 +39,7 @@ static bool _InitGL()
 
     std::call_once(initFlag, [] {
         // Initialize Glew library for GL Extensions if needed
-        pxr::GlfGlewInit();
+        // pxr::GlfGlewInit();
 
         // Initialize if needed and switch to shared GL context.
         pxr::GlfSharedGLContextScopeHolder sharedContext;

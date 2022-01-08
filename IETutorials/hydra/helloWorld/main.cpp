@@ -1,8 +1,6 @@
 
 #include "pxr/base/tf/token.h"
 
-#include "pxr/imaging/glf/glew.h"
-
 #include "pxr/imaging/hd/renderIndex.h"
 #include "pxr/imaging/hd/renderDelegate.h"
 #include "pxr/imaging/hd/engine.h"
@@ -44,7 +42,6 @@ public:
 
     void OnInitializeGL() override
     {
-        pxr::GlfGlewInit();
         pxr::GlfRegisterDefaultDebugOutputMessageCallback();
         pxr::GlfContextCaps::InitInstance();
         std::cout << glGetString(GL_VENDOR) << "\n";
