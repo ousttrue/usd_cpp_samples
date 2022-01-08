@@ -3,7 +3,11 @@
 ```{toctree}
 :maxdepth: 1
 build_usd/index
+cmake/index
+samples/index
 usdtweak
+python/index
+data/index
 ```
 
 ## 参考
