@@ -40,6 +40,45 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "build_usd.py(with python)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_scripts/build_usd.py",
+            "args": [
+                "-v",
+                "-v",
+                "-v",
+                // "--build-variant",
+                // "debug",
+                // "--force", "boost",
+                "--no-tests",
+                "--no-examples",
+                "--no-tutorials",
+                "--no-tools",
+                "--no-docs",
+                "--python",
+                "--prefer-safety-over-speed",
+                "--no-debug-python",
+                // "--no-imaging",
+                "--no-ptex",
+                "--no-openvdb",
+                "--no-usdview",
+                "--no-embree",
+                "--no-prman",
+                "--no-openimageio",
+                "--no-opencolorio",
+                "--no-alembic",
+                "--no-hdf5",
+                "--no-draco",
+                "--no-materialx",
+                "${workspaceFolder}/build_release"
+            ],
+            "env": {
+                "PATH": "C:\\Program Files\\LLVM\\bin;${env:PATH}"
+            },
+            "console": "integratedTerminal"
+        },
+        {
             "name": "samples/hello",
             "type": "cppvsdbg",
             "request": "launch",

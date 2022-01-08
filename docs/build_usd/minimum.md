@@ -7,10 +7,6 @@
 * vswhere
 * nasm
 
-```{toctree}
-dependencies/index
-```
-
 ## minimum
 
 ```

@@ -739,11 +739,11 @@ ZLIB = Dependency("zlib", InstallZlib, "include/zlib.h")
 # boost
 
 if MacOS():
-    BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.gz"
+    BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz"
     BOOST_VERSION_FILE = "include/boost/version.hpp"
 elif Linux():
     if Python3():
-        BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.gz"
+        BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz"
     else:
         BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.66.0/source/boost_1_66_0.tar.gz"
     BOOST_VERSION_FILE = "include/boost/version.hpp"
@@ -753,10 +753,10 @@ elif Windows():
     # "layout=system" would make the Windows install match Linux/MacOS, but that
     # causes problems for other dependencies that look for boost.
     #
-    # boost 1.70 is required for Visual Studio 2019. For simplicity, we use
+    # boost 1.77 is required for Visual Studio 2019. For simplicity, we use
     # this version for all older Visual Studio versions as well.
-    BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.gz"
-    BOOST_VERSION_FILE = "include/boost-1_70/boost/version.hpp"
+    BOOST_URL = "https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz"
+    BOOST_VERSION_FILE = "include/boost-1_77/boost/version.hpp"
 
 
 def InstallBoost_Helper(context, force, buildArgs):
@@ -2208,7 +2208,7 @@ if not isPython64Bit:
 if which("cmake"):
     # Check cmake requirements
     if Windows():
-        # Windows build depend on boost 1.70, which is not supported before
+        # Windows build depend on boost 1.77, which is not supported before
         # cmake version 3.14
         cmake_required_version = (3, 14)
     else:

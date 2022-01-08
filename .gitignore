@@ -1,5 +1,7 @@
 /build/
-public
 /build_usd/
+/build_debug/
+/build_release/
+/public/
 *.pyc
 .qt_for_python
