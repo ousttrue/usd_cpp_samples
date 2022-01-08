@@ -1,3 +1,9 @@
 [submodule "_external/usd/usd"]
 	path = _external/usd
 	url = https://github.com/PixarAnimationStudios/USD.git
+[submodule "_external/usdtweak"]
+	path = _external/usdtweak
+	url = https://github.com/cpichard/usdtweak.git
+[submodule "_external/glfw"]
+	path = _external/glfw
+	url = https://github.com/glfw/glfw.git
