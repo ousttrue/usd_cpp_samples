@@ -196,5 +196,21 @@
             ],
             "externalConsole": false
         },
+        {
+            "name": "usdtweak",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/bin/usdtweak.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${workspaceFolder}\\build_usd\\bin;${workspaceFolder}\\build_usd\\lib;${env:PATH}"
+                }
+            ],
+            "externalConsole": false
+        },
     ]
 }
