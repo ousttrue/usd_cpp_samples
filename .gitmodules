@@ -4,3 +4,6 @@
 [submodule "_external/glfw"]
 	path = _external/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "_external/usdtweak"]
+	path = _external/usdtweak
+	url = https://github.com/ousttrue/usdtweak.git
