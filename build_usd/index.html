@@ -9,6 +9,7 @@
         <title>build_usd.py - usd sample ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
     
     
@@ -134,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -191,7 +192,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -200,6 +201,17 @@
           <section class="tex2jax_ignore mathjax_ignore" id="build-usd-py">
 <h1>build_usd.py<a class="headerlink" href="#build-usd-py" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">build_scripts/build_usd.py</span></code></p>
+<section id="debug">
+<h2>Debug<a class="headerlink" href="#debug" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; python build_scripts/build_usd.py --debug --build-monolithic --no-tests --no-examples --no-tutorials --no-docs --no-python --usd-imaging build_debug
+</pre></div>
+</div>
+</section>
+<section id="release">
+<h2>Release<a class="headerlink" href="#release" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; python build_scripts/build_usd.py --build-monolithic --no-tests --no-examples --no-tutorials --no-docs --no-python --usd-imaging build_release
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="minimum.html">build_usd.py</a></li>
@@ -207,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="python.html">python module</a></li>
 </ul>
 </div>
+</section>
 </section>
 
         </article>
@@ -248,8 +261,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            コンテンツ
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">build_usd.py</a><ul>
+<li><a class="reference internal" href="#debug">Debug</a></li>
+<li><a class="reference internal" href="#release">Release</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -259,6 +292,8 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <script src="../_static/translations.js"></script>
     </body>
 </html>
