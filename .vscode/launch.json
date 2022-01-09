@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "build_usd.py",
+            "name": "build_debug.py(debug)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/build_scripts/build_usd.py",
+            "program": "${workspaceFolder}/build_scripts/build_debug.py",
             "args": [
                 "--build-variant",
                 "debug",
@@ -32,7 +32,7 @@
                 "--no-hdf5",
                 "--no-draco",
                 "--no-materialx",
-                "${workspaceFolder}/build_usd"
+                "${workspaceFolder}/build_debug"
             ],
             "env": {
                 "PATH": "C:\\Program Files\\LLVM\\bin;${env:PATH}"
@@ -40,10 +40,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "build_usd.py(with python)",
+            "name": "build_debug.py(release with python)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/build_scripts/build_usd.py",
+            "program": "${workspaceFolder}/build_scripts/build_debug.py",
             "args": [
                 "-v",
                 "-v",
@@ -89,7 +89,7 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}\\build_usd\\bin;${workspaceFolder}\\build_usd\\lib;${env:PATH}"
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -109,7 +109,7 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}\\build_usd\\bin;${workspaceFolder}\\build_usd\\lib;${env:PATH}"
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -230,7 +230,7 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}\\build_usd\\bin;${workspaceFolder}\\build_usd\\lib;${env:PATH}"
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
                 }
             ],
             "externalConsole": false
@@ -246,7 +246,7 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}\\build_usd\\bin;${workspaceFolder}\\build_usd\\lib;${env:PATH}"
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
                 }
             ],
             "externalConsole": false

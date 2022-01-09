@@ -16,6 +16,7 @@ jobs:
       - run: pip install sphinx
       - run: pip install myst-parser
       - run: pip install furo
+      - run: pip install sphinx-copybutton
       - run: pip install gitinclude
       - run: pip install sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-nwdiag sphinxcontrib-seqdiag
       - run: sphinx-build docs build

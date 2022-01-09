@@ -1,10 +1,9 @@
 add_library(boost INTERFACE)
-target_include_directories(
-  boost INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../build_usd/include/boost-1_70)
+set(BUILD_DIR ${CMAKE_CURRENT_LIST_DIR}/../build_debug)
+target_include_directories(boost INTERFACE ${BUILD_DIR}/include/boost-1_77)
 
 add_library(usd INTERFACE)
-target_include_directories(
-  usd INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../build_usd/include)
+target_include_directories(usd INTERFACE ${BUILD_DIR}/include)
 target_link_libraries(
   usd
   INTERFACE boost
@@ -53,9 +52,7 @@ target_link_libraries(
             usd_usdVol.lib
             usd_usdVolImaging.lib
             usd_vt.lib
-            usd_work.lib
-)
+            usd_work.lib)
 target_compile_definitions(usd INTERFACE NOMINMAX)
 target_compile_options(usd INTERFACE /wd4244 /wd4305 /wd4275)
-target_link_directories(usd INTERFACE
-                        ${CMAKE_CURRENT_LIST_DIR}/../build_usd/lib)
+target_link_directories(usd INTERFACE ${BUILD_DIR}/lib)
