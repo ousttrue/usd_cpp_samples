@@ -3,7 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/build_debug/include",
+                "${workspaceFolder}/build_debug/include/boost-1_77",
+                "${workspaceFolder}/_external/glfw/include",
+                "${workspaceFolder}/_external/usdtweak/src/**"
             ],
             "defines": [
                 "_DEBUG",
