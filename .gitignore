@@ -5,3 +5,4 @@
 *.pyc
 .qt_for_python
 /.cache/
+/typings/

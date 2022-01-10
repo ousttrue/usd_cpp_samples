@@ -6,6 +6,7 @@ build_usd/index
 cmake/index
 samples/index
 usdtweak
+hydra/index
 python/index
 data/index
 scene/index

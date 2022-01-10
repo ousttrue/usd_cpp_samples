@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "run_usd.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_usd.py",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "gen_typings.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/gen_typings.py",
+            "console": "integratedTerminal",
+        },
+        {
             "name": "build_debug.py(debug)",
             "type": "python",
             "request": "launch",
