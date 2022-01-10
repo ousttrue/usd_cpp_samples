@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="実装" href="impl.html" /><link rel="prev" title="usdtweak" href="../usdtweak.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="実装" href="impl.html" /><link rel="prev" title="Hydra" href="../hydra/index.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
         <title>python の usd モジュール - usd sample ドキュメント</title>
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -167,11 +167,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../cmake/index.html">CMakeLists.txt 解読</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samples/index.html">samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usdtweak.html">usdtweak</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hydra/index.html">Hydra</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">python の usd モジュール</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="impl.html">実装</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scene/index.html">シーン構成</a></li>
 </ul>
 
 </div>
@@ -192,7 +194,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -200,6 +202,9 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="python-usd">
 <h1>python の usd モジュール<a class="headerlink" href="#python-usd" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.nvidia.com/usd/tutorials">Working with USD Python Libraries</a></p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="impl.html">実装</a><ul>
@@ -219,6 +224,28 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://graphics.pixar.com/usd/release/tut_usd_tutorials.html">https://graphics.pixar.com/usd/release/tut_usd_tutorials.html</a></p></li>
 </ul>
+<section id="id1">
+<h2>ビルド済み<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>(python-3.6)<a class="reference external" href="https://developer.nvidia.com/usd">https://developer.nvidia.com/usd</a></p></li>
+<li><p>(python-3.9)<a class="reference external" href="https://pypi.org/project/usd-core/">https://pypi.org/project/usd-core/</a></p></li>
+</ul>
+</section>
+<section id="usdview">
+<h2>usdview<a class="headerlink" href="#usdview" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PixarAnimationStudios/USD/tree/release/pxr/usdImaging/usdviewq">https://github.com/PixarAnimationStudios/USD/tree/release/pxr/usdImaging/usdviewq</a></p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pxr</span> <span class="kn">import</span> <span class="n">Usd</span>
+
+<span class="n">stage</span> <span class="o">=</span> <span class="n">Usd</span><span class="o">.</span><span class="n">Stage</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s1">'path_to_file.usd'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="typings">
+<h2>typings<a class="headerlink" href="#typings" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>適当でも作っておくと便利。</p>
+</section>
 </section>
 
         </article>
@@ -235,14 +262,14 @@
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../usdtweak.html">
+          <a class="prev-page" href="../hydra/index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">usdtweak</div>
+                <div class="title">Hydra</div>
                 
               </div>
             </a>
@@ -260,8 +287,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            コンテンツ
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">python の usd モジュール</a><ul>
+<li><a class="reference internal" href="#id1">ビルド済み</a></li>
+<li><a class="reference internal" href="#usdview">usdview</a></li>
+<li><a class="reference internal" href="#typings">typings</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

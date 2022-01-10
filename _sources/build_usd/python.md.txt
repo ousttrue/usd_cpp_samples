@@ -52,10 +52,14 @@ build するのに
 
 | pyside             |                 |
 | ------------------ | --------------- |
-| pyside-uic         | python3 + Qt4 ? |
+| pyside-uic         | python3 + Qt5 ? |
 | python2-pyside-uic | python2 + Qt4 ? |
 | pyside-uic-2.7     | python2 + Qt4 ? |
 
 のいずれかがいる。
 
 <https://fereria.github.io/reincarnation_tech/11_Pipeline/01_USD/00_install_USD/>
+
+## python
+
+{doc}`/python/index`
