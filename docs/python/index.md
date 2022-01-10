@@ -1,5 +1,6 @@
 # python の usd モジュール
 
+* <https://graphics.pixar.com/usd/release/tut_referencing_layers.html>
 * [Working with USD Python Libraries](https://developer.nvidia.com/usd/tutorials)
 
 ```{toctree}
