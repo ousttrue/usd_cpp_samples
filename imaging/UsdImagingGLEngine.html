@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="python の usd モジュール" href="../python/index.html" /><link rel="prev" title="usdtweak" href="../usdtweak.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="python の usd モジュール" href="../python/index.html" /><link rel="prev" title="Imaging" href="index.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>Hydra - usd sample ドキュメント</title>
+        <title>UsdImagingGLEngine - usd sample ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -166,9 +166,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cmake/index.html">CMakeLists.txt 解読</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samples/index.html">samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usdtweak.html">usdtweak</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Hydra</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../python/index.html">python の usd モジュール</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Imaging</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">UsdImagingGLEngine</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python/index.html">python の usd モジュール</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python/impl.html">実装</a></li>
 </ul>
 </li>
@@ -194,18 +196,58 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="hydra">
-<h1>Hydra<a class="headerlink" href="#hydra" title="このヘッドラインへのパーマリンク">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="usdimagingglengine">
+<h1>UsdImagingGLEngine<a class="headerlink" href="#usdimagingglengine" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>ハイレベルインタフェース。</p>
+<p>stage を OpenGL にレンダリングする。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1">// load usd</span>
+<span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">UsdStageRefPtr</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">stage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pxr</span><span class="o">::</span><span class="n">UsdStage</span><span class="o">::</span><span class="n">Open</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// camera</span>
+<span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">GfCamera</span><span class="w"> </span><span class="n">camera</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">100.0f</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">GfMatrix4d</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">t</span><span class="p">.</span><span class="n">SetTranslate</span><span class="p">(</span><span class="n">pxr</span><span class="o">::</span><span class="n">GfVec3d</span><span class="o">::</span><span class="n">ZAxis</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dist</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">camera</span><span class="p">.</span><span class="n">SetTransform</span><span class="p">(</span><span class="n">t</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">camera</span><span class="p">.</span><span class="n">SetFocusDistance</span><span class="p">(</span><span class="n">dist</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// renderer</span>
+<span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">UsdImagingGLEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// param</span>
+<span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">UsdImagingGLRenderParams</span><span class="w"> </span><span class="n">params</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">params</span><span class="p">.</span><span class="n">enableLighting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">IsRunning</span><span class="p">(</span><span class="o">&amp;</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">height</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">GL_DEPTH_BUFFER_BIT</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">SetRenderViewport</span><span class="p">(</span><span class="n">pxr</span><span class="o">::</span><span class="n">GfVec4d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">Render</span><span class="p">(</span><span class="n">stage</span><span class="o">-&gt;</span><span class="n">GetPseudoRoot</span><span class="p">(),</span><span class="w"> </span><span class="n">params</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">SetCameraState</span><span class="p">(</span><span class="n">camera</span><span class="p">.</span><span class="n">GetFrustum</span><span class="p">().</span><span class="n">ComputeViewMatrix</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                          </span><span class="n">camera</span><span class="p">.</span><span class="n">GetFrustum</span><span class="p">().</span><span class="n">ComputeProjectionMatrix</span><span class="p">());</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">w</span><span class="p">.</span><span class="n">SwapBuffers</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<section id="usdtweak">
+<h2>usdtweak<a class="headerlink" href="#usdtweak" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">UsdImagingGLEngine</span></code> と <code class="docutils literal notranslate"><span class="pre">ImGui</span></code> を合体させたツール。</p>
 <ul class="simple">
-<li><p>(202009)<a class="reference external" href="https://qiita.com/ousttrue/items/3b44377e6e24c034649c">USD Hydra 解読</a></p></li>
-<li><p><a class="reference external" href="https://github.com/ousttrue/HydraHost">https://github.com/ousttrue/HydraHost</a></p></li>
+<li><p><a class="reference external" href="https://github.com/cpichard/usdtweak">https://github.com/cpichard/usdtweak</a></p></li>
 </ul>
+</section>
 </section>
 
         </article>
@@ -222,14 +264,14 @@
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../usdtweak.html">
+          <a class="prev-page" href="index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">usdtweak</div>
+                <div class="title">Imaging</div>
                 
               </div>
             </a>
@@ -239,7 +281,7 @@
               Copyright &#169; 2022, ousttrue |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="../_sources/hydra/index.md.txt"
+            | <a class="muted-link" href="../_sources/imaging/UsdImagingGLEngine.md.txt"
                rel="nofollow">
               ソースコードを表示
             </a>
@@ -247,8 +289,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            コンテンツ
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">UsdImagingGLEngine</a><ul>
+<li><a class="reference internal" href="#usdtweak">usdtweak</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="samples" href="../samples/index.html" /><link rel="prev" title="python module" href="../build_usd/python.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="UsdImagingGLEngine" href="UsdImagingGLEngine.html" /><link rel="prev" title="samples" href="../samples/index.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>CMakeLists.txt 解読 - usd sample ドキュメント</title>
+        <title>Imaging - usd sample ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -164,10 +164,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../build_usd/python.html">python module</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CMakeLists.txt 解読</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cmake/index.html">CMakeLists.txt 解読</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samples/index.html">samples</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../imaging/index.html">Imaging</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../imaging/UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Imaging</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python/index.html">python の usd モジュール</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -196,35 +196,26 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="cmakelists-txt">
-<h1>CMakeLists.txt 解読<a class="headerlink" href="#cmakelists-txt" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="o">}</span>
-<span class="w">                      </span><span class="o">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="o">}</span><span class="s">/cmake/defaults</span>
-<span class="w">                      </span><span class="o">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="o">}</span><span class="s">/cmake/modules</span>
-<span class="w">                      </span><span class="o">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="o">}</span><span class="s">/cmake/macros</span><span class="p">)</span>
-
-<span class="nb">include</span><span class="p">(</span><span class="s">Options</span><span class="p">)</span>
-<span class="nb">include</span><span class="p">(</span><span class="s">ProjectDefaults</span><span class="p">)</span>
-<span class="nb">include</span><span class="p">(</span><span class="s">Packages</span><span class="p">)</span>
-</pre></div>
+          <section class="tex2jax_ignore mathjax_ignore" id="imaging">
+<h1>Imaging<a class="headerlink" href="#imaging" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>(202009)<a class="reference external" href="https://qiita.com/ousttrue/items/3b44377e6e24c034649c">USD Hydra 解読</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ousttrue/HydraHost">https://github.com/ousttrue/HydraHost</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="UsdImagingGLEngine.html">UsdImagingGLEngine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UsdImagingGLEngine.html#usdtweak">usdtweak</a></li>
+</ul>
+</li>
+</ul>
 </div>
-<section id="pxr-library">
-<h2>pxr_library<a class="headerlink" href="#pxr-library" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">cmake/macros/Public.cmake</span></code> で定義されている。</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">function</span><span class="p">(</span><span class="s">pxr_library</span><span class="w"> </span><span class="s">NAME</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">cmake/macros/Private.cmake</span></code> で定義されている。</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">function</span><span class="p">(</span><span class="s">_pxr_python_module</span><span class="w"> </span><span class="s">NAME</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 </section>
 
         </article>
@@ -232,23 +223,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samples/index.html">
+          <a class="next-page" href="UsdImagingGLEngine.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samples</div>
+                <div class="title">UsdImagingGLEngine</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../build_usd/python.html">
+          <a class="prev-page" href="../samples/index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">python module</div>
+                <div class="title">samples</div>
                 
               </div>
             </a>
@@ -258,7 +249,7 @@
               Copyright &#169; 2022, ousttrue |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="../_sources/cmake/index.md.txt"
+            | <a class="muted-link" href="../_sources/imaging/index.md.txt"
                rel="nofollow">
               ソースコードを表示
             </a>
@@ -266,27 +257,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            コンテンツ
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">CMakeLists.txt 解読</a><ul>
-<li><a class="reference internal" href="#pxr-library">pxr_library</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
