@@ -109,51 +109,6 @@ namespace
         GfMatrix4d _shadowMatrix;
     };
 
-    class DrawTargetTextureResource : public HdTextureResource
-    {
-    public:
-        DrawTargetTextureResource(GlfDrawTargetRefPtr const &drawTarget)
-            : _drawTarget(drawTarget)
-        {
-        }
-        virtual ~DrawTargetTextureResource(){};
-
-        virtual HdTextureType GetTextureType() const override
-        {
-            return HdTextureType::Uv;
-        }
-
-        virtual GLuint GetTexelsTextureId()
-        {
-            return _drawTarget->GetAttachment("color")->GetGlTextureName();
-        }
-        virtual GLuint GetTexelsSamplerId()
-        {
-            return 0;
-        }
-        virtual uint64_t GetTexelsTextureHandle()
-        {
-            return 0;
-        }
-
-        virtual GLuint GetLayoutTextureId()
-        {
-            return 0;
-        }
-        virtual uint64_t GetLayoutTextureHandle()
-        {
-            return 0;
-        }
-
-        size_t GetMemoryUsed() override
-        {
-            return 0;
-        }
-
-    private:
-        GlfDrawTargetRefPtr _drawTarget;
-    };
-
 } // namespace
 
 // ------------------------------------------------------------------------

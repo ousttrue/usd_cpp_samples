@@ -130,22 +130,22 @@
             ],
             "console": "integratedTerminal"
         },
-        // {
-        //     "name": "samples/hd_sample",
-        //     "type": "cppvsdbg",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/debug/bin/hd_sample.exe",
-        //     "": [],
-        //     "stopAtEntry": false,
-        //     "cwd": "${workspaceFolder}",
-        //     "environment": [
-        //         {
-        //             "name": "PATH",
-        //             "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        //         }
-        //     ],
-        //     "externalConsole": false
-        // },
+        {
+            "name": "samples/hd_sample",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/hd_sample.exe",
+            "": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                }
+            ],
+            "externalConsole": false
+        },
         {
             "name": "samples/tiny",
             "type": "cppvsdbg",
