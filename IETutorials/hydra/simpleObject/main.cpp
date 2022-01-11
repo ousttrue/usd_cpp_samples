@@ -1,8 +1,8 @@
 
 #include "pxr/base/tf/token.h"
-
-#include "pxr/imaging/glf/glew.h"
-
+#include "pxr/imaging/garch/gl.h"
+#include "pxr/imaging/hgi/hgi.h"
+#include "pxr/imaging/hgi/tokens.h"
 #include "pxr/imaging/hd/renderIndex.h"
 #include "pxr/imaging/hd/renderDelegate.h"
 #include "pxr/imaging/hd/engine.h"
@@ -25,14 +25,21 @@
 
 class DebugWindow : public pxr::GarchGLDebugWindow
 {
+	pxr::HgiUniquePtr hgi;
+	std::unique_ptr<pxr::HdDriver> driver;
+
 public:
 	DebugWindow(const char *title, int width, int height) : GarchGLDebugWindow(title, width, height)
 	{
 		// create a RenderDelegate which is required for the RenderIndex
 		renderDelegate.reset( new pxr::HdStRenderDelegate() );
 
+		// Hgi and HdDriver should be constructed before HdEngine to ensure they
+		// are destructed last. Hgi may be used during engine/delegate destruction.
+		hgi = pxr::Hgi::CreatePlatformDefaultHgi();
+		driver.reset(new pxr::HdDriver{pxr::HgiTokens->renderDriver, pxr::VtValue(hgi.get())});
 		// RenderIndex which stores a flat list of the scene to render
-		index = pxr::HdRenderIndex::New( renderDelegate.get() );
+		index = pxr::HdRenderIndex::New(renderDelegate.get(), {driver.get()});		
 
 		// names for elements in the RenderIndex
 		pxr::SdfPath renderSetupId("/renderSetup");
@@ -65,7 +72,7 @@ public:
 		glEnable(GL_DEPTH_TEST);
 
 		// execute the render tasks
-		engine.Execute( *index, tasks );
+		engine.Execute( index, &tasks );
 	}
 
 private:
@@ -73,7 +80,7 @@ private:
 	pxr::HdTaskSharedPtrVector tasks;
 	pxr::HdEngine engine;
 	pxr::HdRenderIndex *index;
-	boost::shared_ptr<pxr::HdStRenderDelegate> renderDelegate;
+	std::shared_ptr<pxr::HdStRenderDelegate> renderDelegate;
 };
 
 int main(int argc, char** argv)
@@ -86,8 +93,6 @@ int main(int argc, char** argv)
 	// create a window, GLContext & extensions
 	DebugWindow window("hydra - simple Object", 1280, 720);
 	window.Init();
-	bool glewInit = pxr::GlfGlewInit();
-	std::cout << "glew:" << glewInit << std::endl;
 
 	// display the window & run the *event* loop until the window is closed
 	window.Run();

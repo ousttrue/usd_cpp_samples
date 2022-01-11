@@ -12,6 +12,7 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#include <iostream>
 
 SceneDelegate::SceneDelegate(pxr::HdRenderIndex *parentIndex, pxr::SdfPath const &delegateID)
  : pxr::HdSceneDelegate(parentIndex, delegateID)
