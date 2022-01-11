@@ -22,8 +22,9 @@
             "name": "build_debug.py(debug)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/build_scripts/build_debug.py",
+            "program": "${workspaceFolder}/build_scripts/build_usd.py",
             "args": [
+                "--build-monolithic",
                 "--build-variant",
                 "debug",
                 "--no-tests",
@@ -59,6 +60,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build_scripts/build_debug.py",
             "args": [
+                "--build-monolithic",
                 "-v",
                 "-v",
                 "-v",
@@ -144,22 +146,22 @@
         //     ],
         //     "externalConsole": false
         // },
-        // {
-        //     "name": "samples:tiny",
-        //     "type": "cppvsdbg",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
-        //     "": [],
-        //     "stopAtEntry": false,
-        //     "cwd": "${workspaceFolder}",
-        //     "environment": [
-        //         {
-        //             "name": "PATH",
-        //             "value": "${env:PATH};${env:USD_BUILD_DEBUG}\\bin;${env:USD_BUILD_DEBUG}\\lib"
-        //         }
-        //     ],
-        //     "externalConsole": false
-        // },
+        {
+            "name": "samples/tiny",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
+            "": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                }
+            ],
+            "externalConsole": false
+        },
         // {
         //     "name": "samples:tinyUSDHyrda",
         //     "type": "cppvsdbg",

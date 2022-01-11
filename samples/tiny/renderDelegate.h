@@ -41,13 +41,13 @@ PXR_NAMESPACE_OPEN_SCOPE
 /// responsible for creating renderpasses, which know how to draw this
 /// renderer's scene primitives.
 ///
-class HdTinyRenderDelegate final : public HdRenderDelegate 
+class HdTinyRenderDelegate final : public HdRenderDelegate
 {
 public:
-    /// Render delegate constructor. 
+    /// Render delegate constructor.
     HdTinyRenderDelegate();
-    /// Render delegate constructor. 
-    HdTinyRenderDelegate(HdRenderSettingsMap const& settingsMap);
+    /// Render delegate constructor.
+    HdTinyRenderDelegate(HdRenderSettingsMap const &settingsMap);
     /// Render delegate destructor.
     virtual ~HdTinyRenderDelegate();
 
@@ -62,26 +62,24 @@ public:
     // Prims
     HdRenderPassSharedPtr CreateRenderPass(
         HdRenderIndex *index,
-        HdRprimCollection const& collection) override;
+        HdRprimCollection const &collection) override;
 
     HdInstancer *CreateInstancer(HdSceneDelegate *delegate,
-                                         SdfPath const& id,
-                                         SdfPath const& instancerId) override;
+                                 SdfPath const &id) override;
     void DestroyInstancer(HdInstancer *instancer) override;
 
-    HdRprim *CreateRprim(TfToken const& typeId,
-                                 SdfPath const& rprimId,
-                                 SdfPath const& instancerId) override;
+    HdRprim *CreateRprim(TfToken const &typeId,
+                         SdfPath const &rprimId) override;
     void DestroyRprim(HdRprim *rPrim) override;
 
-    HdSprim *CreateSprim(TfToken const& typeId,
-                         SdfPath const& sprimId) override;
-    HdSprim *CreateFallbackSprim(TfToken const& typeId) override;
+    HdSprim *CreateSprim(TfToken const &typeId,
+                         SdfPath const &sprimId) override;
+    HdSprim *CreateFallbackSprim(TfToken const &typeId) override;
     void DestroySprim(HdSprim *sprim) override;
 
-    HdBprim *CreateBprim(TfToken const& typeId,
-                                 SdfPath const& bprimId) override;
-    HdBprim *CreateFallbackBprim(TfToken const& typeId) override;
+    HdBprim *CreateBprim(TfToken const &typeId,
+                         SdfPath const &bprimId) override;
+    HdBprim *CreateFallbackBprim(TfToken const &typeId) override;
     void DestroyBprim(HdBprim *bprim) override;
 
     void CommitResources(HdChangeTracker *tracker) override;
@@ -99,9 +97,8 @@ private:
 
     // This class does not support copying.
     HdTinyRenderDelegate(const HdTinyRenderDelegate &) = delete;
-    HdTinyRenderDelegate &operator =(const HdTinyRenderDelegate &) = delete;
+    HdTinyRenderDelegate &operator=(const HdTinyRenderDelegate &) = delete;
 };
-
 
 PXR_NAMESPACE_CLOSE_SCOPE
 

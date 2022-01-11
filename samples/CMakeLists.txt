@@ -2,6 +2,6 @@ subdirs(
   hello
   gl_sample
   # hd_sample
-  # tiny
+  tiny
   # tinyUSDHyrda
 )
