@@ -4,5 +4,5 @@ subdirs(
   hd_sample
   tiny
   tinyUSDHyrda
-  MiniUsdHydra  
+  MiniUsdImagingGLEngine  
 )

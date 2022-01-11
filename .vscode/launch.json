@@ -111,10 +111,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "samples/MiniUsdHydra",
+            "name": "samples/UsdImagingGLEngine",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/bin/MiniUsdHydra.exe",
+            "program": "${workspaceFolder}/build/Debug/bin/UsdImagingGLEngine.exe",
             "args": [
                 "test_sphere.usda",
                 // "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",

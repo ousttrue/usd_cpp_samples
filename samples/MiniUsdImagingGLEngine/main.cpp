@@ -72,7 +72,7 @@ public:
 
 int main(int argc, char **argv) {
   Window w;
-  if (!w.Create(1920, 1080, "MiniUsdHydra")) {
+  if (!w.Create(1920, 1080, "UsdImagingGLEngine")) {
     return 1;
   }
 
