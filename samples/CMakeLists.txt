@@ -3,5 +3,5 @@ subdirs(
   gl_sample
   hd_sample
   tiny
-  # tinyUSDHyrda
+  tinyUSDHyrda
 )

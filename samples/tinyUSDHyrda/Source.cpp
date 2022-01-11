@@ -50,8 +50,8 @@ public:
 class TinyRenderDelegate_Mesh final : public pxr::HdMesh
 {
 public:
-	TinyRenderDelegate_Mesh(pxr::TfToken const& typeId, pxr::SdfPath const& rprimId, pxr::SdfPath const& instancerId)
-		:pxr::HdMesh(rprimId, instancerId) {}
+	TinyRenderDelegate_Mesh(pxr::TfToken const& typeId, pxr::SdfPath const& rprimId)
+		:pxr::HdMesh(rprimId) {}
 
 	pxr::HdDirtyBits GetInitialDirtyBitsMask() const override
 	{
@@ -126,11 +126,11 @@ public:
 		return pxr::HdRenderPassSharedPtr(new TinyRenderDelegate_RenderPass(index, collection));
 	};
 
-	virtual pxr::HdInstancer *CreateInstancer(pxr::HdSceneDelegate *delegate, pxr::SdfPath const& id, pxr::SdfPath const& instancerId) override { return nullptr; };
+	virtual pxr::HdInstancer *CreateInstancer(pxr::HdSceneDelegate *delegate, pxr::SdfPath const& id) override { return nullptr; };
 	virtual void DestroyInstancer(pxr::HdInstancer *instancer) override { delete instancer; };
 
-	virtual pxr::HdRprim *CreateRprim(pxr::TfToken const& typeId, pxr::SdfPath const &rprimId, pxr::SdfPath const& instancerId) override {
-		return  new TinyRenderDelegate_Mesh(typeId, rprimId, instancerId);
+	virtual pxr::HdRprim *CreateRprim(pxr::TfToken const& typeId, pxr::SdfPath const &rprimId) override {
+		return  new TinyRenderDelegate_Mesh(typeId, rprimId);
 	}
 	virtual void DestroyRprim(pxr::HdRprim *rPrim) override { delete rPrim; };
 
@@ -157,7 +157,7 @@ public:
 	};
 
 	virtual void Prepare(pxr::HdTaskContext* ctx, pxr::HdRenderIndex* renderIndex) override {
-		_renderPass->Prepare(pxr::TfTokenVector());
+		// _renderPass->Prepare(pxr::TfTokenVector());
 	};
 
 	void Execute(pxr::HdTaskContext* ctx) override
