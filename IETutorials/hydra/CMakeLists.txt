@@ -1,5 +1,5 @@
 add_subdirectory(helloWorld)
-add_subdirectory(simpleObject)
+# add_subdirectory(simpleObject)
 # add_subdirectory(shader)
 # add_subdirectory(texturing)
 # add_subdirectory(lighting)

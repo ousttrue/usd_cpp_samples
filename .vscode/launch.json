@@ -111,6 +111,27 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "samples/MiniUsdHydra",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/bin/MiniUsdHydra.exe",
+            "args": [
+                "test_sphere.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
+                // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                }
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "samples/gl_sample",
             "type": "cppvsdbg",
             "request": "launch",
