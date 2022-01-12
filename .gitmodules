@@ -7,3 +7,6 @@
 [submodule "_external/usdtweak"]
 	path = _external/usdtweak
 	url = https://github.com/ousttrue/usdtweak.git
+[submodule "_external/USD-Cookbook"]
+	path = _external/USD-Cookbook
+	url = https://github.com/ColinKennedy/USD-Cookbook.git
