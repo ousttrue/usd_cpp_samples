@@ -398,12 +398,6 @@ public:
     SetRenderViewport(info.viewport);
     SetCameraState(info.modelViewMatrix, info.projectionMatrix);
 
-    using namespace pxr;
-
-    // TRACE_FUNCTION_SCOPE("test profile: renderTime");
-
-    // renderTime.Start();
-
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 
@@ -428,8 +422,6 @@ public:
       TRACE_FUNCTION_SCOPE("glFinish");
       glFinish();
     }
-
-    // renderTime.Stop();
 
     _drawTarget->Unbind();
 
@@ -669,50 +661,24 @@ private:
   }
 };
 
-class GLEngine {
-  class GLEngineImpl *_impl = nullptr;
+class UnitTestWindow : public pxr::GarchGLDebugWindow {
+  CameraView view;
 
-  // Disallow copies
-  GLEngine(const GLEngine &) = delete;
-  GLEngine &operator=(const GLEngine &) = delete;
-
-public:
-  GLEngine(const CreateSceneDelegate &createSceneDelegate);
-  ~GLEngine();
-  uint32_t RenderFrame(const RenderFrameInfo &info,
-                       const pxr::SdfPathVector &paths);
-};
-
-//----------------------------------------------------------------------------
-// Construction
-//----------------------------------------------------------------------------
-GLEngine::GLEngine(const CreateSceneDelegate &createSceneDelegate)
-    : _impl(new GLEngineImpl(createSceneDelegate)) {}
-
-GLEngine::~GLEngine() { delete _impl; }
-
-uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info,
-                               const pxr::SdfPathVector &paths) {
-  return _impl->RenderFrame(info, paths);
-}
-
-class Impl {
   pxr::UsdStageRefPtr _stage;
   pxr::SdfPath _rootPath;
-  GLEngine *_engine = nullptr;
+  GLEngineImpl *_engine = nullptr;
 
   pxr::UsdImagingDelegate *_sceneDelegate = nullptr;
   bool _isPopulated = false;
 
 public:
-  Impl(const char *usdFile) {
+  UnitTestWindow(int w, int h, const char *usdFile)
+      : GarchGLDebugWindow("UsdImagingGL Test", w, h) {
     _stage = pxr::UsdStage::Open(usdFile);
     _rootPath = _stage->GetPseudoRoot().GetPath();
   }
 
-  ~Impl() { Shutdown(); }
-
-  void Shutdown() {
+  ~UnitTestWindow() {
     if (_engine) {
       delete _engine;
       _engine = nullptr;
@@ -724,66 +690,10 @@ public:
     std::cout << "GLDrawing::ShutdownTest()\n";
   }
 
-  uint32_t Draw(int width, int height, const pxr::GfMatrix4d &viewMatrix) {
-    const double aspectRatio = double(width) / height;
-    pxr::GfFrustum frustum;
-    frustum.SetPerspective(60.0, aspectRatio, 1, 100000.0);
-
-    RenderFrameInfo frameInfo;
-    frameInfo.clearDepth = {1.0f};
-    frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
-    frameInfo.modelViewMatrix = viewMatrix;
-    if (pxr::UsdGeomGetStageUpAxis(_stage) == pxr::UsdGeomTokens->z) {
-      // rotate from z-up to y-up
-      frameInfo.modelViewMatrix = pxr::GfMatrix4d().SetRotate(pxr::GfRotation(
-                                      pxr::GfVec3d(1.0, 0.0, 0.0), -90.0)) *
-                                  frameInfo.modelViewMatrix;
-    }
-    frameInfo.projectionMatrix = frustum.ComputeProjectionMatrix();
-
-    if (!_engine) {
-      std::cout << "Using HD Renderer.\n";
-      _engine = new GLEngine(std::bind(&Impl::CreateSceneDelegate, this,
-                                       std::placeholders::_1,
-                                       pxr::SdfPath::AbsoluteRootPath()));
-    }
-
-    PrepareBatch();
-    // XXX(UsdImagingPaths): Is it correct to map USD root path directly
-    // to the cachePath here?
-    // const SdfPath cachePath = root.GetPath();
-    auto paths = {_sceneDelegate->ConvertCachePathToIndexPath(_rootPath)};
-
-    return _engine->RenderFrame(frameInfo, paths);
+  virtual void OnInitializeGL() {
+    pxr::GlfRegisterDefaultDebugOutputMessageCallback();
+    pxr::GlfContextCaps::InitInstance();
   }
-
-  void CreateSceneDelegate(pxr::HdRenderIndex *renderIndex,
-                           const pxr::SdfPath &delegateId) {
-    _sceneDelegate = new pxr::UsdImagingDelegate(renderIndex, delegateId);
-  }
-
-  // bool _CanPrepareBatch(
-  //     const pxr::UsdPrim &root,
-  //     const pxr::UsdImagingGLRenderParams &params)
-  // {
-  //     using namespace pxr;
-  //     HD_TRACE_FUNCTION();
-
-  //     if (!TF_VERIFY(root, "Attempting to draw an invalid/null prim\n"))
-  //         return false;
-
-  //     if (!root.GetPath().HasPrefix(_rootPath))
-  //     {
-  //         TF_CODING_ERROR("Attempting to draw path <%s>, but engine is
-  //         rooted"
-  //                         "at <%s>\n",
-  //                         root.GetPath().GetText(),
-  //                         _rootPath.GetText());
-  //         return false;
-  //     }
-
-  //     return true;
-  // }
 
   void PrepareBatch() {
     using namespace pxr;
@@ -822,22 +732,44 @@ public:
       // _sceneDelegate->SetTime(params.frame);
     }
   }
-};
 
-class UnitTestWindow : public pxr::GarchGLDebugWindow {
-  CameraView view;
-  Impl driver;
-
-public:
-  UnitTestWindow(int w, int h, const char *usdFile)
-      : GarchGLDebugWindow("UsdImagingGL Test", w, h), driver(usdFile) {}
-
-  virtual void OnInitializeGL() {
-    pxr::GlfRegisterDefaultDebugOutputMessageCallback();
-    pxr::GlfContextCaps::InitInstance();
+  void CreateSceneDelegate(pxr::HdRenderIndex *renderIndex,
+                           const pxr::SdfPath &delegateId) {
+    _sceneDelegate = new pxr::UsdImagingDelegate(renderIndex, delegateId);
   }
 
-  virtual void OnUninitializeGL() { driver.Shutdown(); }
+  uint32_t Draw(int width, int height, const pxr::GfMatrix4d &viewMatrix) {
+    const double aspectRatio = double(width) / height;
+    pxr::GfFrustum frustum;
+    frustum.SetPerspective(60.0, aspectRatio, 1, 100000.0);
+
+    RenderFrameInfo frameInfo;
+    frameInfo.clearDepth = {1.0f};
+    frameInfo.viewport = pxr::GfVec4d(0, 0, width, height);
+    frameInfo.modelViewMatrix = viewMatrix;
+    if (pxr::UsdGeomGetStageUpAxis(_stage) == pxr::UsdGeomTokens->z) {
+      // rotate from z-up to y-up
+      frameInfo.modelViewMatrix = pxr::GfMatrix4d().SetRotate(pxr::GfRotation(
+                                      pxr::GfVec3d(1.0, 0.0, 0.0), -90.0)) *
+                                  frameInfo.modelViewMatrix;
+    }
+    frameInfo.projectionMatrix = frustum.ComputeProjectionMatrix();
+
+    if (!_engine) {
+      std::cout << "Using HD Renderer.\n";
+      _engine = new GLEngineImpl(std::bind(&UnitTestWindow::CreateSceneDelegate,
+                                           this, std::placeholders::_1,
+                                           pxr::SdfPath::AbsoluteRootPath()));
+    }
+
+    PrepareBatch();
+    // XXX(UsdImagingPaths): Is it correct to map USD root path directly
+    // to the cachePath here?
+    // const SdfPath cachePath = root.GetPath();
+    auto paths = {_sceneDelegate->ConvertCachePathToIndexPath(_rootPath)};
+
+    return _engine->RenderFrame(frameInfo, paths);
+  }
 
   void OnPaintGL() {
     //
@@ -847,7 +779,7 @@ public:
     int width = GetWidth();
     int height = GetHeight();
 
-    auto fbo = driver.Draw(width, height, view.ViewMatrix());
+    auto fbo = Draw(width, height, view.ViewMatrix());
 
     //
     // Blit the resulting color buffer to the window (this is a noop
@@ -867,7 +799,6 @@ public:
     switch (key) {
     case 'q':
       ExitApp();
-      return;
     }
   }
 
@@ -889,14 +820,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Impl driver(argv[1]);
-
-  // input.OnKeyRelease = [&driver](int key) {
-  //     driver.KeyRelease(key);
-  // };
   auto context = UnitTestWindow(640, 480, argv[1]);
   context.Init();
   context.Run();
-
-  std::cout << "OK" << std::endl;
 }
