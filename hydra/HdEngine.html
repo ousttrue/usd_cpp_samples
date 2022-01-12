@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="python の usd モジュール" href="../python/index.html" /><link rel="prev" title="UsdImagingGLEngine" href="UsdImagingGLEngine.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="Tiny" href="Tiny.html" /><link rel="prev" title="Hydra Framework" href="index.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
         <title>pxr::HdEngine - usd sample ドキュメント</title>
@@ -166,9 +166,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cmake/index.html">CMakeLists.txt 解読</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samples/index.html">samples</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Imaging</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Hydra Framework</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pxr::HdEngine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tiny.html">Tiny</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python/index.html">python の usd モジュール</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -206,14 +207,19 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="pxr-hdengine">
 <h1>pxr::HdEngine<a class="headerlink" href="#pxr-hdengine" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<section id="renderdelegate">
-<h2>RenderDelegate<a class="headerlink" href="#renderdelegate" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>RenderIndex を介して、RenderDelegate を制御する。
+RenderDelegate は RenderIndex から情報を pull する。</p>
+<section id="sync">
+<h2>Sync<a class="headerlink" href="#sync" title="このヘッドラインへのパーマリンク">¶</a></h2>
 </section>
-<section id="hdrenderindex">
-<h2>HdRenderIndex<a class="headerlink" href="#hdrenderindex" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="prepare">
+<h2>Prepare<a class="headerlink" href="#prepare" title="このヘッドラインへのパーマリンク">¶</a></h2>
 </section>
-<section id="scenedelegate">
-<h2>SceneDelegate<a class="headerlink" href="#scenedelegate" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="commit">
+<h2>Commit<a class="headerlink" href="#commit" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="execute">
+<h2>Execute<a class="headerlink" href="#execute" title="このヘッドラインへのパーマリンク">¶</a></h2>
 </section>
 <section id="taskcontroller">
 <h2>TaskController<a class="headerlink" href="#taskcontroller" title="このヘッドラインへのパーマリンク">¶</a></h2>
@@ -251,23 +257,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../python/index.html">
+          <a class="next-page" href="Tiny.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">python の usd モジュール</div>
+                <div class="title">Tiny</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="UsdImagingGLEngine.html">
+          <a class="prev-page" href="index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">UsdImagingGLEngine</div>
+                <div class="title">Hydra Framework</div>
                 
               </div>
             </a>
@@ -277,7 +283,7 @@
               Copyright &#169; 2022, ousttrue |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="../_sources/imaging/HdEngine.md.txt"
+            | <a class="muted-link" href="../_sources/hydra/HdEngine.md.txt"
                rel="nofollow">
               ソースコードを表示
             </a>
@@ -298,9 +304,10 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">pxr::HdEngine</a><ul>
-<li><a class="reference internal" href="#renderdelegate">RenderDelegate</a></li>
-<li><a class="reference internal" href="#hdrenderindex">HdRenderIndex</a></li>
-<li><a class="reference internal" href="#scenedelegate">SceneDelegate</a></li>
+<li><a class="reference internal" href="#sync">Sync</a></li>
+<li><a class="reference internal" href="#prepare">Prepare</a></li>
+<li><a class="reference internal" href="#commit">Commit</a></li>
+<li><a class="reference internal" href="#execute">Execute</a></li>
 <li><a class="reference internal" href="#taskcontroller">TaskController</a></li>
 <li><a class="reference internal" href="#scenedelegate-path">SceneDelegate から path のリストを得る</a></li>
 <li><a class="reference internal" href="#path-task">path から task を作る</a></li>

@@ -2,6 +2,16 @@
 
 ハイレベルインタフェース。
 {doc}`HdEngine` で `UsdImagingDelegate` を駆動するラッパー。
+中で、`HdEngine` と `HdxTaskController` を使う。
+
+```{blockdiag}
+blockdiag {
+    S_Usd[label = "USDImaging(SceneDelegate)"];
+    R_Storm[label = "HdStorm(RenderDelegate)"];
+    S_Usd -> RenderIndex;
+    RenderIndex -> R_Storm;
+}
+```
 
 stage を OpenGL にレンダリングする。
 

@@ -1,10 +1,13 @@
 # pxr::HdEngine
 
-## RenderDelegate
+RenderIndex を介して、RenderDelegate を制御する。
+RenderDelegate は RenderIndex から情報を pull する。
 
-## HdRenderIndex
+## Sync
+## Prepare
+## Commit
+## Execute
 
-## SceneDelegate
 
 ## TaskController
 
