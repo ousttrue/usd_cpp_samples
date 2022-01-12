@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="data" href="../data/index.html" /><link rel="prev" title="python の usd モジュール" href="index.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="python の usd モジュール" href="../python/index.html" /><link rel="prev" title="UsdImagingGLEngine" href="UsdImagingGLEngine.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>実装 - usd sample ドキュメント</title>
+        <title>pxr::HdEngine - usd sample ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -166,13 +166,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cmake/index.html">CMakeLists.txt 解読</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samples/index.html">samples</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../imaging/index.html">Imaging</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../imaging/UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../imaging/HdEngine.html">pxr::HdEngine</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Imaging</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="UsdImagingGLEngine.html">UsdImagingGLEngine</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pxr::HdEngine</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">python の usd モジュール</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">実装</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python/index.html">python の usd モジュール</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python/impl.html">実装</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">data</a></li>
@@ -204,35 +204,45 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>実装<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">build_usd.py</span></code> で <code class="docutils literal notranslate"><span class="pre">--python</span></code> するとビルドされて、 <code class="docutils literal notranslate"><span class="pre">BUILD_DIR/lib/python</span></code> フォルダん展開される。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pxr</span>
-  <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
-  <span class="n">Usd</span><span class="o">/</span>
-    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
-    <span class="n">_usd</span><span class="o">.</span><span class="n">pyd</span>
+          <section class="tex2jax_ignore mathjax_ignore" id="pxr-hdengine">
+<h1>pxr::HdEngine<a class="headerlink" href="#pxr-hdengine" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="renderdelegate">
+<h2>RenderDelegate<a class="headerlink" href="#renderdelegate" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="hdrenderindex">
+<h2>HdRenderIndex<a class="headerlink" href="#hdrenderindex" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="scenedelegate">
+<h2>SceneDelegate<a class="headerlink" href="#scenedelegate" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</section>
+<section id="taskcontroller">
+<h2>TaskController<a class="headerlink" href="#taskcontroller" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">_taskController</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">pxr</span><span class="o">::</span><span class="n">HdxTaskController</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
+<span class="n">_renderIndex</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">_ComputeControllerPath</span><span class="p">(</span><span class="n">_renderDelegate</span><span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
-<p>のように展開される。</p>
-<p><code class="docutils literal notranslate"><span class="pre">pyd</span></code> は usd 関連の <code class="docutils literal notranslate"><span class="pre">dll</span></code> に依存するので、 <code class="docutils literal notranslate"><span class="pre">BUILD_DIR/bin</span></code> と <code class="docutils literal notranslate"><span class="pre">BUILD_DIR/lib</span></code> に追加で PATH を通す必要があるだろう。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="n">HERE</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
-<span class="n">BUILD_DIR</span> <span class="o">=</span> <span class="n">HERE</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">'build_release'</span>
-<span class="n">PY_USD_DIR</span> <span class="o">=</span> <span class="n">BUILD_DIR</span> <span class="o">/</span> <span class="s1">'lib/python'</span>
-<span class="n">BIN_DIR0</span> <span class="o">=</span> <span class="n">BUILD_DIR</span> <span class="o">/</span> <span class="s1">'bin'</span>
-<span class="n">BIN_DIR1</span> <span class="o">=</span> <span class="n">BUILD_DIR</span> <span class="o">/</span> <span class="s1">'lib'</span>
-
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'PATH'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BIN_DIR0</span><span class="si">}</span><span class="s1">;</span><span class="si">{</span><span class="n">BIN_DIR1</span><span class="si">}</span><span class="s1">;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">PY_USD_DIR</span><span class="p">))</span>
+</section>
+<section id="scenedelegate-path">
+<h2>SceneDelegate から path のリストを得る<a class="headerlink" href="#scenedelegate-path" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>_stage と _sceneDelegate から path のリストを得る。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">pxr</span><span class="o">::</span><span class="n">SdfPathVector</span><span class="w"> </span><span class="n">paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">_sceneDelegate</span><span class="o">-&gt;</span><span class="n">ConvertCachePathToIndexPath</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">_stage</span><span class="o">-&gt;</span><span class="n">GetPseudoRoot</span><span class="p">().</span><span class="n">GetPath</span><span class="p">())};</span><span class="w"></span>
 </pre></div>
 </div>
-<section id="cmakelists-txt">
-<h2>CMakeLists.txt<a class="headerlink" href="#cmakelists-txt" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">PYMODULE_CPPFILES</span></code></p>
-<p>というところにソースファイルが列挙されている。</p>
+</section>
+<section id="path-task">
+<h2>path から task を作る<a class="headerlink" href="#path-task" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>_taskController が paths を受け取って task 化する</p>
+</section>
+<section id="task">
+<h2>task をレンダリングする<a class="headerlink" href="#task" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">HD_API</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="n">Execute</span><span class="p">(</span><span class="n">HdRenderIndex</span><span class="w"> </span><span class="o">*</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">HdTaskSharedPtrVector</span><span class="w"> </span><span class="o">*</span><span class="n">tasks</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">_engine</span><span class="o">-&gt;</span><span class="n">Execute</span><span class="p">(</span><span class="n">_renderIndex</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tasks</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -241,23 +251,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../data/index.html">
+          <a class="next-page" href="../python/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">data</div>
+                <div class="title">python の usd モジュール</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="UsdImagingGLEngine.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">python の usd モジュール</div>
+                <div class="title">UsdImagingGLEngine</div>
                 
               </div>
             </a>
@@ -267,7 +277,7 @@
               Copyright &#169; 2022, ousttrue |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="../_sources/python/impl.md.txt"
+            | <a class="muted-link" href="../_sources/imaging/HdEngine.md.txt"
                rel="nofollow">
               ソースコードを表示
             </a>
@@ -287,8 +297,14 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">実装</a><ul>
-<li><a class="reference internal" href="#cmakelists-txt">CMakeLists.txt</a></li>
+<li><a class="reference internal" href="#">pxr::HdEngine</a><ul>
+<li><a class="reference internal" href="#renderdelegate">RenderDelegate</a></li>
+<li><a class="reference internal" href="#hdrenderindex">HdRenderIndex</a></li>
+<li><a class="reference internal" href="#scenedelegate">SceneDelegate</a></li>
+<li><a class="reference internal" href="#taskcontroller">TaskController</a></li>
+<li><a class="reference internal" href="#scenedelegate-path">SceneDelegate から path のリストを得る</a></li>
+<li><a class="reference internal" href="#path-task">path から task を作る</a></li>
+<li><a class="reference internal" href="#task">task をレンダリングする</a></li>
 </ul>
 </li>
 </ul>

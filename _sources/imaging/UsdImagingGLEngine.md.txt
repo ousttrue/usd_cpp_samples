@@ -1,6 +1,7 @@
 # UsdImagingGLEngine
 
 ハイレベルインタフェース。
+{doc}`HdEngine` で `UsdImagingDelegate` を駆動するラッパー。
 
 stage を OpenGL にレンダリングする。
 
