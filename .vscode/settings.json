@@ -18,4 +18,7 @@
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build"
     ],
+    "cSpell.words": [
+        "Garch"
+    ],
 }
