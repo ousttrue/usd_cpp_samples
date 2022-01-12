@@ -1,3 +1,3 @@
 # Tiny
 
-サンプルコード
+`usd/extras/imaging/examples/hdTiny`
