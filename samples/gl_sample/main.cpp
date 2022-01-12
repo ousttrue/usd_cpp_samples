@@ -24,7 +24,6 @@
 #include <pxr/usdImaging/usdImaging/delegate.h>
 #include <pxr/usdImaging/usdImagingGL/renderParams.h>
 
-
 PXR_NAMESPACE_OPEN_SCOPE
 class UsdPrim;
 class HdRenderIndex;
@@ -35,130 +34,52 @@ using CreateSceneDelegate = std::function<void(pxr::HdRenderIndex *)>;
 #include <functional>
 #include <pxr/imaging/garch/glDebugWindow.h>
 
-struct Input {
-  std::function<void(int key)> OnKeyRelease;
-  std::function<void(int button, int x, int y, int modKeys)> OnMousePress;
-  std::function<void(int button, int x, int y, int modKeys)> OnMouseRelease;
-  std::function<void(int x, int y, int modKeys)> OnMouseMove;
+class CameraView {
+  float _rotate[2] = {0, 0};
+  float _translate[3] = {0.0f, 0.0f, -100.0f};
+  int _mousePos[2] = {0, 0};
+  bool _mouseButton[3] = {false, false, false};
 
-  void KeyRelease(int key) {
-    if (OnKeyRelease) {
-      OnKeyRelease(key);
-    }
+public:
+  pxr::GfMatrix4d ViewMatrix() const {
+    pxr::GfMatrix4d viewMatrix(1.0);
+    viewMatrix *= pxr::GfMatrix4d().SetRotate(
+        pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
+    viewMatrix *= pxr::GfMatrix4d().SetRotate(
+        pxr::GfRotation(pxr::GfVec3d(1, 0, 0), _rotate[1]));
+    viewMatrix *= pxr::GfMatrix4d().SetTranslate(
+        pxr::GfVec3d(_translate[0], _translate[1], _translate[2]));
+    return viewMatrix;
   }
+
   void MousePress(int button, int x, int y, int modKeys) {
-    if (OnMouseRelease) {
-      OnMousePress(button, x, y, modKeys);
-    }
+    _mouseButton[button] = 1;
+    _mousePos[0] = x;
+    _mousePos[1] = y;
   }
+
   void MouseRelease(int button, int x, int y, int modKeys) {
-    if (OnMouseRelease) {
-      OnMouseRelease(button, x, y, modKeys);
-    }
+    _mouseButton[button] = 0;
   }
+
   void MouseMove(int x, int y, int modKeys) {
-    if (OnMouseMove) {
-      OnMouseMove(x, y, modKeys);
+    int dx = x - _mousePos[0];
+    int dy = y - _mousePos[1];
+
+    if (_mouseButton[0]) {
+      _rotate[0] += dx;
+      _rotate[1] += dy;
+    } else if (_mouseButton[1]) {
+      _translate[0] += dx;
+      _translate[1] -= dy;
+    } else if (_mouseButton[2]) {
+      _translate[2] += dx;
     }
+
+    _mousePos[0] = x;
+    _mousePos[1] = y;
   }
 };
-
-class UnitTestWindow : public pxr::GarchGLDebugWindow {
-public:
-  using OnInitFunc = std::function<void(int, int)>;
-  using OnDrawFunc = std::function<uint32_t(int, int)>;
-  using OnUninitFunc = std::function<void()>;
-
-public:
-  UnitTestWindow(int w, int h, const OnInitFunc &onInit,
-                 const OnDrawFunc &onDraw, const OnUninitFunc &onUninit,
-                 const Input &input);
-  virtual ~UnitTestWindow();
-
-  // GarchGLDebugWIndow overrides;
-  virtual void OnInitializeGL();
-  virtual void OnUninitializeGL();
-  virtual void OnPaintGL();
-  virtual void OnKeyRelease(int key);
-  virtual void OnMousePress(int button, int x, int y, int modKeys);
-  virtual void OnMouseRelease(int button, int x, int y, int modKeys);
-  virtual void OnMouseMove(int x, int y, int modKeys);
-
-private:
-  OnInitFunc _onInit;
-  OnDrawFunc _onDraw;
-  OnUninitFunc _onUninit;
-  Input _input;
-};
-UnitTestWindow::UnitTestWindow(int w, int h, const OnInitFunc &onInit,
-                               const OnDrawFunc &onDraw,
-                               const OnUninitFunc &onUninit, const Input &input)
-    : GarchGLDebugWindow("UsdImagingGL Test", w, h), _onInit(onInit),
-      _onDraw(onDraw), _onUninit(onUninit), _input(input) {}
-
-UnitTestWindow::~UnitTestWindow() {}
-
-/* virtual */
-void UnitTestWindow::OnInitializeGL() {
-  // pxr::GlfGlewInit();
-  pxr::GlfRegisterDefaultDebugOutputMessageCallback();
-  pxr::GlfContextCaps::InitInstance();
-
-  _onInit(GetWidth(), GetHeight());
-}
-
-/* virtual */
-void UnitTestWindow::OnUninitializeGL() { _onUninit(); }
-
-/* virtual */
-void UnitTestWindow::OnPaintGL() {
-  //
-  // Update the draw target's size and execute the unit test with
-  // the draw target bound.
-  //
-  int width = GetWidth();
-  int height = GetHeight();
-
-  auto fbo = _onDraw(width, height);
-
-  //
-  // Blit the resulting color buffer to the window (this is a noop
-  // if we're drawing offscreen).
-  //
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-
-  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height,
-                    GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-}
-
-/* virtual */
-void UnitTestWindow::OnKeyRelease(int key) {
-  switch (key) {
-  case 'q':
-    ExitApp();
-    return;
-  }
-  _input.KeyRelease(key);
-}
-
-/* virtual */
-void UnitTestWindow::OnMousePress(int button, int x, int y, int modKeys) {
-  _input.MousePress(button, x, y, modKeys);
-}
-
-/* virtual */
-void UnitTestWindow::OnMouseRelease(int button, int x, int y, int modKeys) {
-  _input.MouseRelease(button, x, y, modKeys);
-}
-
-/* virtual */
-void UnitTestWindow::OnMouseMove(int x, int y, int modKeys) {
-  _input.MouseMove(x, y, modKeys);
-}
 
 struct RenderFrameInfo {
   pxr::GfVec4d viewport;
@@ -302,6 +223,40 @@ static pxr::HdxRenderTaskParams _MakeHydraUsdImagingGLRenderParams(
 
 static bool IsColorCorrectionCapable() {
   return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled;
+}
+
+static int _GetRefineLevel(float c) {
+  // TODO: Change complexity to refineLevel when we refactor UsdImaging.
+  //
+  // Convert complexity float to refine level int.
+  int refineLevel = 0;
+
+  // to avoid floating point inaccuracy (e.g. 1.3 > 1.3f)
+  c = std::min(c + 0.01f, 2.0f);
+
+  if (1.0f <= c && c < 1.1f) {
+    refineLevel = 0;
+  } else if (1.1f <= c && c < 1.2f) {
+    refineLevel = 1;
+  } else if (1.2f <= c && c < 1.3f) {
+    refineLevel = 2;
+  } else if (1.3f <= c && c < 1.4f) {
+    refineLevel = 3;
+  } else if (1.4f <= c && c < 1.5f) {
+    refineLevel = 4;
+  } else if (1.5f <= c && c < 1.6f) {
+    refineLevel = 5;
+  } else if (1.6f <= c && c < 1.7f) {
+    refineLevel = 6;
+  } else if (1.7f <= c && c < 1.8f) {
+    refineLevel = 7;
+  } else if (1.8f <= c && c <= 2.0f) {
+    refineLevel = 8;
+  } else {
+    using namespace pxr;
+    TF_CODING_ERROR("Invalid complexity %f, expected range is [1.0,2.0]\n", c);
+  }
+  return refineLevel;
 }
 
 class GLEngineImpl {
@@ -741,87 +696,6 @@ uint32_t GLEngine::RenderFrame(const RenderFrameInfo &info,
   return _impl->RenderFrame(info, paths);
 }
 
-class CameraView {
-  float _rotate[2] = {0, 0};
-  float _translate[3] = {0.0f, 0.0f, -100.0f};
-  int _mousePos[2] = {0, 0};
-  bool _mouseButton[3] = {false, false, false};
-
-public:
-  pxr::GfMatrix4d ViewMatrix() const {
-    pxr::GfMatrix4d viewMatrix(1.0);
-    viewMatrix *= pxr::GfMatrix4d().SetRotate(
-        pxr::GfRotation(pxr::GfVec3d(0, 1, 0), _rotate[0]));
-    viewMatrix *= pxr::GfMatrix4d().SetRotate(
-        pxr::GfRotation(pxr::GfVec3d(1, 0, 0), _rotate[1]));
-    viewMatrix *= pxr::GfMatrix4d().SetTranslate(
-        pxr::GfVec3d(_translate[0], _translate[1], _translate[2]));
-    return viewMatrix;
-  }
-
-  void MousePress(int button, int x, int y, int modKeys) {
-    _mouseButton[button] = 1;
-    _mousePos[0] = x;
-    _mousePos[1] = y;
-  }
-
-  void MouseRelease(int button, int x, int y, int modKeys) {
-    _mouseButton[button] = 0;
-  }
-
-  void MouseMove(int x, int y, int modKeys) {
-    int dx = x - _mousePos[0];
-    int dy = y - _mousePos[1];
-
-    if (_mouseButton[0]) {
-      _rotate[0] += dx;
-      _rotate[1] += dy;
-    } else if (_mouseButton[1]) {
-      _translate[0] += dx;
-      _translate[1] -= dy;
-    } else if (_mouseButton[2]) {
-      _translate[2] += dx;
-    }
-
-    _mousePos[0] = x;
-    _mousePos[1] = y;
-  }
-};
-
-static int _GetRefineLevel(float c) {
-  // TODO: Change complexity to refineLevel when we refactor UsdImaging.
-  //
-  // Convert complexity float to refine level int.
-  int refineLevel = 0;
-
-  // to avoid floating point inaccuracy (e.g. 1.3 > 1.3f)
-  c = std::min(c + 0.01f, 2.0f);
-
-  if (1.0f <= c && c < 1.1f) {
-    refineLevel = 0;
-  } else if (1.1f <= c && c < 1.2f) {
-    refineLevel = 1;
-  } else if (1.2f <= c && c < 1.3f) {
-    refineLevel = 2;
-  } else if (1.3f <= c && c < 1.4f) {
-    refineLevel = 3;
-  } else if (1.4f <= c && c < 1.5f) {
-    refineLevel = 4;
-  } else if (1.5f <= c && c < 1.6f) {
-    refineLevel = 5;
-  } else if (1.6f <= c && c < 1.7f) {
-    refineLevel = 6;
-  } else if (1.7f <= c && c < 1.8f) {
-    refineLevel = 7;
-  } else if (1.8f <= c && c <= 2.0f) {
-    refineLevel = 8;
-  } else {
-    using namespace pxr;
-    TF_CODING_ERROR("Invalid complexity %f, expected range is [1.0,2.0]\n", c);
-  }
-  return refineLevel;
-}
-
 class Impl {
   pxr::UsdStageRefPtr _stage;
   pxr::SdfPath _rootPath;
@@ -950,35 +824,77 @@ public:
   }
 };
 
+class UnitTestWindow : public pxr::GarchGLDebugWindow {
+  CameraView view;
+  Impl driver;
+
+public:
+  UnitTestWindow(int w, int h, const char *usdFile)
+      : GarchGLDebugWindow("UsdImagingGL Test", w, h), driver(usdFile) {}
+
+  virtual void OnInitializeGL() {
+    pxr::GlfRegisterDefaultDebugOutputMessageCallback();
+    pxr::GlfContextCaps::InitInstance();
+  }
+
+  virtual void OnUninitializeGL() { driver.Shutdown(); }
+
+  void OnPaintGL() {
+    //
+    // Update the draw target's size and execute the unit test with
+    // the draw target bound.
+    //
+    int width = GetWidth();
+    int height = GetHeight();
+
+    auto fbo = driver.Draw(width, height, view.ViewMatrix());
+
+    //
+    // Blit the resulting color buffer to the window (this is a noop
+    // if we're drawing offscreen).
+    //
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height,
+                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  }
+
+  virtual void OnKeyRelease(int key) {
+    switch (key) {
+    case 'q':
+      ExitApp();
+      return;
+    }
+  }
+
+  virtual void OnMousePress(int button, int x, int y, int modKeys) {
+    view.MousePress(button, x, y, modKeys);
+  }
+
+  virtual void OnMouseRelease(int button, int x, int y, int modKeys) {
+    view.MouseRelease(button, x, y, modKeys);
+  }
+
+  virtual void OnMouseMove(int x, int y, int modKeys) {
+    view.MouseMove(x, y, modKeys);
+  }
+};
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     return 1;
   }
 
-  Impl driver(argv[1]);
-  CameraView view;
+  // Impl driver(argv[1]);
 
-  // create GL Context / window
-  Input input;
-  input.OnMousePress = [&view](int button, int x, int y, int mod) {
-    view.MousePress(button, x, y, mod);
-  };
-  input.OnMouseRelease = [&view](int button, int x, int y, int mod) {
-    view.MouseRelease(button, x, y, mod);
-  };
-  input.OnMouseMove = [&view](int button, int x, int y) {
-    view.MouseMove(button, x, y);
-  };
   // input.OnKeyRelease = [&driver](int key) {
   //     driver.KeyRelease(key);
   // };
-  auto context = UnitTestWindow(
-      640, 480, [&driver](int w, int h) {},
-      [&driver, &view](int w, int h) {
-        return driver.Draw(w, h, view.ViewMatrix());
-      },
-      [&driver]() { driver.Shutdown(); }, input);
-
+  auto context = UnitTestWindow(640, 480, argv[1]);
   context.Init();
   context.Run();
 
