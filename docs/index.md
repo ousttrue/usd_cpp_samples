@@ -9,6 +9,7 @@ usdtweak
 imaging/index
 python/index
 data/index
+usda/index
 scene/index
 ```
 
