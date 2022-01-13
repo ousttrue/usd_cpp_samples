@@ -127,6 +127,10 @@
                 {
                     "name": "PATH",
                     "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                },
+                {
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
                 }
             ],
             "console": "integratedTerminal"
