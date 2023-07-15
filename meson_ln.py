@@ -12,8 +12,9 @@ def process(subprojects: pathlib.Path):
     for f in src.glob("**/meson.build"):
         rel = f.relative_to(src)
         target = dst / rel
-        print(f"remove {target}")
-        os.unlink(target)
+        if target.exists() or target.is_symlink():
+            print(f"remove {target}")
+            os.unlink(target)
         print(f"{f}")
         print(f"  => {target}")
         os.symlink(f, target)
