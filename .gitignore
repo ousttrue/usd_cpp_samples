@@ -9,3 +9,9 @@
 imgui.ini
 window.ini
 /.venv/
+
+/subprojects/*
+!/subprojects/packagefiles
+!/subprojects/usd.wrap
+!/subprojects/tbb.wrap
+
