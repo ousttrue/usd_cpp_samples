@@ -292,5 +292,12 @@
             ],
             "externalConsole": false
         },
+        {
+            "name": "meson_ln.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/meson_ln.py",
+            "console": "integratedTerminal",
+        },
     ]
 }
