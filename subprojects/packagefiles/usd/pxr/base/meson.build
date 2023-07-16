@@ -1,0 +1,8 @@
+subdir('arch')
+subdir('tf')
+subdir('js')
+subdir('work')
+subdir('gf')
+subdir('trace')
+subdir('vt')
+subdir('plug')

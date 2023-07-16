@@ -1,0 +1,6 @@
+subdir('ar')
+subdir('sdf')
+subdir('pcp')
+subdir('kind')
+subdir('usd')
+subdir('usdGeom')

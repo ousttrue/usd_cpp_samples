@@ -98,14 +98,14 @@
             "name": "samples/hello",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/hello.exe",
-            "": [],
+            "program": "${workspaceFolder}/prefix/bin/hello.exe",
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
                 }
             ],
             "console": "integratedTerminal"
@@ -114,7 +114,7 @@
             "name": "samples/UsdImagingGLEngine",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/bin/UsdImagingGLEngine.exe",
+            "program": "${workspaceFolder}/prefix/bin/UsdImagingGLEngine.exe",
             "args": [
                 "test_sphere.usda",
                 // "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
@@ -139,7 +139,7 @@
             "name": "samples/gl_sample",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/gl_sample.exe",
+            "program": "${workspaceFolder}/prefix/bin/gl_sample.exe",
             "args": [
                 "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
                 // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
@@ -159,7 +159,7 @@
             "name": "samples/hd_sample",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/hd_sample.exe",
+            "program": "${workspaceFolder}/prefix/bin/hd_sample.exe",
             "": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -175,7 +175,7 @@
             "name": "samples/tiny",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/tiny.exe",
+            "program": "${workspaceFolder}/prefix/bin/tiny.exe",
             "": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -191,7 +191,7 @@
             "name": "samples/tinyUSDHyrda",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/tinyUSDHyrda.exe",
+            "program": "${workspaceFolder}/prefix/bin/tinyUSDHyrda.exe",
             "": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -207,7 +207,7 @@
         //     "name": "extras:testHdTiny",
         //     "type": "cppvsdbg",
         //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/debug/bin/testHdTiny.exe",
+        //     "program": "${workspaceFolder}/prefix/bin/testHdTiny.exe",
         //     "": [],
         //     "stopAtEntry": false,
         //     "cwd": "${workspaceFolder}",
@@ -223,7 +223,7 @@
             "name": "usd_source/testHdxIdRender",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/testHdxIdRender.exe",
+            "program": "${workspaceFolder}/prefix/bin/testHdxIdRender.exe",
             "": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -239,7 +239,7 @@
         //     "name": "source:testUsdImagingGLBasicDrawing",
         //     "type": "cppvsdbg",
         //     "request": "launch",
-        //     "program": "${workspaceFolder}/build/debug/bin/testUsdImagingGLBasicDrawing.exe",
+        //     "program": "${workspaceFolder}/prefix/bin/testUsdImagingGLBasicDrawing.exe",
         //     "": [
         //         "-stage",
         //         "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
@@ -264,7 +264,7 @@
             "name": "IETutorials/helloWorld",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/debug/bin/helloWorld.exe",
+            "program": "${workspaceFolder}/prefix/bin/helloWorld.exe",
             "": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -280,7 +280,7 @@
             "name": "usdtweak",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/bin/usdtweak.exe",
+            "program": "${workspaceFolder}/prefix/bin/usdtweak.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -291,6 +291,13 @@
                 }
             ],
             "externalConsole": false
+        },
+        {
+            "name": "meson_ln.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/meson_ln.py",
+            "console": "integratedTerminal",
         },
     ]
 }
