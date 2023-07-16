@@ -10,6 +10,7 @@ subdir('usdShade')
 subdir('usdLux')
 subdir('usdVol')
 subdir('usdRender')
+subdir('usdHydra')
 
 usd_dep = declare_dependency(
     link_with: [
@@ -25,6 +26,7 @@ usd_dep = declare_dependency(
         usdLux_lib,
         usdVol_lib,
         usdRender_lib,
+        usdHydra_lib,
     ],
     dependencies: [usd_base_dep],
     compile_args: args,

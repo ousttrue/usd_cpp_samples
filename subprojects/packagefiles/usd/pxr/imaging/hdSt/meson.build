@@ -132,3 +132,118 @@ hdSt_lib = shared_library(
         pxOsd_lib,
     ],
 )
+
+cdata = configuration_data()
+cdata.set('PLUG_INFO_LIBRARY_PATH', '../../usd_hdSt.dll')
+cdata.set('PLUG_INFO_RESOURCE_PATH', 'resources')
+cdata.set('PLUG_INFO_ROOT', '..')
+configure_file(
+    input: 'plugInfo.json',
+    output: 'plugInfo.json',
+    install: true,
+    install_dir: 'bin/pluginfo/hdSt/resources',
+    configuration: cdata,
+)
+
+install_data(
+    'shaders/basisCurves.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/compute.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/domeLight.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/edgeId.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/fallbackLighting.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/fallbackLightingShader.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/fallbackMaterialNetwork.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/fallbackVolume.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/frustumCull.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/imageShader.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/instancing.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/mesh.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/meshFaceCull.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/meshNormal.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/meshWire.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/points.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/pointId.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/ptexTexture.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/renderPass.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/renderPassShader.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/simpleLightingShader.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/terminals.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/visibility.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'shaders/volume.glslfx',
+    install_dir: 'bin/pluginfo/hdSt/resources/shaders',
+)
+install_data(
+    'textures/fallbackBlackDomeLight.png',
+    install_dir: 'bin/pluginfo/hdSt/resources/textures',
+)
+#
+#

@@ -136,8 +136,8 @@ void Hdx_UnitTestDelegate::SetCamera(SdfPath const &cameraId,
 {
     _ValueCache &cache = _valueCacheMap[cameraId];
     cache[HdCameraTokens->windowPolicy] = VtValue(CameraUtilFit);
-    cache[HdCameraTokens->worldToViewMatrix] = VtValue(viewMatrix);
-    cache[HdCameraTokens->projectionMatrix] = VtValue(projMatrix);
+    cache[HdShaderTokens->worldToViewMatrix] = VtValue(viewMatrix);
+    cache[HdShaderTokens->projectionMatrix] = VtValue(projMatrix);
 
     GetRenderIndex().GetChangeTracker().MarkSprimDirty(cameraId,
                                                        HdCamera::AllDirty);

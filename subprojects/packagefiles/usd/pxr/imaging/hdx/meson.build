@@ -56,3 +56,101 @@ hdx_lib = shared_library(
         cameraUtil_lib,
     ],
 )
+
+cdata = configuration_data()
+cdata.set('PLUG_INFO_LIBRARY_PATH', '../../usd_hdx.dll')
+cdata.set('PLUG_INFO_RESOURCE_PATH', 'resources')
+cdata.set('PLUG_INFO_ROOT', '..')
+configure_file(
+    input: 'plugInfo.json',
+    output: 'plugInfo.json',
+    install: true,
+    install_dir: 'bin/pluginfo/hdx/resources',
+    configuration: cdata,
+)
+
+install_data(
+    'shaders/boundingBox.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/colorChannel.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/colorCorrection.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/fullscreen.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/oitResolveImageShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/outline.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPass.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassColorShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassColorAndSelectionShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassColorWithOccludedSelectionShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassIdShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassPickingShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassOitShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassOitOpaqueShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassOitVolumeShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/renderPassShadowShader.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/selection.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/skydome.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'shaders/visualize.glslfx',
+    install_dir: 'bin/pluginfo/hdx/resources/shaders',
+)
+install_data(
+    'textures/StinsonBeach.hdr',
+    install_dir: 'bin/pluginfo/hdx/resources/textures',
+)
+install_data(
+    'textures/StinsonBeach.tex',
+    install_dir: 'bin/pluginfo/hdx/resources/textures',
+)
+

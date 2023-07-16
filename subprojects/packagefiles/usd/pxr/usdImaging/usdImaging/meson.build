@@ -1,6 +1,6 @@
 cpp = meson.get_compiler('cpp')
 
-usd_usdImaging_lib = shared_library(
+usdImaging_lib = shared_library(
     'usd_usdImaging',
     [
         # PUBLIC_CLASSES

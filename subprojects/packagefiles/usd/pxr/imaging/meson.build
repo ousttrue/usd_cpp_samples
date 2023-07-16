@@ -15,6 +15,7 @@ subdir('hgiGL')
 subdir('hgiInterop')
 subdir('hdSt')
 subdir('hdx')
+subdir('plugin/hdStorm')
 
 usd_imaging_dep = declare_dependency(
     link_with: [
@@ -33,6 +34,7 @@ usd_imaging_dep = declare_dependency(
         hgiInterop_lib,
         hdSt_lib,
         hdx_lib,
+        # hdStorm_lib,
     ],
     dependencies: [usd_base_dep],
     compile_args: args,
