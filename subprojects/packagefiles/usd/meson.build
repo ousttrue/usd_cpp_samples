@@ -12,7 +12,7 @@ args = ['-DNOMINMAX']
 subdir('pxr')
 usd_dep = declare_dependency(
     include_directories: pxr_inc,
-    link_with: [arch_lib, tf_lib, js_lib, work_lib],
+    link_with: [arch_lib, tf_lib, js_lib, work_lib, plug_lib, ar_lib, sdf_lib],
     dependencies: [boost_dep, tbb_dep],
     compile_args: args,
 )

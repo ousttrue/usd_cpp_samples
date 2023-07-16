@@ -14,4 +14,4 @@ window.ini
 !/subprojects/packagefiles
 !/subprojects/usd.wrap
 !/subprojects/tbb.wrap
-
+/prefix/
