@@ -103,10 +103,6 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
-                {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\subprojects\\tbb2019_20190410oss\\bin\\intel64\\vc14;${env:PATH}"
-                }
             ],
             "console": "integratedTerminal"
         },

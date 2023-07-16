@@ -9,11 +9,13 @@ if get_option(
         'tbb_debug',
         dirs: meson.current_source_dir() + '/lib/intel64/vc14',
     )
+    install_data('bin/intel64/vc14/tbb_debug.dll', install_dir: 'bin')
 else
     tbb_lib = cc.find_library(
         'tbb',
         dirs: meson.current_source_dir() + '/lib/intel64/vc14',
     )
+    install_data('bin/intel64/vc14/tbb.dll', install_dir: 'bin')
 endif
 
 tbb_dep = declare_dependency(
