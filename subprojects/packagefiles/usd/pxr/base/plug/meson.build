@@ -31,3 +31,6 @@ plug_lib = shared_library(
     dependencies: [boost_dep, tbb_dep],
     link_with: [arch_lib, tf_lib, js_lib, trace_lib, work_lib],
 )
+
+install_data('plugInfo.json', install_dir: 'bin/pluginfo')
+install_data('plugInfo.json', install_dir: 'plugin/pluginfo')

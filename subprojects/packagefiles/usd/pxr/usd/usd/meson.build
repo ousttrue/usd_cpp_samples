@@ -92,3 +92,15 @@ usd_lib = shared_library(
         sdf_lib,
     ],
 )
+
+cdata = configuration_data()
+cdata.set('PLUG_INFO_LIBRARY_PATH', '../../usd_usd.dll')
+cdata.set('PLUG_INFO_RESOURCE_PATH', 'resources')
+cdata.set('PLUG_INFO_ROOT', '..')
+configure_file(
+    input: 'plugInfo.json',
+    output: 'plugInfo.json',
+    install: true,
+    install_dir: 'bin/pluginfo/usd/resources',
+    configuration: cdata,
+)
