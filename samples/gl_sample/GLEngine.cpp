@@ -175,7 +175,8 @@ static pxr::HdxRenderTaskParams _MakeHydraUsdImagingGLRenderParams(
 }
 
 static bool IsColorCorrectionCapable() {
-  return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled;
+  // return pxr::GlfContextCaps::GetInstance().floatingPointBuffersEnabled;
+  return false;
 }
 
 GLEngineImpl::GLEngineImpl()

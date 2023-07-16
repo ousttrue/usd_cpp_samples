@@ -8,6 +8,11 @@ args = [
     '/wd4244',
     '/wd4305',
     '/wd4251',
+    '/wd4267',
+    '/wd4804',
+    '/wd4005',
+    '/wd4273',
+    '/wd4828',
 ]
 subdir('pxr')
 usd_dep = declare_dependency(
@@ -26,6 +31,8 @@ usd_dep = declare_dependency(
         kind_lib,
         usd_lib,
         usdGeom_lib,
+        ndr_lib,
+        sdr_lib,
     ],
     dependencies: [boost_dep, tbb_dep],
     compile_args: ['-DNOMINMAX'],
