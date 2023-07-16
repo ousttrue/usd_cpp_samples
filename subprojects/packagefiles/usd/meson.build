@@ -4,11 +4,11 @@ boost_dep = dependency('boost')
 tbb_dep = subproject('tbb').get_variable('tbb_dep')
 pxr_inc = include_directories('.', is_system: true)
 
-# cpp = meson.get_compiler('cpp')
-# shlwapi_lib = cpp.find_library('Shlwapi', required: true)
-# ws2_32_lib = cpp.find_library('Ws2_32', required: true)
-# dbghelp_lib = cpp.find_library('Dbghelp', required: true)
-args = ['-DNOMINMAX']
+args = [
+    '/wd4244',
+    '/wd4305',
+    '/wd4251',
+]
 subdir('pxr')
 usd_dep = declare_dependency(
     include_directories: pxr_inc,
@@ -25,7 +25,8 @@ usd_dep = declare_dependency(
         pcp_lib,
         kind_lib,
         usd_lib,
+        usdGeom_lib,
     ],
     dependencies: [boost_dep, tbb_dep],
-    compile_args: args,
+    compile_args: ['-DNOMINMAX'],
 )
