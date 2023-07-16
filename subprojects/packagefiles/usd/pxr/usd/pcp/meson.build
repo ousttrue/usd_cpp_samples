@@ -44,9 +44,7 @@ pcp_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    include_directories: pxr_inc,
     cpp_args: args + ['-DPCP_EXPORTS=1'],
-    dependencies: [boost_dep, tbb_dep],
-    link_with: [arch_lib, tf_lib, trace_lib, vt_lib, sdf_lib, work_lib, ar_lib],
+    dependencies: [usd_base_dep],
+    link_with: [sdf_lib, ar_lib],
 )
-

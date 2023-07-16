@@ -4,16 +4,7 @@ boost_dep = dependency('boost')
 tbb_dep = subproject('tbb').get_variable('tbb_dep')
 pxr_inc = include_directories('.', is_system: true)
 
-args = [
-    '/wd4244',
-    '/wd4305',
-    '/wd4251',
-    '/wd4267',
-    '/wd4804',
-    '/wd4005',
-    '/wd4273',
-    '/wd4828',
-]
+
 subdir('pxr')
 usd_dep = declare_dependency(
     include_directories: pxr_inc,
@@ -33,6 +24,10 @@ usd_dep = declare_dependency(
         usdGeom_lib,
         ndr_lib,
         sdr_lib,
+        usdShade_lib,
+        # imaging
+        # pxOsd_lib,
+        # hd_lib,
     ],
     dependencies: [boost_dep, tbb_dep],
     compile_args: ['-DNOMINMAX'],

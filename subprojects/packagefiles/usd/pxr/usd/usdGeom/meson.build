@@ -48,23 +48,9 @@ usdGeom_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    include_directories: pxr_inc,
     cpp_args: args + ['-DUSDGEOM_EXPORTS=1'],
-    dependencies: [boost_dep, tbb_dep],
-    link_with: [
-        arch_lib,
-        js_lib,
-        tf_lib,
-        plug_lib,
-        vt_lib,
-        trace_lib,
-        work_lib,
-        kind_lib,
-        gf_lib,
-        #
-        sdf_lib,
-        usd_lib,
-    ],
+    dependencies: [usd_base_dep],
+    link_with: [kind_lib, sdf_lib, usd_lib],
 )
 
 cdata = configuration_data()

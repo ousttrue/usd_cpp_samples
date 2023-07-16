@@ -90,8 +90,7 @@ sdf_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    include_directories: pxr_inc,
     cpp_args: args + ['-DSDF_EXPORTS=1', '-DYY_NO_UNISTD_H'],
-    dependencies: [boost_dep, tbb_dep],
-    link_with: [arch_lib, tf_lib, js_lib, gf_lib, trace_lib, vt_lib, work_lib, ar_lib, plug_lib],
+    dependencies: [usd_base_dep],
+    link_with: [ar_lib],
 )
