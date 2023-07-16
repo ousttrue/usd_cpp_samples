@@ -171,5 +171,5 @@ hd_lib = shared_library(
     implicit_include_directories: false,
     cpp_args: args + ['-DHD_EXPORTS=1'],
     dependencies: [usd_dep, osd_dep],
-    link_with: [pxOsd_lib],
+    link_with: [pxOsd_lib, cameraUtil_lib, hf_lib],
 )

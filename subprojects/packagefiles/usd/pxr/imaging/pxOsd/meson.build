@@ -1,5 +1,7 @@
 cpp = meson.get_compiler('cpp')
 
+osd_dep = dependency('osd')
+
 pxOsd_lib = shared_library(
     'usd_pxOsd',
     [
