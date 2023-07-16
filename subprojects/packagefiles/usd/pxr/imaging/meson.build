@@ -1,3 +1,5 @@
+gl_dep = dependency('gl')
+
 subdir('pxOsd')
 subdir('cameraUtil')
 subdir('hf')
@@ -6,6 +8,13 @@ subdir('garch')
 subdir('geomUtil')
 subdir('hdar')
 subdir('hio')
+subdir('hgi')
+subdir('glf')
+subdir('hdsi')
+subdir('hgiGL')
+subdir('hgiInterop')
+subdir('hdSt')
+subdir('hdx')
 
 usd_imaging_dep = declare_dependency(
     link_with: [
@@ -17,6 +26,13 @@ usd_imaging_dep = declare_dependency(
         geomUtil_lib,
         hdar_lib,
         hio_lib,
+        hgi_lib,
+        glf_lib,
+        hdsi_lib,
+        hgiGL_lib,
+        hgiInterop_lib,
+        hdSt_lib,
+        hdx_lib,
     ],
     dependencies: [usd_base_dep],
     compile_args: args,

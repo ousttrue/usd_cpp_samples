@@ -6,5 +6,5 @@ executable(
         'HDHost.cpp',
     ],
     install: true,
-    dependencies: [usd_imaging_dep, usd_usdImaging_dep],
+    dependencies: [usd_dep, usd_imaging_dep, usd_usdImaging_dep],
 )

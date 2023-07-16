@@ -18,3 +18,9 @@
 
 ### OpenSubdiv
 
+- build 難航。
+
+`pxr/imaging/hdSt/codeGen.cpp` で OpenSubdiv の 
+shader を得ているところを コメントアウトして誤魔化した。
+後回しでよし。
+

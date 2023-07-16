@@ -4,11 +4,15 @@ project(
     version: '3.5.0',
 )
 
+gl_dep = dependency('gl')
+
 osd_inc = include_directories('.')
 
 osd_lib = static_library(
     'osd',
     [
+        # 'glLoader/glLoader.cpp',
+        # 'glLoader/glApi.cpp',
         'opensubdiv/sdc/crease.cpp',
         'opensubdiv/sdc/typeTraits.cpp',
         'opensubdiv/vtr/fvarLevel.cpp',
@@ -39,6 +43,11 @@ osd_lib = static_library(
         'opensubdiv/osd/cpuKernel.cpp',
         'opensubdiv/osd/cpuPatchTable.cpp',
         'opensubdiv/osd/cpuVertexBuffer.cpp',
+        # 'opensubdiv/osd/cpuGLVertexBuffer.cpp',
+        # 'opensubdiv/osd/glLegacyGregoryPatchTable.cpp',
+        # 'opensubdiv/osd/glPatchTable.cpp',
+        # 'opensubdiv/osd/glVertexBuffer.cpp',
+        # 'opensubdiv/osd/glslPatchShaderSource.cpp',
     ],
     # install: true,
     include_directories: osd_inc,
@@ -46,6 +55,7 @@ osd_lib = static_library(
         '-DNOMINMAX',
         '-D_USE_MATH_DEFINES',
     ],
+    dependencies: [gl_dep],
 )
 
 osd_dep = declare_dependency(

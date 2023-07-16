@@ -1,10 +1,9 @@
 cpp = meson.get_compiler('cpp')
 
-gl_dep = dependency('gl')
-
 garch_lib = shared_library(
     'usd_garch',
     [
+        'glApi.cpp',
         'glDebugWindow.cpp',
         'glPlatformDebugContext.cpp',
         # Windows

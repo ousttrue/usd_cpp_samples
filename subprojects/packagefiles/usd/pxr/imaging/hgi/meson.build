@@ -1,0 +1,37 @@
+cpp = meson.get_compiler('cpp')
+
+hgi_lib = shared_library(
+    'usd_hgi',
+    [
+        # PUBLIC_CLASSES
+        'attachmentDesc.cpp',
+        'blitCmds.cpp',
+        'buffer.cpp',
+        'capabilities.cpp',
+        'cmds.cpp',
+        'computeCmds.cpp',
+        'computeCmdsDesc.cpp',
+        'computePipeline.cpp',
+        'debugCodes.cpp',
+        'graphicsCmds.cpp',
+        'graphicsCmdsDesc.cpp',
+        'graphicsPipeline.cpp',
+        'hgi.cpp',
+        'indirectCommandEncoder.cpp',
+        'resourceBindings.cpp',
+        'sampler.cpp',
+        'shaderFunction.cpp',
+        'shaderFunctionDesc.cpp',
+        'shaderGenerator.cpp',
+        'shaderProgram.cpp',
+        'shaderSection.cpp',
+        'texture.cpp',
+        'tokens.cpp',
+        'types.cpp',
+    ],
+    install: true,
+    implicit_include_directories: false,
+    cpp_args: args + ['-DHGI_EXPORTS=1'],
+    dependencies: [usd_dep],
+    link_with: [],
+)
