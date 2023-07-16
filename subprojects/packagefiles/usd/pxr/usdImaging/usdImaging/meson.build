@@ -105,3 +105,16 @@ usd_usdImaging_lib = shared_library(
     link_with: [],
 )
 
+cdata = configuration_data()
+cdata.set('PLUG_INFO_LIBRARY_PATH', '../../usd_usdImaging.dll')
+cdata.set('PLUG_INFO_RESOURCE_PATH', 'resources')
+cdata.set('PLUG_INFO_ROOT', '..')
+configure_file(
+    input: 'plugInfo.json',
+    output: 'plugInfo.json',
+    install: true,
+    install_dir: 'bin/pluginfo/usdImaging/resources',
+    configuration: cdata,
+)
+
+

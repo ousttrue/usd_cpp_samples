@@ -223,6 +223,7 @@ GLEngineImpl::GLEngineImpl()
 
     HdPluginRenderDelegateUniqueHandle renderDelegate =
         registry.CreateRenderDelegate(resolvedId);
+    assert(renderDelegate);
     if (!renderDelegate) {
       using namespace pxr;
       TF_CODING_ERROR("No renderer plugins found! "

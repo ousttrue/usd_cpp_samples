@@ -38,3 +38,16 @@ hgiGL_lib = shared_library(
     link_with: [garch_lib, hgi_lib],
 )
 
+cdata = configuration_data()
+cdata.set('PLUG_INFO_LIBRARY_PATH', '../../usd_hgiGL.dll')
+cdata.set('PLUG_INFO_RESOURCE_PATH', 'resources')
+cdata.set('PLUG_INFO_ROOT', '..')
+configure_file(
+    input: 'plugInfo.json',
+    output: 'plugInfo.json',
+    install: true,
+    install_dir: 'bin/pluginfo/hgiGL/resources',
+    configuration: cdata,
+)
+
+
