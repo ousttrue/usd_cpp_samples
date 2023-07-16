@@ -1,0 +1,52 @@
+cpp = meson.get_compiler('cpp')
+
+pcp_lib = shared_library(
+    'usd_pcp',
+    [
+        # PUBLIC_CLASSES
+        'arc.cpp',
+        'cache.cpp',
+        'changes.cpp',
+        'composeSite.cpp',
+        'dependency.cpp',
+        'dynamicFileFormatContext.cpp',
+        'dynamicFileFormatDependencyData.cpp',
+        'dynamicFileFormatInterface.cpp',
+        'errors.cpp',
+        'instanceKey.cpp',
+        'iterator.cpp',
+        'layerPrefetchRequest.cpp',
+        'layerStack.cpp',
+        'layerStackIdentifier.cpp',
+        'mapExpression.cpp',
+        'mapFunction.cpp',
+        'namespaceEdits.cpp',
+        'node.cpp',
+        'pathTranslation.cpp',
+        'primIndex.cpp',
+        'propertyIndex.cpp',
+        'site.cpp',
+        'strengthOrdering.cpp',
+        'targetIndex.cpp',
+        'types.cpp',
+
+        # PRIVATE_CLASSES
+        'debugCodes.cpp',
+        'dependencies.cpp',
+        'diagnostic.cpp',
+        'instancing.cpp',
+        'layerStackRegistry.cpp',
+        'node_Iterator.cpp',
+        'primIndex_Graph.cpp',
+        'primIndex_StackFrame.cpp',
+        'statistics.cpp',
+        'utils.cpp',
+    ],
+    install: true,
+    implicit_include_directories: false,
+    include_directories: pxr_inc,
+    cpp_args: args + ['-DPCP_EXPORTS=1'],
+    dependencies: [boost_dep, tbb_dep],
+    link_with: [arch_lib, tf_lib, trace_lib, vt_lib, sdf_lib, work_lib, ar_lib],
+)
+
