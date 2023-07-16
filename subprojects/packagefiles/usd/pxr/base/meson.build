@@ -1,4 +1,5 @@
 args = [
+    '-DNOMINMAX',
     '/wd4244',
     '/wd4305',
     '/wd4251',
