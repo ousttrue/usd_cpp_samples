@@ -7,4 +7,6 @@ patch_directory = usd
 [provide]
 usd = usd_dep
 usd_imaging = usd_imaging_dep
+usd_usdImaging = usd_usdImaging_dep
+
 

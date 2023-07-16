@@ -27,3 +27,4 @@ configure_file(
 subdir('base')
 subdir('usd')
 subdir('imaging')
+subdir('usdImaging')
