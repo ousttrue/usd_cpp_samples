@@ -22,7 +22,12 @@ plug_lib = shared_library(
     install: true,
     implicit_include_directories: false,
     include_directories: pxr_inc,
-    cpp_args: args + ['-DPLUG_EXPORTS=1'],
+
+    cpp_args: args + [
+        '-DPLUG_EXPORTS=1',
+        '-DPXR_BUILD_LOCATION=pluginfo',
+        '-DPXR_PLUGIN_BUILD_LOCATION=../plugin/pluginfo',
+    ],
     dependencies: [boost_dep, tbb_dep],
     link_with: [arch_lib, tf_lib, js_lib, trace_lib, work_lib],
 )

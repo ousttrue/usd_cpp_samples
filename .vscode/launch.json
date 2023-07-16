@@ -103,6 +103,10 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
+                {
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
+                }
             ],
             "console": "integratedTerminal"
         },
