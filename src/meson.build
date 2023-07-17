@@ -1,3 +1,5 @@
+subdir('glwindow')
+
 subdir('hello')
 subdir('gl_sample')
 subdir('hd_sample')
