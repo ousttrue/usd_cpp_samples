@@ -12,7 +12,11 @@ usdHydra_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    cpp_args: args + ['-DUSDHYDRA_EXPORTS=1'],
+    cpp_args: args + [
+        '-DUSDHYDRA_EXPORTS=1',
+        '-DMFB_PACKAGE_NAME=usdHydra',
+        '-DMFB_ALT_PACKAGE_NAME=usdHydra',
+    ],
     dependencies: [usd_base_dep],
     link_with: [usd_lib, usdShade_lib, sdf_lib, ndr_lib, ar_lib],
 )

@@ -89,3 +89,12 @@ configure_file(
     install_dir: 'bin/pluginfo/usd/resources',
     configuration: cdata,
 )
+
+install_data(
+    'generatedSchema.usda',
+    install_dir: 'bin/pluginfo/usd/resources',
+)
+install_data(
+    'schema.usda',
+    install_dir: 'bin/pluginfo/usd/resources/usd',
+)

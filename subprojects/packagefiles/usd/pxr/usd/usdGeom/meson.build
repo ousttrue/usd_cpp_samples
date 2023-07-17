@@ -64,3 +64,12 @@ configure_file(
     install_dir: 'bin/pluginfo/usdGeom/resources',
     configuration: cdata,
 )
+
+install_data(
+    'generatedSchema.usda',
+    install_dir: 'bin/pluginfo/usdGeom/resources',
+)
+install_data(
+    'schema.usda',
+    install_dir: 'bin/pluginfo/usdGeom/resources/usdGeom',
+)

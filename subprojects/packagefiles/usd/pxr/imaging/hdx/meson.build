@@ -41,7 +41,11 @@ hdx_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    cpp_args: args + ['-DHDX_EXPORTS=1'],
+    cpp_args: args + [
+        '-DHDX_EXPORTS=1',
+        '-DMFB_PACKAGE_NAME=hdx',
+        '-DMFB_ALT_PACKAGE_NAME=hdx',
+    ],
     dependencies: [usd_dep],
     link_with: [
         garch_lib,
@@ -153,4 +157,3 @@ install_data(
     'textures/StinsonBeach.tex',
     install_dir: 'bin/pluginfo/hdx/resources/textures',
 )
-

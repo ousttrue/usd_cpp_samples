@@ -167,6 +167,10 @@
                 {
                     "name": "TF_DEBUG",
                     "value": "PLUG_*",
+                },
+                {
+                    "name": "HDST_DUMP_SHADER_SOURCEFILE",
+                    "value": "1",
                 }
             ],
             "externalConsole": false

@@ -6,15 +6,17 @@
 ## [WIP] mesno builld にしてみた
 
 ```
-# prefix がフルパスになるようにしてください
+# --prefix is fullpath
 > meson setup builddir --prefix $(pwd)/prefix 
-# compile でなく install。plugin のフォルダ配置が動作に必要です。
+# install to prefix
 > meson install -C builddir
 
 > ./prefix/bin/hello.exe
 ```
 
 ## Imaging
+
+ある程度ビルドできたが動かん。
 
 ### OpenSubdiv
 
@@ -23,3 +25,4 @@
 `pxr/imaging/hdSt/codeGen.cpp` で OpenSubdiv の 
 shader を得ているところを コメントアウトして誤魔化した。
 後回しでよし。
+

@@ -113,7 +113,11 @@ hdSt_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    cpp_args: args + ['-DHDST_EXPORTS=1'],
+    cpp_args: args + [
+        '-DHDST_EXPORTS=1',
+        '-DMFB_PACKAGE_NAME=hdSt',
+        '-DMFB_ALT_PACKAGE_NAME=hdSt',
+    ],
     dependencies: [usd_dep, osd_dep],
     link_with: [
         glf_lib,

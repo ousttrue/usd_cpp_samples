@@ -10,3 +10,4 @@ kind_lib = shared_library(
     cpp_args: args + ['-DKIND_EXPORTS=1'],
     dependencies: [usd_base_dep],
 )
+

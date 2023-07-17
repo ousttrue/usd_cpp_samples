@@ -11,7 +11,9 @@ js_lib = shared_library(
     install: true,
     implicit_include_directories: false,
     include_directories: pxr_inc,
-    cpp_args: args + ['-DJS_EXPORTS=1'],
+    cpp_args: args + [
+        '-DJS_EXPORTS=1',
+    ],
     dependencies: [boost_dep],
     link_with: [tf_lib],
 )

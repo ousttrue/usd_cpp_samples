@@ -34,7 +34,11 @@ usdLux_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    cpp_args: args + ['-DUSDLUX_EXPORTS=1'],
+    cpp_args: args + [
+        '-DUSDLUX_EXPORTS=1',
+        '-DMFB_PACKAGE_NAME=usdLux',
+        '-DMFB_ALT_PACKAGE_NAME=usdLux',
+    ],
     dependencies: [usd_base_dep],
     link_with: [ndr_lib, sdr_lib, sdf_lib, usd_lib, usdGeom_lib, usdShade_lib],
 )
