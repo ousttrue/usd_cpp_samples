@@ -8,6 +8,11 @@ args = [
     '/wd4005',
     '/wd4273',
     '/wd4828',
+    '/wd4275',
+    '-DPXR_MAJOR_VERSION=' + major_version.to_string(),
+    '-DPXR_MINOR_VERSION=' + minor_version.to_string(),
+    '-DPXR_PATCH_VERSION=' + patch_version.to_string(),
+    '-DPXR_VERSION=' + pxr_version.to_string(),
 ]
 
 subdir('arch')
