@@ -73,24 +73,9 @@ usd_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    include_directories: pxr_inc,
     cpp_args: args + ['-DUSD_EXPORTS=1', '/bigobj'],
-    dependencies: [boost_dep, tbb_dep],
-    link_with: [
-        arch_lib,
-        tf_lib,
-        vt_lib,
-        js_lib,
-        trace_lib,
-        work_lib,
-        plug_lib,
-        gf_lib,
-        # usd
-        ar_lib,
-        kind_lib,
-        pcp_lib,
-        sdf_lib,
-    ],
+    dependencies: [usd_base_dep],
+    link_with: [ar_lib, kind_lib, pcp_lib, sdf_lib],
 )
 
 cdata = configuration_data()
@@ -103,4 +88,13 @@ configure_file(
     install: true,
     install_dir: 'bin/pluginfo/usd/resources',
     configuration: cdata,
+)
+
+install_data(
+    'generatedSchema.usda',
+    install_dir: 'bin/pluginfo/usd/resources',
+)
+install_data(
+    'schema.usda',
+    install_dir: 'bin/pluginfo/usd/resources/usd',
 )

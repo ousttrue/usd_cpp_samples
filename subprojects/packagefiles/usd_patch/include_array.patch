@@ -1,0 +1,12 @@
+diff --git a/pxr/usdImaging/usdImaging/drawModeStandin.cpp b/pxr/usdImaging/usdImaging/drawModeStandin.cpp
+index 68437b0..6883705 100644
+--- a/pxr/usdImaging/usdImaging/drawModeStandin.cpp
++++ b/pxr/usdImaging/usdImaging/drawModeStandin.cpp
+@@ -57,6 +57,7 @@
+ 
+ #include <functional>
+ #include <bitset>
++#include <array>
+ 
+ PXR_NAMESPACE_OPEN_SCOPE
+ 

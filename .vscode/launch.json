@@ -149,8 +149,8 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
                 }
             ],
             "console": "integratedTerminal"
@@ -160,13 +160,17 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/prefix/bin/hd_sample.exe",
-            "": [],
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
+                },
+                {
+                    "name": "HDST_DUMP_SHADER_SOURCEFILE",
+                    "value": "1",
                 }
             ],
             "externalConsole": false
@@ -181,8 +185,8 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
                 }
             ],
             "externalConsole": false
@@ -197,8 +201,8 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "PATH",
-                    "value": "${workspaceFolder}\\build_debug\\bin;${workspaceFolder}\\build_debug\\lib;${env:PATH}"
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
                 }
             ],
             "externalConsole": false
@@ -275,6 +279,24 @@
                 }
             ],
             "externalConsole": false
+        },
+        {
+            "name": "samples/MiniUsdImagingGLEngine",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/prefix/bin/MiniUsdImagingGLEngine.exe",
+            "args": [
+                "test_sphere.usda"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
+                }
+            ],
+            "console": "externalTerminal"
         },
         {
             "name": "usdtweak",

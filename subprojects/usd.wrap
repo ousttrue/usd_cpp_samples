@@ -3,6 +3,11 @@ url = https://github.com/PixarAnimationStudios/OpenUSD
 revision = v23.05
 depth = 1
 patch_directory = usd
+diff_files = usd_patch/include_array.patch
 
 [provide]
 usd = usd_dep
+usd_imaging = usd_imaging_dep
+usd_usdImaging = usd_usdImaging_dep
+
+

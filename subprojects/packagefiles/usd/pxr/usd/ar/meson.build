@@ -29,10 +29,8 @@ ar_lib = shared_library(
     ],
     install: true,
     implicit_include_directories: false,
-    include_directories: pxr_inc,
     cpp_args: args + ['-DAR_EXPORTS=1'],
-    dependencies: [boost_dep, tbb_dep],
-    link_with: [arch_lib, js_lib, tf_lib, plug_lib, vt_lib],
+    dependencies: [usd_base_dep],
 )
 
 cdata = configuration_data()
