@@ -16,4 +16,5 @@ window.ini
 !/subprojects/tbb.wrap
 !/subprojects/osd.wrap
 !/subprojects/glfw.wrap
+!/subprojects/glew.wrap
 /prefix/
