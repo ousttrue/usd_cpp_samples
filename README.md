@@ -12,17 +12,7 @@
 > meson install -C builddir
 
 > ./prefix/bin/hello.exe
+
+> ./prefix/bin/gl_sample.exe usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda
 ```
-
-## Imaging
-
-ある程度ビルドできたが動かん。
-
-### OpenSubdiv
-
-- build 難航。
-
-`pxr/imaging/hdSt/codeGen.cpp` で OpenSubdiv の 
-shader を得ているところを コメントアウトして誤魔化した。
-後回しでよし。
 
