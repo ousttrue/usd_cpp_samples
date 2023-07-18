@@ -182,6 +182,7 @@
             "program": "${workspaceFolder}/prefix/bin/view_sample.exe",
             "args": [
                 "${workspaceFolder}/scenes/ref.usda"
+                // "${workspaceFolder}/scenes/box.usda"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
