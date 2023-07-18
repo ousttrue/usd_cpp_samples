@@ -3,7 +3,9 @@
 <https://ousttrue.github.io/usd_cpp_samples/>
 
 
-## [WIP] mesno builld にしてみた
+## mesno builld
+
+using `/subprojects/usd.wrap`
 
 ```
 # --prefix is fullpath

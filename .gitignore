@@ -15,4 +15,5 @@ window.ini
 !/subprojects/usd.wrap
 !/subprojects/glfw.wrap
 !/subprojects/glew.wrap
+!/subprojects/imgui.wrap
 /prefix/
