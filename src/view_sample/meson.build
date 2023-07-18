@@ -3,6 +3,7 @@ executable(
     [
         'main.cpp',
         'platform.cpp',
+        'gui.cpp',
     ],
     install: true,
     dependencies: [

@@ -1,6 +1,8 @@
 #include "platform.h"
 #include <GLFW/glfw3.h>
 #include <assert.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <stdio.h>
 #include <string>
 
@@ -20,6 +22,8 @@ struct PlatformImpl {
   }
 
   ~PlatformImpl() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
     glfwDestroyWindow(Window);
     glfwTerminate();
   }
@@ -57,7 +61,11 @@ struct PlatformImpl {
 
     glfwMakeContextCurrent(Window);
     glfwSwapInterval(1); // Enable vsync
-                         //
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(Window, true);
+    ImGui_ImplOpenGL3_Init(GlslVersion.c_str());
+
     return Window;
   }
 
@@ -80,10 +88,33 @@ struct PlatformImpl {
     Frame frame;
     glfwGetFramebufferSize(Window, &frame.Width, &frame.Height);
 
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
     return frame;
   }
 
-  void EndFrame() { glfwSwapBuffers(Window); }
+  void EndFrame() {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // Update and Render additional Platform Windows
+    // (Platform functions may change the current OpenGL context, so we
+    // save/restore it to make it easier to paste this code elsewhere.
+    //  For this specific demo app we could also call
+    //  glfwMakeContextCurrent(window) directly)
+    auto &io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      UpdateViewports([]() {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+      });
+    }
+
+    glfwSwapBuffers(Window);
+  }
 
   void UpdateViewports(const std::function<void()> &callback) {
     GLFWwindow *backup_current_context = glfwGetCurrentContext();
