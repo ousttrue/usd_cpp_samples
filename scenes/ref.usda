@@ -1,0 +1,7 @@
+#usda 1.0
+def "box1" ( references = @box.usda@ ) {
+
+}
+def "box2" ( references = @box.usda@ ) {
+    float size = 2.0
+}

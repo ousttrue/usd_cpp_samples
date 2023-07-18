@@ -176,6 +176,24 @@
             "externalConsole": false
         },
         {
+            "name": "samples/view_sample",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/prefix/bin/view_sample.exe",
+            "args": [
+                "${workspaceFolder}/scenes/ref.usda"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "TF_DEBUG",
+                    "value": "PLUG_*",
+                },
+            ],
+            "externalConsole": false
+        },
+        {
             "name": "samples/tiny",
             "type": "cppvsdbg",
             "request": "launch",

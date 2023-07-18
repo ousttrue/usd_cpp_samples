@@ -16,4 +16,6 @@ window.ini
 !/subprojects/glfw.wrap
 !/subprojects/glew.wrap
 !/subprojects/imgui.wrap
+!/subprojects/grapho.wrap
+!/subprojects/DirectXMath.wrap
 /prefix/
