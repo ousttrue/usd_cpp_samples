@@ -141,7 +141,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/prefix/bin/gl_sample.exe",
             "args": [
-                "${workspaceFolder}/usd_source/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
+                "${workspaceFolder}/subprojects/usd/extras/usd/tutorials/authoringVariants/HelloWorld.usda",
                 // "${workspaceFolder}/usd_source/extras/usd/tutorials/convertingLayerFormats/Sphere.usda",
                 // "${workspaceFolder}/usd_source/extras/usd/examples/usdGeomExamples/basisCurves.usda",
             ],

@@ -1,13 +1,11 @@
 [wrap-git]
-url = https://github.com/PixarAnimationStudios/OpenUSD
-revision = v23.05
+url = https://github.com/ousttrue/USD
+revision = Branch_v23.05
 depth = 1
-patch_directory = usd
-diff_files = usd_patch/include_array.patch
+; patch_directory = usd
 
 [provide]
-usd = usd_dep
+usd_usd = usd_usd_dep
 usd_imaging = usd_imaging_dep
 usd_usdImaging = usd_usdImaging_dep
-
 

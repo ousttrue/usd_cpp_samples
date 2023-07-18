@@ -1,9 +1,2 @@
-[wrap-file]
-directory = tbb2019_20190410oss
-source_url = https://github.com/oneapi-src/oneTBB/releases/download/2019_U6/tbb2019_20190410oss_win.zip
-source_filename = tbb2019_20190410oss_win.zip
-source_hash = cb7aab9d4a061ca238a5d7a3bce5fa09ed89deb48aa52e2eb0cc695c878f03d5
-patch_directory = tbb
-
-[provide]
-tbb = tbb_dep
+[wrap-redirect]
+filename = usd\subprojects\tbb.wrap

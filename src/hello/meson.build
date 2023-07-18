@@ -3,6 +3,6 @@ executable(
     'main.cpp',
     install: true,
     dependencies: [
-        usd_dep,
+        usd_usd_dep,
     ],
 )

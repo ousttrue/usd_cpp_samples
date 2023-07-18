@@ -1,9 +1,2 @@
-[wrap-git]
-url = https://github.com/PixarAnimationStudios/OpenSubdiv
-revision = v3_5_0
-depth = 1
-patch_directory = osd
-
-[provide]
-osd = osd_dep
-
+[wrap-redirect]
+filename = usd\subprojects\osd.wrap
